@@ -1,0 +1,78 @@
+import 'package:flutter/material.dart';
+import 'package:fitness_app/screens/home_screen.dart';
+import 'package:fitness_app/widgets/bottom_navigation.dart';
+import 'package:fitness_app/widgets/phone_frame.dart';
+
+void main() {
+  runApp(const FitnessApp());
+}
+
+class FitnessApp extends StatelessWidget {
+  const FitnessApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Фитнес Трекер',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        fontFamily: 'Roboto',
+      ),
+      home: const SimplePhoneBorder(
+        child: MainNavigation(),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const HomeScreen(),
+    _buildPlaceholderScreen('Тренировки'),
+    _buildPlaceholderScreen('Прогресс'),
+    _buildPlaceholderScreen('Профиль'),
+  ];
+
+  static Widget _buildPlaceholderScreen(String title) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Text(
+          '$title - Раздел в разработке',
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      ),
+    );
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigation(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+      ),
+    );
+  }
+}
