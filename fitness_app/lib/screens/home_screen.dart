@@ -8,6 +8,7 @@ import './trainers_screen.dart';
 import './membership_screen.dart';
 import './payment_screen.dart';
 import './locker_screen.dart';
+import '../widgets/phone_frame.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -176,7 +177,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const TennisBookingScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const TennisBookingScreen(),
+                ),
+              ),
             );
           },
         ),
@@ -187,7 +192,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const ScheduleScreen(),
+                ),
+              ),
             );
           },
         ),
@@ -198,7 +207,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const TrainersScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const TrainersScreen(),
+                ),
+              ),
             );
           },
         ),
@@ -209,7 +222,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const MembershipScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const MembershipScreen(),
+                ),
+              ),
             );
           },
         ),
@@ -220,7 +237,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const PaymentScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const PaymentScreen(),
+                ),
+              ),
             );
           },
         ),
@@ -231,7 +252,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const LockerScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const LockerScreen(),
+                ),
+              ),
             );
           },
         ),
@@ -250,7 +275,11 @@ class HomeScreen extends StatelessWidget {
           () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const TrainersScreen()),
+              MaterialPageRoute(
+                builder: (context) => SimplePhoneBorder(
+                  child: const TrainersScreen(),
+                ),
+              ),
             );
           },
         ),

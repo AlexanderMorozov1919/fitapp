@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/trainer_model.dart';
+import '../widgets/phone_frame.dart';
 
 class TrainersScreen extends StatefulWidget {
   const TrainersScreen({super.key});
@@ -80,7 +81,9 @@ class _TrainersScreenState extends State<TrainersScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TrainerDetailScreen(trainer: trainer),
+              builder: (context) => SimplePhoneBorder(
+                child: TrainerDetailScreen(trainer: trainer),
+              ),
             ),
           );
         },
