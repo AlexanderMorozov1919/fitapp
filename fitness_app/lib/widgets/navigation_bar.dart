@@ -20,7 +20,7 @@ class NavigationBar extends StatelessWidget {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.only(top: 6),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(color: Colors.grey[200]!)),
@@ -37,13 +37,13 @@ class NavigationBar extends StatelessWidget {
                 Icon(
                   item['icon'] as IconData,
                   color: isActive ? Colors.blue : Colors.grey[400],
-                  size: 24,
+                  size: 22,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 1),
                 Text(
                   item['label'] as String,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 9,
                     color: isActive ? Colors.blue : Colors.grey[400],
                   ),
                 ),

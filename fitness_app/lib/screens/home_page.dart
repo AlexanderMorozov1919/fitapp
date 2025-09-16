@@ -43,38 +43,31 @@ class HomePage extends StatelessWidget {
           
           const SizedBox(height: 16),
           
-          SizedBox(
-            height: 100, // Фиксированная высота для быстрых действий
-            child: GridView.count(
-              crossAxisCount: 4,
-              crossAxisSpacing: 6,
-              mainAxisSpacing: 6,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 0.8,
-              children: [
-                QuickAction(
-                  icon: Icons.calendar_today,
-                  label: 'Расписание',
-                  onTap: () => onPageChanged('schedule'),
-                ),
-                QuickAction(
-                  icon: Icons.people,
-                  label: 'Тренеры',
-                  onTap: () => onPageChanged('trainers'),
-                ),
-                QuickAction(
-                  icon: Icons.check_circle,
-                  label: 'Прогресс',
-                  onTap: () => onPageChanged('progress'),
-                ),
-                QuickAction(
-                  icon: Icons.shopping_cart,
-                  label: 'Магазин',
-                  onTap: () => onPageChanged('shop'),
-                ),
-              ],
-            ),
+          GridView.count(
+            crossAxisCount: 4,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 1.0,
+            children: [
+              QuickAction(
+                icon: Icons.calendar_today,
+                onTap: () => onPageChanged('schedule'),
+              ),
+              QuickAction(
+                icon: Icons.people,
+                onTap: () => onPageChanged('trainers'),
+              ),
+              QuickAction(
+                icon: Icons.check_circle,
+                onTap: () => onPageChanged('progress'),
+              ),
+              QuickAction(
+                icon: Icons.shopping_cart,
+                onTap: () => onPageChanged('shop'),
+              ),
+            ],
           ),
           
           const SizedBox(height: 12),

@@ -48,7 +48,7 @@ class IPhoneFrame extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 44, // Отступ под статус бар
-                        bottom: 34, // Отступ под навигацию
+                        bottom: 10, // Убрали отступ под навигацию
                       ),
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(
@@ -93,16 +93,7 @@ class IPhoneFrame extends StatelessWidget {
                     ),
                   ),
                   
-                  // Нижняя безопасная зона
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 34,
-                      color: Colors.transparent,
-                    ),
-                  ),
+                  // Нижняя безопасная зона (убрана)
                 ],
               ),
             ),

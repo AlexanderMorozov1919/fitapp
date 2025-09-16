@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class QuickAction extends StatelessWidget {
   final IconData icon;
-  final String label;
   final Function() onTap;
 
   const QuickAction({
     super.key,
     required this.icon,
-    required this.label,
     required this.onTap,
   });
 
@@ -30,24 +28,12 @@ class QuickAction extends StatelessWidget {
           border: Border.all(color: Colors.grey[100]!),
         ),
         padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: Colors.blue,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        child: Center(
+          child: Icon(
+            icon,
+            size: 32,
+            color: Colors.blue,
+          ),
         ),
       ),
     );
