@@ -38,12 +38,12 @@ class BottomNavigation extends StatelessWidget {
             label: 'Главная',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
-            label: 'Тренировки',
+            icon: Icon(Icons.calendar_today),
+            label: 'Расписание',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Прогресс',
+            icon: Icon(Icons.book_online),
+            label: 'Мои записи',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

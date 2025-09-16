@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fitness_app/screens/home_screen.dart';
+import 'package:fitness_app/screens/tennis_booking_screen.dart';
+import 'package:fitness_app/screens/membership_screen.dart';
+import 'package:fitness_app/screens/trainers_screen.dart';
+import 'package:fitness_app/screens/schedule_screen.dart';
+import 'package:fitness_app/screens/profile_screen.dart';
+import 'package:fitness_app/screens/bookings_screen.dart';
+import 'package:fitness_app/screens/payment_screen.dart';
+import 'package:fitness_app/screens/locker_screen.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
@@ -39,9 +47,9 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    _buildPlaceholderScreen('Тренировки'),
-    _buildPlaceholderScreen('Прогресс'),
-    _buildPlaceholderScreen('Профиль'),
+    const ScheduleScreen(),
+    const BookingsScreen(),
+    const ProfileScreen(),
   ];
 
   static Widget _buildPlaceholderScreen(String title) {

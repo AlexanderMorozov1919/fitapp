@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import '../services/mock_data_service.dart';
+import '../models/user_model.dart';
+import '../models/trainer_model.dart';
+import './tennis_booking_screen.dart';
+import './schedule_screen.dart';
+import './trainers_screen.dart';
+import './membership_screen.dart';
+import './payment_screen.dart';
+import './locker_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = MockDataService.currentUser;
+    final upcomingBookings = MockDataService.userBookings
+        .where((booking) => booking.isUpcoming)
+        .take(3)
+        .toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Фитнес Трекер',
+          'Фитнес Центр',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -31,34 +46,8 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Приветствие
-            const Text(
-              'Добро пожаловать!',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Александр',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Статистика
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildStatCard('7', 'Тренировок', Colors.blue),
-                _buildStatCard('42', 'Минут', Colors.green),
-                _buildStatCard('1200', 'Ккал', Colors.orange),
-              ],
-            ),
+            // Приветствие и баланс
+            _buildWelcomeSection(user),
             const SizedBox(height: 24),
 
             // Быстрый доступ
@@ -70,134 +59,526 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                _buildQuickAction(Icons.fitness_center, 'Тренировка', Colors.blue),
-                const SizedBox(width: 16),
-                _buildQuickAction(Icons.timer, 'Таймер', Colors.green),
-                const SizedBox(width: 16),
-                _buildQuickAction(Icons.bar_chart, 'Прогресс', Colors.orange),
-              ],
-            ),
+            _buildQuickActions(context),
             const SizedBox(height: 24),
 
-            // Последняя тренировка
-            const Text(
-              'Последняя тренировка',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildLastWorkoutCard(),
+            // Предстоящие записи
+            if (upcomingBookings.isNotEmpty) ...[
+              _buildUpcomingBookings(upcomingBookings),
+              const SizedBox(height: 24),
+            ],
+
+            // Групповые занятия сегодня
+            _buildTodayClasses(),
+            const SizedBox(height: 24),
+
+            // Статистика посещений
+            _buildStatistics(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatCard(String value, String label, Color color) {
-    return Column(
+  Widget _buildWelcomeSection(User user) {
+    return Row(
       children: [
+        // Аватар
         Container(
-          width: 70,
-          height: 70,
+          width: 60,
+          height: 60,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(30),
           ),
-          child: Center(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
+          child: user.photoUrl != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Image.network(
+                    user.photoUrl!,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : const Icon(
+                  Icons.person,
+                  size: 40,
+                  color: Colors.blue,
+                ),
+        ),
+        const SizedBox(width: 16),
+
+        // Информация
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Добро пожаловать,',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
               ),
-            ),
+              Text(
+                user.firstName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (user.membership != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  user.membership!.type,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
+
+        // Баланс
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            '${user.balance} руб.',
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildQuickAction(IconData icon, String label, Color color) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {},
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 32),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+  Widget _buildQuickActions(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 4,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      children: [
+        _buildQuickAction(
+          Icons.sports_tennis,
+          'Теннис',
+          Colors.green,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TennisBookingScreen()),
+            );
+          },
+        ),
+        _buildQuickAction(
+          Icons.calendar_today,
+          'Расписание',
+          Colors.blue,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ScheduleScreen()),
+            );
+          },
+        ),
+        _buildQuickAction(
+          Icons.people,
+          'Тренеры',
+          Colors.orange,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TrainersScreen()),
+            );
+          },
+        ),
+        _buildQuickAction(
+          Icons.credit_card,
+          'Абонемент',
+          Colors.purple,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const MembershipScreen()),
+            );
+          },
+        ),
+        _buildQuickAction(
+          Icons.account_balance_wallet,
+          'Пополнить',
+          Colors.teal,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PaymentScreen()),
+            );
+          },
+        ),
+        _buildQuickAction(
+          Icons.lock,
+          'Шкафчик',
+          Colors.brown,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LockerScreen()),
+            );
+          },
+        ),
+        _buildQuickAction(
+          Icons.book_online,
+          'Мои записи',
+          Colors.indigo,
+          () {
+            // Навигация уже реализована через нижнее меню
+          },
+        ),
+        _buildQuickAction(
+          Icons.star,
+          'Рейтинги',
+          Colors.amber,
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TrainersScreen()),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickAction(IconData icon, String label, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: color,
               ),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildLastWorkoutCard() {
+  Widget _buildUpcomingBookings(List<dynamic> bookings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Ближайшие записи',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...bookings.map((booking) => _buildBookingItem(booking)).toList(),
+      ],
+    );
+  }
+
+  Widget _buildBookingItem(dynamic booking) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.fitness_center, color: Colors.blue, size: 40),
-          const SizedBox(width: 16),
+          Icon(
+            Icons.calendar_today,
+            size: 16,
+            color: Colors.grey[600],
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Силовая тренировка',
-                  style: TextStyle(
-                    fontSize: 16,
+                Text(
+                  booking.title,
+                  style: const TextStyle(
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
-                  '45 минут • 8 упражнений',
+                  '${_formatDate(booking.startTime)} • ${_formatTime(booking.startTime)}',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: Colors.grey[600],
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.play_arrow, color: Colors.blue),
-            onPressed: () {},
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: booking.statusColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              booking.statusText,
+              style: TextStyle(
+                fontSize: 10,
+                color: booking.statusColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildTodayClasses() {
+    final todayClasses = MockDataService.groupClasses
+        .where((classItem) =>
+            classItem.startTime.year == DateTime.now().year &&
+            classItem.startTime.month == DateTime.now().month &&
+            classItem.startTime.day == DateTime.now().day)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Занятия сегодня',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        todayClasses.isEmpty
+            ? _buildEmptyTodayClasses()
+            : Column(
+                children: todayClasses
+                    .map((classItem) => _buildClassItem(classItem))
+                    .toList(),
+              ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyTodayClasses() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Column(
+        children: [
+          Icon(Icons.calendar_today, size: 32, color: Colors.grey),
+          SizedBox(height: 8),
+          Text(
+            'Сегодня нет занятий',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildClassItem(GroupClass classItem) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.fitness_center, size: 16, color: Colors.blue),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  classItem.name,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '${_formatTime(classItem.startTime)} • ${classItem.trainerName}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '${classItem.spotsLeft} мест',
+            style: TextStyle(
+              fontSize: 12,
+              color: classItem.isFull ? Colors.red : Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatistics() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Статистика посещений',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  Text(
+                    '12',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Посещений',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    '8',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Теннис',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    '4',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Групповые',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildStatItem(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.blue,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 10,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}.${date.month}';
+  }
+
+  String _formatTime(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }
