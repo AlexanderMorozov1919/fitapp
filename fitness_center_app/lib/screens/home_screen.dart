@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:fitness_center_app/navigation/app_navigator.dart';
 import 'package:fitness_center_app/theme/app_theme.dart';
 import 'package:fitness_center_app/utils/animations.dart';
 
@@ -241,7 +242,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         location: 'Зал B, 2 этаж',
                         status: 'Подтверждено',
                         statusColor: AppTheme.statusConfirmed,
-                        onTap: () {},
+                        onTap: () {
+                          AppNavigator.pushBookingDetail(
+                            context,
+                            booking: Booking(
+                              id: '1',
+                              service: 'Групповая тренировка',
+                              trainer: 'Мария Петрова',
+                              date: '12.03.2024',
+                              time: '10:00-11:00',
+                              location: 'Зал B, 2 этаж',
+                              status: 'Подтверждено',
+                              price: 0,
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 12),
                       _ScheduleItem(
@@ -251,7 +266,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         location: 'Корт 3',
                         status: 'Подтверждено',
                         statusColor: AppTheme.statusConfirmed,
-                        onTap: () {},
+                        onTap: () {
+                          AppNavigator.pushBookingDetail(
+                            context,
+                            booking: Booking(
+                              id: '2',
+                              service: 'Теннис (Корт 3)',
+                              trainer: 'С партнером',
+                              date: '12.03.2024',
+                              time: '14:00-15:00',
+                              location: 'Корт 3',
+                              status: 'Подтверждено',
+                              price: 1200,
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 25),
                       // Subscriptions
@@ -291,10 +320,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildNavItem(Icons.home, 'Главная', true),
-                    _buildNavItem(Icons.calendar_today, 'Записаться', false),
-                    _buildNavItem(Icons.fitness_center, 'Тренеры', false),
-                    _buildNavItem(Icons.person, 'Профиль', false),
+                    GestureDetector(
+                      onTap: () {},
+                      child: _buildNavItem(Icons.home, 'Главная', true),
+                    ),
+                    GestureDetector(
+                      onTap: () => AppNavigator.pushBookService(context),
+                      child: _buildNavItem(Icons.calendar_today, 'Записаться', false),
+                    ),
+                    GestureDetector(
+                      onTap: () => AppNavigator.pushTrainers(context),
+                      child: _buildNavItem(Icons.fitness_center, 'Тренеры', false),
+                    ),
+                    GestureDetector(
+                      onTap: () => AppNavigator.pushProfile(context),
+                      child: _buildNavItem(Icons.person, 'Профиль', false),
+                    ),
                   ],
                 ),
               ),
@@ -303,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => AppNavigator.pushBookService(context),
         backgroundColor: AppTheme.primary,
         foregroundColor: Colors.white,
         shape: const CircleBorder(),
@@ -550,7 +591,9 @@ class _SubscriptionCard extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  AppNavigator.pushRenewSubscription(context);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primary,
                   foregroundColor: Colors.white,
@@ -620,22 +663,26 @@ class _QuickActionsGrid extends StatelessWidget {
       childAspectRatio: 0.8,
       mainAxisSpacing: 15,
       crossAxisSpacing: 15,
-      children: const [
+      children: [
         _QuickActionItem(
           icon: Icons.calendar_today,
           label: 'Записаться',
+          onTap: () => AppNavigator.pushBookService(context),
         ),
         _QuickActionItem(
           icon: Icons.directions_car,
           label: 'Парковка',
+          onTap: () => AppNavigator.pushParking(context),
         ),
         _QuickActionItem(
           icon: Icons.fitness_center,
           label: 'Тренеры',
+          onTap: () => AppNavigator.pushTrainers(context),
         ),
         _QuickActionItem(
           icon: Icons.lock,
           label: 'Шкафчик',
+          onTap: () => AppNavigator.pushLocker(context),
         ),
       ],
     );
@@ -645,36 +692,41 @@ class _QuickActionsGrid extends StatelessWidget {
 class _QuickActionItem extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback onTap;
 
   const _QuickActionItem({
     required this.icon,
     required this.label,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            gradient: AppTheme.secondaryGradient,
-            borderRadius: BorderRadius.circular(20),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: AppTheme.secondaryGradient,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(icon, color: Colors.white, size: 24),
           ),
-          child: Icon(icon, color: Colors.white, size: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.dark,
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppTheme.dark,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -725,11 +777,62 @@ class _HistorySection extends StatelessWidget {
         ),
         if (showHistory) ...[
           const SizedBox(height: 15),
-          _buildHistoryItem('Теннис (Корт 1)', '12.03.24 • 10:00-11:00', 'Завершено', AppTheme.statusConfirmed),
+          GestureDetector(
+            onTap: () {
+              AppNavigator.pushBookingDetail(
+                context,
+                booking: Booking(
+                  id: '3',
+                  service: 'Теннис (Корт 1)',
+                  trainer: 'С партнером',
+                  date: '12.03.2024',
+                  time: '10:00-11:00',
+                  location: 'Корт 1',
+                  status: 'Завершено',
+                  price: 1200,
+                ),
+              );
+            },
+            child: _buildHistoryItem('Теннис (Корт 1)', '12.03.24 • 10:00-11:00', 'Завершено', AppTheme.statusConfirmed),
+          ),
           const SizedBox(height: 10),
-          _buildHistoryItem('Йога', '10.03.24 • 09:00-10:00', 'Завершено', AppTheme.statusConfirmed),
+          GestureDetector(
+            onTap: () {
+              AppNavigator.pushBookingDetail(
+                context,
+                booking: Booking(
+                  id: '4',
+                  service: 'Йога',
+                  trainer: 'Анна Иванова',
+                  date: '10.03.2024',
+                  time: '09:00-10:00',
+                  location: 'Зал A, 1 этаж',
+                  status: 'Завершено',
+                  price: 0,
+                ),
+              );
+            },
+            child: _buildHistoryItem('Йога', '10.03.24 • 09:00-10:00', 'Завершено', AppTheme.statusConfirmed),
+          ),
           const SizedBox(height: 10),
-          _buildHistoryItem('Персональная тренировка', '08.03.24 • 14:00-15:00', 'Отменено', AppTheme.statusCancelled),
+          GestureDetector(
+            onTap: () {
+              AppNavigator.pushBookingDetail(
+                context,
+                booking: Booking(
+                  id: '5',
+                  service: 'Персональная тренировка',
+                  trainer: 'Иван Сидоров',
+                  date: '08.03.2024',
+                  time: '14:00-15:00',
+                  location: 'Зал C, 3 этаж',
+                  status: 'Отменено',
+                  price: 2500,
+                ),
+              );
+            },
+            child: _buildHistoryItem('Персональная тренировка', '08.03.24 • 14:00-15:00', 'Отменено', AppTheme.statusCancelled),
+          ),
         ],
       ],
     );

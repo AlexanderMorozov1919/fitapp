@@ -31,13 +31,16 @@ class RouteGenerator {
       case AppRoutes.profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case AppRoutes.bookingDetail:
-        return MaterialPageRoute(builder: (_) => const BookingDetailScreen());
+        final booking = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(builder: (_) => BookingDetailScreen(booking: booking));
       case AppRoutes.trainers:
         return MaterialPageRoute(builder: (_) => const TrainersScreen());
       case AppRoutes.trainerProfile:
-        return MaterialPageRoute(builder: (_) => const TrainerProfileScreen());
+        final trainer = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(builder: (_) => TrainerProfileScreen(trainer: trainer));
       case AppRoutes.trainerBooking:
-        return MaterialPageRoute(builder: (_) => const TrainerBookingScreen());
+        final trainer = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(builder: (_) => TrainerBookingScreen(trainer: trainer));
       case AppRoutes.subscriptions:
         return MaterialPageRoute(builder: (_) => const SubscriptionsScreen());
       case AppRoutes.locker:
