@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/user_model.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -63,9 +66,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Профиль успешно обновлен'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: Text(
+            'Профиль успешно обновлен',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: AppStyles.borderRadiusLg,
+          ),
         ),
       );
     }
@@ -74,24 +86,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Профиль'),
+        title: Text(
+          'Профиль',
+          style: AppTextStyles.headline5,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
+        foregroundColor: AppColors.textPrimary,
         actions: [
           IconButton(
             icon: Icon(_isEditing ? Icons.close : Icons.edit),
             onPressed: _toggleEdit,
+            color: AppColors.primary,
           ),
           if (_isEditing)
             IconButton(
               icon: const Icon(Icons.save),
               onPressed: _saveProfile,
+              color: AppColors.primary,
             ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: AppStyles.paddingLg,
         child: Form(
           key: _formKey,
           child: Column(
@@ -102,11 +121,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 24),
 
               // Личная информация
-              const Text(
+              Text(
                 'Личная информация',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.headline5.copyWith(
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -115,11 +133,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 32),
 
               // Настройки уведомлений
-              const Text(
+              Text(
                 'Настройки уведомлений',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.headline5.copyWith(
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -128,11 +145,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 32),
 
               // Действия
-              const Text(
+              Text(
                 'Действия',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.headline5.copyWith(
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 16),
@@ -200,9 +216,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         TextFormField(
           controller: _firstNameController,
-          decoration: const InputDecoration(
+          decoration: AppStyles.inputDecoration.copyWith(
             labelText: 'Имя',
-            border: OutlineInputBorder(),
           ),
           enabled: _isEditing,
           validator: (value) {
@@ -215,9 +230,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 16),
         TextFormField(
           controller: _lastNameController,
-          decoration: const InputDecoration(
+          decoration: AppStyles.inputDecoration.copyWith(
             labelText: 'Фамилия',
-            border: OutlineInputBorder(),
           ),
           enabled: _isEditing,
           validator: (value) {
@@ -230,9 +244,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 16),
         TextFormField(
           controller: _emailController,
-          decoration: const InputDecoration(
+          decoration: AppStyles.inputDecoration.copyWith(
             labelText: 'Email',
-            border: OutlineInputBorder(),
           ),
           enabled: _isEditing,
           keyboardType: TextInputType.emailAddress,
@@ -249,9 +262,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 16),
         TextFormField(
           controller: _phoneController,
-          decoration: const InputDecoration(
+          decoration: AppStyles.inputDecoration.copyWith(
             labelText: 'Телефон',
-            border: OutlineInputBorder(),
           ),
           enabled: _isEditing,
           keyboardType: TextInputType.phone,
@@ -263,18 +275,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
         ),
         const SizedBox(height: 16),
-        ListTile(
-          leading: const Icon(Icons.cake),
-          title: const Text('Дата рождения'),
-          subtitle: Text(_formatDate(_user.birthDate)),
-          trailing: _isEditing
-              ? IconButton(
-                  icon: const Icon(Icons.edit),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: AppStyles.borderRadiusLg,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.cake,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Дата рождения',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      _formatDate(_user.birthDate),
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_isEditing)
+                IconButton(
+                  icon: Icon(
+                    Icons.edit,
+                    color: AppColors.primary,
+                  ),
                   onPressed: () {
                     // TODO: Реализовать выбор даты рождения
                   },
-                )
-              : null,
+                ),
+            ],
+          ),
         ),
       ],
     );
@@ -283,23 +327,82 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildNotificationSettings() {
     return Column(
       children: [
-        SwitchListTile(
-          title: const Text('Уведомления о бронированиях'),
-          subtitle: const Text('Получать уведомления о подтверждении и напоминаниях'),
-          value: true,
-          onChanged: _isEditing ? (value) {} : null,
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: SwitchListTile(
+            title: Text(
+              'Уведомления о бронированиях',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'Получать уведомления о подтверждении и напоминаниях',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            value: true,
+            onChanged: _isEditing ? (value) {} : null,
+            activeColor: AppColors.primary,
+          ),
         ),
-        SwitchListTile(
-          title: const Text('Уведомления о занятиях'),
-          subtitle: const Text('Напоминания о начале групповых занятий'),
-          value: true,
-          onChanged: _isEditing ? (value) {} : null,
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: SwitchListTile(
+            title: Text(
+              'Уведомления о занятиях',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'Напоминания о начале групповых занятий',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            value: true,
+            onChanged: _isEditing ? (value) {} : null,
+            activeColor: AppColors.primary,
+          ),
         ),
-        SwitchListTile(
-          title: const Text('Новости и акции'),
-          subtitle: const Text('Получать информацию о новых услугах и акциях'),
-          value: false,
-          onChanged: _isEditing ? (value) {} : null,
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: SwitchListTile(
+            title: Text(
+              'Новости и акции',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'Получать информацию о новых услугах и акциях',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            value: false,
+            onChanged: _isEditing ? (value) {} : null,
+            activeColor: AppColors.primary,
+          ),
         ),
       ],
     );
@@ -308,37 +411,93 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildActions() {
     return Column(
       children: [
-        ListTile(
-          leading: const Icon(Icons.credit_card, color: Colors.blue),
-          title: const Text('Способы оплаты'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            // TODO: Реализовать экран управления платежными методами
-          },
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: ListTile(
+            leading: Icon(Icons.credit_card, color: AppColors.primary),
+            title: Text(
+              'Способы оплата',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
+            onTap: () {
+              // TODO: Реализовать экран управления платежными методами
+            },
+          ),
         ),
-        ListTile(
-          leading: const Icon(Icons.security, color: Colors.green),
-          title: const Text('Безопасность'),
-          subtitle: const Text('Смена пароля, двухфакторная аутентификация'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            // TODO: Реализовать экран настроек безопасности
-          },
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: ListTile(
+            leading: Icon(Icons.security, color: AppColors.secondary),
+            title: Text(
+              'Безопасность',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            subtitle: Text(
+              'Смена пароля, двухфакторная аутентификация',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
+            onTap: () {
+              // TODO: Реализовать экран настроек безопасности
+            },
+          ),
         ),
-        ListTile(
-          leading: const Icon(Icons.help, color: Colors.orange),
-          title: const Text('Помощь и поддержка'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            // TODO: Реализовать экран поддержки
-          },
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: ListTile(
+            leading: Icon(Icons.help, color: AppColors.accent),
+            title: Text(
+              'Помощь и поддержка',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
+            onTap: () {
+              // TODO: Реализовать экран поддержки
+            },
+          ),
         ),
-        ListTile(
-          leading: const Icon(Icons.exit_to_app, color: Colors.red),
-          title: const Text('Выйти'),
-          onTap: () {
-            _showLogoutDialog();
-          },
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: ListTile(
+            leading: Icon(Icons.exit_to_app, color: AppColors.error),
+            title: Text(
+              'Выйти',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.error,
+              ),
+            ),
+            onTap: () {
+              _showLogoutDialog();
+            },
+          ),
         ),
       ],
     );
