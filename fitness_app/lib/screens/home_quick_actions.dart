@@ -96,7 +96,7 @@ class _HomeQuickActionsState extends State<HomeQuickActions>
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: AppStyles.borderRadiusLg,
-            boxShadow: AppColors.shadowSm,
+            boxShadow: AppColors.shadowMd,
             border: Border.all(
               color: AppColors.border,
               width: 1,
@@ -126,10 +126,9 @@ class _HomeQuickActionsState extends State<HomeQuickActions>
                 width: 70,
                 child: Text(
                   label,
-                  style: AppTextStyles.overline.copyWith(
+                  style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,
-                    fontSize: 10,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,

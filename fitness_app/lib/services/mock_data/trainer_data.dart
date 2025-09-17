@@ -1,0 +1,43 @@
+import '../../models/trainer_model.dart';
+
+final List<Trainer> trainers = [
+  Trainer(
+    id: 'trainer_001',
+    firstName: 'Мария',
+    lastName: 'Иванова',
+    specialty: 'Теннис, Кардио-тренировки',
+    bio: 'Профессиональный тренер с 10-летним опытом. Специализация: теннис для начинающих и продвинутых игроков, кардио-тренировки.',
+    rating: 4.8,
+    totalReviews: 124,
+    certifications: ['ITF Level 2', 'Fitness Instructor Certification'],
+    photoUrl: null,
+    availableSports: ['теннис', 'кардио', 'функциональный тренинг'],
+    hourlyRates: {'теннис': 2000, 'персональная тренировка': 1500},
+  ),
+  Trainer(
+    id: 'trainer_002',
+    firstName: 'Дмитрий',
+    lastName: 'Петров',
+    specialty: 'Силовые тренировки, Бодибилдинг',
+    bio: 'Мастер спорта по пауэрлифтингу. Специализируется на силовых тренировках и построении мышечной массы.',
+    rating: 4.9,
+    totalReviews: 89,
+    certifications: ['Master Trainer', 'Nutrition Specialist'],
+    photoUrl: null,
+    availableSports: ['силовые тренировки', 'бодибилдинг', 'кроссфит'],
+    hourlyRates: {'персональная тренировка': 1800},
+  ),
+  Trainer(
+    id: 'trainer_003',
+    firstName: 'Елена',
+    lastName: 'Сидорова',
+    specialty: 'Йога, Пилатес, Стретчинг',
+    bio: 'Сертифицированный инструктор по йоге и пилатесу. Помогает достичь гармонии тела и разума.',
+    rating: 4.7,
+    totalReviews: 67,
+    certifications: ['Yoga Alliance 500h', 'Pilates Instructor'],
+    photoUrl: null,
+    availableSports: ['йога', 'пилатес', 'стретчинг'],
+    hourlyRates: {'групповое занятие': 800, 'персональное': 1200},
+  ),
+];

@@ -97,23 +97,35 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 _showFilters = !_showFilters;
               });
             },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _showFilters ? 'Скрыть фильтры' : 'Показать фильтры',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: AppStyles.borderRadiusLg,
+                boxShadow: AppColors.shadowSm,
+                border: Border.all(
+                  color: AppColors.border,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _showFilters ? 'Скрыть фильтры' : 'Показать фильтры',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  _showFilters ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Icon(
+                    _showFilters ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
