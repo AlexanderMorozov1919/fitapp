@@ -4,6 +4,7 @@ import '../models/trainer_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import 'calendar_filter.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -16,6 +17,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   DateTime _selectedDate = DateTime.now();
   String _selectedType = 'Все';
   String _selectedLevel = 'Все';
+  bool _showFilters = false;
 
   final List<String> _classTypes = ['Все', 'Йога', 'Кардио', 'Силовые', 'Теннис'];
   final List<String> _classLevels = ['Все', 'Начинающий', 'Средний', 'Продвинутый'];
@@ -40,8 +42,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           // Фильтры
           _buildFilters(),
           
-          // Дата
-          _buildDateSelector(),
           
           // Список занятий
           Expanded(
@@ -74,172 +74,164 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   Widget _buildFilters() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: AppColors.shadowSm,
-      ),
-      child: Row(
-        children: [
-          // Фильтр по типу
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Календарный фильтр как в "Мои записи"
+        CalendarFilter(
+          selectedDate: _selectedDate,
+          onDateSelected: (date) {
+            setState(() {
+              _selectedDate = date;
+            });
+          },
+          datesWithBookings: _getDatesWithClasses(),
+        ),
+        
+        // Кнопка показа/скрытия фильтров
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _showFilters = !_showFilters;
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Тип занятия',
+                  _showFilters ? 'Скрыть фильтры' : 'Показать фильтры',
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary,
+                    color: AppColors.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: AppStyles.borderRadiusLg,
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedType,
-                    items: _classTypes.map((type) {
-                      return DropdownMenuItem(
-                        value: type,
-                        child: Text(
-                          type,
-                          style: AppTextStyles.bodySmall,
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedType = value!;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                      isDense: true,
-                    ),
-                    style: AppTextStyles.bodySmall,
-                    icon: Icon(
-                      Icons.arrow_drop_down,
-                      size: 20,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
+                const SizedBox(width: 4),
+                Icon(
+                  _showFilters ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  size: 16,
+                  color: AppColors.primary,
                 ),
               ],
             ),
           ),
-          
-          const SizedBox(width: 12),
-          
-          // Фильтр по уровню
-          Expanded(
+        ),
+        
+        // Фильтры по типу и уровню (скрыты по умолчанию)
+        if (_showFilters) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: AppColors.shadowSm,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Фильтр по типу - горизонтальный скролл
                 Text(
-                  'Уровень',
+                  'Тип занятия:',
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: AppStyles.borderRadiusLg,
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    value: _selectedLevel,
-                    items: _classLevels.map((level) {
-                      return DropdownMenuItem(
-                        value: level,
-                        child: Text(
-                          level,
-                          style: AppTextStyles.bodySmall,
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _classTypes.map((type) {
+                      final isSelected = _selectedType == type;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedType = type;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.primary : AppColors.background,
+                              borderRadius: AppStyles.borderRadiusFull,
+                              border: Border.all(
+                                color: isSelected ? AppColors.primary : AppColors.border,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              type,
+                              style: AppTextStyles.caption.copyWith(
+                                color: isSelected ? Colors.white : AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         ),
                       );
                     }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedLevel = value!;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                      isDense: true,
-                    ),
-                    style: AppTextStyles.bodySmall,
-                    icon: Icon(
-                      Icons.arrow_drop_down,
-                      size: 20,
-                      color: AppColors.textSecondary,
-                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Фильтр по уровню - горизонтальный скролл
+                Text(
+                  'Уровень:',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 40,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _classLevels.map((level) {
+                      final isSelected = _selectedLevel == level;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedLevel = level;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.secondary : AppColors.background,
+                              borderRadius: AppStyles.borderRadiusFull,
+                              border: Border.all(
+                                color: isSelected ? AppColors.secondary : AppColors.border,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              level,
+                              style: AppTextStyles.caption.copyWith(
+                                color: isSelected ? Colors.white : AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 
-  Widget _buildDateSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.chevron_left,
-              color: AppColors.primary,
-              size: 24,
-            ),
-            onPressed: () {
-              setState(() {
-                _selectedDate = _selectedDate.subtract(const Duration(days: 1));
-              });
-            },
-          ),
-          
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: AppStyles.borderRadiusLg,
-            ),
-            child: Text(
-              _formatDate(_selectedDate),
-              style: AppTextStyles.headline6.copyWith(
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-          
-          IconButton(
-            icon: Icon(
-              Icons.chevron_right,
-              color: AppColors.primary,
-              size: 24,
-            ),
-            onPressed: () {
-              setState(() {
-                _selectedDate = _selectedDate.add(const Duration(days: 1));
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildClassCard(GroupClass classItem) {
     final isFull = classItem.isFull;
@@ -532,17 +524,30 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final today = DateTime.now();
     final tomorrow = today.add(const Duration(days: 1));
     
-    if (date.year == today.year && 
-        date.month == today.month && 
+    if (date.year == today.year &&
+        date.month == today.month &&
         date.day == today.day) {
       return 'Сегодня';
-    } else if (date.year == tomorrow.year && 
-               date.month == tomorrow.month && 
+    } else if (date.year == tomorrow.year &&
+               date.month == tomorrow.month &&
                date.day == tomorrow.day) {
       return 'Завтра';
     } else {
       return '${date.day}.${date.month}.${date.year}';
     }
+  }
+
+  List<DateTime> _getDatesWithClasses() {
+    final dates = <DateTime>{};
+    for (final classItem in MockDataService.groupClasses) {
+      final date = DateTime(
+        classItem.startTime.year,
+        classItem.startTime.month,
+        classItem.startTime.day,
+      );
+      dates.add(date);
+    }
+    return dates.toList()..sort();
   }
 
   String _formatTime(DateTime time) {
