@@ -16,8 +16,8 @@ class MockDataService {
     membership: Membership(
       id: 'mem_001',
       type: 'All-inclusive',
-      startDate: DateTime(2024, 1, 1),
-      endDate: DateTime(2024, 12, 31),
+      startDate: DateTime(2025, 9, 1),
+      endDate: DateTime(2025, 9, 30),
       remainingVisits: 0, // unlimited
       price: 25000,
       includedServices: ['тренажерный зал', 'групповые занятия', 'теннис'],
@@ -433,7 +433,7 @@ class MockDataService {
       size: 'Стандартный',
       isAvailable: false,
       pricePerDay: 100,
-      rentalEndDate: DateTime(2024, 1, 20),
+      rentalEndDate: DateTime(2025, 9, 20),
     ),
     Locker(
       id: 'locker_005',

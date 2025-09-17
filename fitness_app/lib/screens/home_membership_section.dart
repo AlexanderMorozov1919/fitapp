@@ -223,16 +223,12 @@ class HomeMembershipSection extends StatelessWidget {
 
   Widget _buildIncludedServices(Membership membership) {
     final services = <Widget>[
-      if (membership.includedServices.contains('gym'))
+      if (membership.includedServices.contains('тренажерный зал'))
         _buildServiceItem('🏋️ Тренажерный зал'),
-      if (membership.includedServices.contains('group_classes'))
+      if (membership.includedServices.contains('групповые занятия'))
         _buildServiceItem('👥 Групповые занятия'),
-      if (membership.includedServices.contains('tennis'))
+      if (membership.includedServices.contains('теннис'))
         _buildServiceItem('🎾 Теннисные корты'),
-      if (membership.includedServices.contains('pool'))
-        _buildServiceItem('🏊 Бассейн'),
-      if (membership.includedServices.contains('yoga'))
-        _buildServiceItem('🧘 Йога'),
     ];
 
     return Column(
