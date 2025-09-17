@@ -8,6 +8,7 @@ import 'package:fitness_app/screens/profile_screen.dart';
 import 'package:fitness_app/screens/bookings_screen.dart';
 import 'package:fitness_app/screens/payment_screen.dart';
 import 'package:fitness_app/screens/locker_screen.dart';
+import 'package:fitness_app/screens/booking_detail_screen.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
@@ -68,17 +69,19 @@ class _MainNavigationState extends State<MainNavigation> {
   late final List<Widget> _screens;
 
   // Дополнительные экраны для быстрого доступа
-  final Map<String, Widget> _quickAccessScreens = {
-    'tennis': const TennisBookingScreen(),
-    'trainers': const TrainersScreen(),
-    'membership': const MembershipScreen(),
-    'payment': const PaymentScreen(),
-    'locker': const LockerScreen(),
-    'bookings': const BookingsScreen(),
-    'schedule': const ScheduleScreen(),
+  final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
+    'tennis': (_) => const TennisBookingScreen(),
+    'trainers': (_) => const TrainersScreen(),
+    'membership': (_) => const MembershipScreen(),
+    'payment': (_) => const PaymentScreen(),
+    'locker': (_) => const LockerScreen(),
+    'bookings': (_) => const BookingsScreen(),
+    'schedule': (_) => const ScheduleScreen(),
+    'booking_detail': (data) => BookingDetailScreen(booking: data),
   };
 
   String? _currentQuickAccessScreen;
+  dynamic _quickAccessData;
 
   static Widget _buildPlaceholderScreen(String title) {
     return Scaffold(
@@ -113,9 +116,10 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
-  void _navigateToQuickAccess(String screenKey) {
+  void _navigateToQuickAccess(String screenKey, [dynamic data]) {
     setState(() {
       _currentQuickAccessScreen = screenKey;
+      _quickAccessData = data;
     });
   }
 
@@ -133,7 +137,7 @@ class _MainNavigationState extends State<MainNavigation> {
       // Показываем экран быстрого доступа с оберткой для навигации назад
       currentBody = NavigationService(
         onBack: _navigateBack,
-        child: _quickAccessScreens[_currentQuickAccessScreen]!,
+        child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {
       // Показываем основной экран навигации

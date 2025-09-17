@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../models/booking_model.dart';
 import 'calendar_filter.dart';
@@ -12,12 +11,14 @@ class HomeBookingsSection extends StatefulWidget {
   final List<Booking> allBookings;
   final Function(Booking) onCancelBooking;
   final Function(Booking) onRescheduleBooking;
+  final Function(Booking) onBookingTap;
 
   const HomeBookingsSection({
     super.key,
     required this.allBookings,
     required this.onCancelBooking,
     required this.onRescheduleBooking,
+    required this.onBookingTap,
   });
 
   @override
@@ -100,101 +101,119 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
   }
 
   Widget _buildBookingItem(Booking booking) {
-    return AppCard(
-      padding: AppStyles.paddingLg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Основная информация
-          Row(
-            children: [
-              // Иконка типа бронирования
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _getStatusColor(booking.status).withOpacity(0.1),
-                  borderRadius: AppStyles.borderRadiusLg,
-                ),
-                child: Icon(
-                  _getBookingIcon(booking),
-                  size: 20,
-                  color: _getStatusColor(booking.status),
-                ),
-              ),
-              const SizedBox(width: 12),
-              
-              // Детали бронирования
-              Expanded(
+    return StatefulBuilder(
+      builder: (context, setState) {
+        var isHovered = false;
+        
+        return GestureDetector(
+          onTap: () => widget.onBookingTap(booking),
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              transform: Matrix4.identity()..scale(isHovered ? 1.02 : 1.0),
+              child: AppCard(
+                padding: AppStyles.paddingLg,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      booking.title,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${DateFormatters.formatDate(booking.startTime)} • ${DateFormatters.formatTime(booking.startTime)}',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    if (booking.description != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        booking.description!,
-                        style: AppTextStyles.overline.copyWith(
-                          color: AppColors.textTertiary,
+                    // Основная информация
+                    Row(
+                      children: [
+                        // Иконка типа бронирования
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(booking.status).withOpacity(0.1),
+                            borderRadius: AppStyles.borderRadiusLg,
+                          ),
+                          child: Icon(
+                            _getBookingIcon(booking),
+                            size: 20,
+                            color: _getStatusColor(booking.status),
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        const SizedBox(width: 12),
+                        
+                        // Детали бронирования
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                booking.title,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${DateFormatters.formatDate(booking.startTime)} • ${DateFormatters.formatTime(booking.startTime)}',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              if (booking.description != null) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  booking.description!,
+                                  style: AppTextStyles.overline.copyWith(
+                                    color: AppColors.textTertiary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        
+                        // Статус
+                        StatusBadge(
+                          text: _getStatusText(booking.status),
+                          color: _getStatusColor(booking.status),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Действия
+                    if (booking.status == BookingStatus.confirmed && booking.canCancel)
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SecondaryButton(
+                              text: 'Отменить',
+                              onPressed: () => widget.onCancelBooking(booking),
+                              color: AppColors.error,
+                            ),
+                          ),
+                          if (booking.type == BookingType.tennisCourt ||
+                              booking.type == BookingType.personalTraining) ...[
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: PrimaryButton(
+                                text: 'Изменить',
+                                onPressed: () => widget.onRescheduleBooking(booking),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                    ],
                   ],
                 ),
               ),
-              
-              // Статус
-              StatusBadge(
-                text: _getStatusText(booking.status),
-                color: _getStatusColor(booking.status),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          // Действия
-          if (booking.status == BookingStatus.confirmed && booking.canCancel)
-            Row(
-              children: [
-                Expanded(
-                  child: SecondaryButton(
-                    text: 'Отменить',
-                    onPressed: () => widget.onCancelBooking(booking),
-                    color: AppColors.error,
-                  ),
-                ),
-                if (booking.type == BookingType.tennisCourt ||
-                    booking.type == BookingType.personalTraining) ...[
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: PrimaryButton(
-                      text: 'Изменить',
-                      onPressed: () => widget.onRescheduleBooking(booking),
-                    ),
-                  ),
-                ],
-              ],
             ),
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 

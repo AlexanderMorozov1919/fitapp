@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
+import '../models/booking_model.dart';
 import 'home_welcome_section.dart';
 import 'home_quick_actions.dart';
 import 'home_bookings_section.dart';
@@ -7,13 +8,14 @@ import 'home_classes_section.dart';
 import 'home_membership_section.dart';
 import 'home_statistics_section.dart';
 import 'home_section_widget.dart';
+import 'booking_detail_screen.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
 import '../widgets/common_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function(String) onQuickAccessNavigate;
+  final Function(String, [dynamic]) onQuickAccessNavigate;
 
   const HomeScreen({super.key, required this.onQuickAccessNavigate});
 
@@ -62,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   allBookings: allBookings,
                   onCancelBooking: _showCancelDialog,
                   onRescheduleBooking: _showRescheduleDialog,
+                  onBookingTap: _navigateToBookingDetail,
                 ),
               ),
             ],
@@ -145,5 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  void _navigateToBookingDetail(Booking booking) {
+    widget.onQuickAccessNavigate('booking_detail', booking);
   }
 }
