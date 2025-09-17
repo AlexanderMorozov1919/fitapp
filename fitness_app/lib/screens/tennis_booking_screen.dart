@@ -105,6 +105,7 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
         title: const Text('Бронирование теннисных кортов'),
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

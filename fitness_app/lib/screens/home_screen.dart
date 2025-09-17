@@ -11,7 +11,9 @@ import './locker_screen.dart';
 import '../widgets/phone_frame.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Function(String) onQuickAccessNavigate;
+
+  const HomeScreen({super.key, required this.onQuickAccessNavigate});
 
   @override
   Widget build(BuildContext context) {
@@ -175,14 +177,7 @@ class HomeScreen extends StatelessWidget {
           'Теннис',
           Colors.green,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const TennisBookingScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('tennis');
           },
         ),
         _buildQuickAction(
@@ -190,14 +185,7 @@ class HomeScreen extends StatelessWidget {
           'Расписание',
           Colors.blue,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const ScheduleScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('trainers');
           },
         ),
         _buildQuickAction(
@@ -205,14 +193,7 @@ class HomeScreen extends StatelessWidget {
           'Тренеры',
           Colors.orange,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const TrainersScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('trainers');
           },
         ),
         _buildQuickAction(
@@ -220,14 +201,7 @@ class HomeScreen extends StatelessWidget {
           'Абонемент',
           Colors.purple,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const MembershipScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('membership');
           },
         ),
         _buildQuickAction(
@@ -235,14 +209,7 @@ class HomeScreen extends StatelessWidget {
           'Пополнить',
           Colors.teal,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const PaymentScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('payment');
           },
         ),
         _buildQuickAction(
@@ -250,14 +217,7 @@ class HomeScreen extends StatelessWidget {
           'Шкафчик',
           Colors.brown,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const LockerScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('locker');
           },
         ),
         _buildQuickAction(
@@ -273,14 +233,7 @@ class HomeScreen extends StatelessWidget {
           'Рейтинги',
           Colors.amber,
           () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SimplePhoneBorder(
-                  child: const TrainersScreen(),
-                ),
-              ),
-            );
+            onQuickAccessNavigate('trainers');
           },
         ),
       ],

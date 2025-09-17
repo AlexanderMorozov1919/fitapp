@@ -45,12 +45,18 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const ScheduleScreen(),
-    const BookingsScreen(),
-    const ProfileScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  // Дополнительные экраны для быстрого доступа
+  final Map<String, Widget> _quickAccessScreens = {
+    'tennis': const TennisBookingScreen(),
+    'trainers': const TrainersScreen(),
+    'membership': const MembershipScreen(),
+    'payment': const PaymentScreen(),
+    'locker': const LockerScreen(),
+  };
+
+  String? _currentQuickAccessScreen;
 
   static Widget _buildPlaceholderScreen(String title) {
     return Scaffold(
@@ -67,16 +73,50 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
+      const ScheduleScreen(),
+      const BookingsScreen(),
+      const ProfileScreen(),
+    ];
+  }
+
   void _onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
+      _currentQuickAccessScreen = null; // Сбрасываем быстрый доступ при переключении табов
+    });
+  }
+
+  void _navigateToQuickAccess(String screenKey) {
+    setState(() {
+      _currentQuickAccessScreen = screenKey;
+    });
+  }
+
+  void _navigateBack() {
+    setState(() {
+      _currentQuickAccessScreen = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget currentBody;
+
+    if (_currentQuickAccessScreen != null) {
+      // Показываем экран быстрого доступа
+      currentBody = _quickAccessScreens[_currentQuickAccessScreen]!;
+    } else {
+      // Показываем основной экран навигации
+      currentBody = _screens[_currentIndex];
+    }
+
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: currentBody,
       bottomNavigationBar: BottomNavigation(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
