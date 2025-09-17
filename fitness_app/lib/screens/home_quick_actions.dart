@@ -1,112 +1,149 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
 
-class HomeQuickActions extends StatelessWidget {
+class HomeQuickActions extends StatefulWidget {
   final Function(String) onQuickAccessNavigate;
 
   const HomeQuickActions({super.key, required this.onQuickAccessNavigate});
 
   @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 4,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      children: [
-        _buildQuickAction(
-          Icons.sports_tennis,
-          'Теннис',
-          Colors.green,
-          () {
-            onQuickAccessNavigate('tennis');
-          },
-        ),
-        _buildQuickAction(
-          Icons.calendar_today,
-          'Расписание',
-          Colors.blue,
-          () {
-            onQuickAccessNavigate('trainers');
-          },
-        ),
-        _buildQuickAction(
-          Icons.people,
-          'Тренеры',
-          Colors.orange,
-          () {
-            onQuickAccessNavigate('trainers');
-          },
-        ),
-        _buildQuickAction(
-          Icons.credit_card,
-          'Абонемент',
-          Colors.purple,
-          () {
-            onQuickAccessNavigate('membership');
-          },
-        ),
-        _buildQuickAction(
-          Icons.account_balance_wallet,
-          'Пополнить',
-          Colors.teal,
-          () {
-            onQuickAccessNavigate('payment');
-          },
-        ),
-        _buildQuickAction(
-          Icons.lock,
-          'Шкафчик',
-          Colors.brown,
-          () {
-            onQuickAccessNavigate('locker');
-          },
-        ),
-        _buildQuickAction(
-          Icons.book_online,
-          'Мои записи',
-          Colors.indigo,
-          () {
-            // Навигация уже реализована через нижнее меню
-          },
-        ),
-        _buildQuickAction(
-          Icons.star,
-          'Рейтинги',
-          Colors.amber,
-          () {
-            onQuickAccessNavigate('trainers');
-          },
-        ),
-      ],
+  State<HomeQuickActions> createState() => _HomeQuickActionsState();
+}
+
+class _HomeQuickActionsState extends State<HomeQuickActions>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: AppStyles.animationDurationMedium,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutBack,
+      ),
     );
   }
 
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final actions = [
+      _buildActionData(Icons.sports_tennis, 'Теннис', AppColors.secondary, 'tennis'),
+      _buildActionData(Icons.calendar_today, 'Расписание', AppColors.info, 'schedule'),
+      _buildActionData(Icons.people, 'Тренеры', AppColors.accent, 'trainers'),
+      _buildActionData(Icons.credit_card, 'Абонемент', AppColors.primary, 'membership'),
+      _buildActionData(Icons.account_balance_wallet, 'Пополнить', AppColors.success, 'payment'),
+      _buildActionData(Icons.lock, 'Шкафчик', AppColors.warning, 'locker'),
+      _buildActionData(Icons.book_online, 'Мои записи', AppColors.primaryLight, 'bookings'),
+      _buildActionData(Icons.star, 'Рейтинги', AppColors.error, 'ratings'),
+    ];
+
+    return SizedBox(
+      height: 100,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        children: actions
+            .map((action) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: _buildQuickAction(
+                    action['icon'] as IconData,
+                    action['label'] as String,
+                    action['color'] as Color,
+                    action['onTap'] as VoidCallback,
+                  ),
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  Map<String, dynamic> _buildActionData(
+      IconData icon, String label, Color color, String screenKey) {
+    return {
+      'icon': icon,
+      'label': label,
+      'color': color,
+      'onTap': () => _onActionTap(screenKey),
+    };
+  }
+
   Widget _buildQuickAction(IconData icon, String label, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-              textAlign: TextAlign.center,
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: GestureDetector(
+        onTap: () {
+          _animationController.forward(from: 0.0);
+          Future.delayed(const Duration(milliseconds: 100), onTap);
+        },
+        onTapDown: (_) => _animationController.reverse(),
+        onTapCancel: () => _animationController.forward(),
+        child: Container(
+          width: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+            border: Border.all(
+              color: AppColors.border,
+              width: 1,
             ),
-          ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Иконка с круглым фоном
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: AppStyles.borderRadiusFull,
+                ),
+                child: Icon(
+                  icon,
+                  size: 22,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 6),
+              
+              // Текст под иконкой
+              SizedBox(
+                width: 70,
+                child: Text(
+                  label,
+                  style: AppTextStyles.overline.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                    fontSize: 10,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _onActionTap(String screenKey) {
+    widget.onQuickAccessNavigate(screenKey);
   }
 }

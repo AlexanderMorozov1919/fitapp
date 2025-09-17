@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
 
 class HomeStatisticsSection extends StatelessWidget {
   const HomeStatisticsSection({super.key});
@@ -6,28 +9,74 @@ class HomeStatisticsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        // Статистика в виде карточек
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.2,
           children: [
-            _buildStatItem('12', 'Посещений'),
-            _buildStatItem('8', 'Теннис'),
-            _buildStatItem('4', 'Групповые'),
+            _buildStatCard(
+              '12',
+              'Посещений',
+              Icons.fitness_center,
+              AppColors.primary,
+            ),
+            _buildStatCard(
+              '8',
+              'Теннис',
+              Icons.sports_tennis,
+              AppColors.secondary,
+            ),
+            _buildStatCard(
+              '4',
+              'Групповые',
+              Icons.people,
+              AppColors.accent,
+            ),
+            _buildStatCard(
+              '16ч',
+              'Тренировок',
+              Icons.timer,
+              AppColors.info,
+            ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
+        
+        // Кнопка подробной статистики
         Center(
-          child: TextButton(
+          child: ElevatedButton(
             onPressed: () {
               // Навигация к детальной статистике
             },
-            child: const Text(
-              'Подробная статистика →',
-              style: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-              ),
+            style: AppStyles.secondaryButtonStyle.copyWith(
+              backgroundColor: MaterialStateProperty.all(Colors.transparent),
+              foregroundColor: MaterialStateProperty.all(AppColors.primary),
+              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              )),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Подробная статистика',
+                  style: AppTextStyles.buttonSmall.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ],
             ),
           ),
         ),
@@ -35,27 +84,56 @@ class HomeStatisticsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
-          ),
+  Widget _buildStatCard(String value, String label, IconData icon, Color color) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Colors.grey,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Иконка с фоном
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: AppStyles.borderRadiusFull,
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: color,
+            ),
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+          const SizedBox(height: 12),
+          
+          // Значение
+          Text(
+            value,
+            style: AppTextStyles.statValue.copyWith(
+              color: color,
+              fontSize: 22,
+            ),
+          ),
+          const SizedBox(height: 4),
+          
+          // Подпись
+          Text(
+            label,
+            style: AppTextStyles.statLabel.copyWith(
+              color: AppColors.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
 
 class HomeMembershipSection extends StatelessWidget {
   final User user;
@@ -22,80 +25,92 @@ class HomeMembershipSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Карточка абонемента
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: AppStyles.paddingLg,
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.green),
+            gradient: AppColors.secondaryGradient,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowLg,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Заголовок и тип абонемента
               Row(
                 children: [
-                  const Icon(Icons.credit_card, color: Colors.green, size: 20),
-                  const SizedBox(width: 8),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: AppStyles.borderRadiusFull,
+                    ),
+                    child: Icon(
+                      Icons.credit_card,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       membership.type,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: AppTextStyles.headline5.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
+              
+              // Прогресс бар дней
+              _buildDaysProgress(membership),
+              const SizedBox(height: 16),
+              
+              // Детали абонемента
+              _buildMembershipDetails(membership),
               const SizedBox(height: 12),
-              _buildMembershipDetailItem(
-                '📅 Действует до',
-                _formatDateFull(membership.endDate),
-              ),
-              _buildMembershipDetailItem(
-                '⏰ Осталось дней',
-                '${membership.daysRemaining}',
-              ),
-              if (membership.remainingVisits > 0)
-                _buildMembershipDetailItem(
-                  '🎯 Осталось посещений',
-                  '${membership.remainingVisits}',
-                ),
-              if (membership.remainingVisits == -1)
-                _buildMembershipDetailItem(
-                  '♾️ Посещения',
-                  'Неограниченные',
-                ),
-              if (membership.autoRenew)
-                _buildMembershipDetailItem(
-                  '🔄 Автопродление',
-                  'Включено',
-                  color: Colors.green,
-                ),
-              const SizedBox(height: 8),
-              const Text(
-                'Включенные услуги:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              _buildMembershipFeatures(membership),
+              
+              // Включенные услуги
+              _buildIncludedServices(membership),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
+        
+        // Кнопка управления
         Center(
-          child: TextButton(
+          child: ElevatedButton(
             onPressed: () {
               onQuickAccessNavigate('membership');
             },
-            child: const Text(
-              'Управление абонементом →',
-              style: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-              ),
+            style: AppStyles.secondaryButtonStyle.copyWith(
+              backgroundColor: MaterialStateProperty.all(Colors.transparent),
+              foregroundColor: MaterialStateProperty.all(AppColors.secondary),
+              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              )),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Управление абонементом',
+                  style: AppTextStyles.buttonSmall.copyWith(
+                    color: AppColors.secondary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  color: AppColors.secondary,
+                ),
+              ],
             ),
           ),
         ),
@@ -103,78 +118,155 @@ class HomeMembershipSection extends StatelessWidget {
     );
   }
 
-  Widget _buildMembershipDetailItem(String label, String value, {Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: color ?? Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMembershipFeatures(Membership membership) {
-    final features = <Widget>[];
-    
-    // Проверяем включенные услуги
-    if (membership.includedServices.contains('gym')) {
-      features.add(_buildFeatureItem('🏋️ Тренажерный зал'));
-    }
-    if (membership.includedServices.contains('group_classes')) {
-      features.add(_buildFeatureItem('👥 Групповые занятия'));
-    }
-    if (membership.includedServices.contains('tennis')) {
-      features.add(_buildFeatureItem('🎾 Теннисные корты'));
-    }
-    if (membership.includedServices.contains('pool')) {
-      features.add(_buildFeatureItem('🏊 Бассейн'));
-    }
-    if (membership.includedServices.contains('yoga')) {
-      features.add(_buildFeatureItem('🧘 Йога'));
-    }
-
-    // Добавляем информацию о неограниченных посещениях
-    if (membership.remainingVisits == -1) {
-      features.add(_buildFeatureItem('♾️ Неограниченные посещения'));
-    } else if (membership.remainingVisits > 0) {
-      features.add(_buildFeatureItem('📊 Посещений: ${membership.remainingVisits}'));
-    }
+  Widget _buildDaysProgress(Membership membership) {
+    final progress = membership.daysRemaining / 30; // Пример: 30 дней в месяце
+    final daysText = membership.daysRemaining == 1 ? 'день' : 'дней';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: features,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Осталось дней',
+              style: AppTextStyles.caption.copyWith(
+                color: Colors.white.withOpacity(0.8),
+              ),
+            ),
+            Text(
+              '${membership.daysRemaining} $daysText',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          height: 6,
+          decoration: AppStyles.progressBarDecoration.copyWith(
+            color: Colors.white.withOpacity(0.3),
+          ),
+          child: FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: progress.clamp(0.0, 1.0),
+            child: Container(
+              decoration: AppStyles.progressBarFillDecoration(Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildFeatureItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          const Icon(Icons.check, size: 16, color: Colors.green),
-          const SizedBox(width: 4),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 12),
+  Widget _buildMembershipDetails(Membership membership) {
+    return Column(
+      children: [
+        _buildDetailRow(
+          Icons.calendar_today,
+          'Действует до',
+          _formatDateFull(membership.endDate),
+        ),
+        const SizedBox(height: 8),
+        if (membership.remainingVisits > 0)
+          _buildDetailRow(
+            Icons.confirmation_number,
+            'Осталось посещений',
+            '${membership.remainingVisits}',
           ),
-        ],
+        if (membership.remainingVisits == -1)
+          _buildDetailRow(
+            Icons.all_inclusive,
+            'Посещения',
+            'Неограниченные',
+          ),
+        if (membership.autoRenew)
+          _buildDetailRow(
+            Icons.autorenew,
+            'Автопродление',
+            'Включено',
+            color: Colors.greenAccent,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value, {Color? color}) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: color ?? Colors.white.withOpacity(0.8),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            style: AppTextStyles.caption.copyWith(
+              color: Colors.white.withOpacity(0.8),
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: color ?? Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIncludedServices(Membership membership) {
+    final services = <Widget>[
+      if (membership.includedServices.contains('gym'))
+        _buildServiceItem('🏋️ Тренажерный зал'),
+      if (membership.includedServices.contains('group_classes'))
+        _buildServiceItem('👥 Групповые занятия'),
+      if (membership.includedServices.contains('tennis'))
+        _buildServiceItem('🎾 Теннисные корты'),
+      if (membership.includedServices.contains('pool'))
+        _buildServiceItem('🏊 Бассейн'),
+      if (membership.includedServices.contains('yoga'))
+        _buildServiceItem('🧘 Йога'),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Включенные услуги:',
+          style: AppTextStyles.caption.copyWith(
+            color: Colors.white.withOpacity(0.8),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: services,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServiceItem(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: AppStyles.borderRadiusSm,
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.overline.copyWith(
+          color: Colors.white,
+        ),
       ),
     );
   }

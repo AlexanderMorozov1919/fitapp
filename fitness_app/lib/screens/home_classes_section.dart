@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
 
 class HomeClassesSection extends StatefulWidget {
   const HomeClassesSection({super.key});
@@ -24,7 +27,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Селектор дат
+        // Селектор дат с улучшенным дизайном
         _buildDateSelector(availableDates),
         const SizedBox(height: 16),
         
@@ -33,21 +36,41 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
             ? _buildEmptyTodayClasses()
             : Column(
                 children: selectedDateClasses
-                    .map((classItem) => _buildClassItemSimple(classItem))
+                    .map((classItem) => _buildClassItem(classItem))
                     .toList(),
               ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
+        
+        // Кнопка полного расписания
         Center(
-          child: TextButton(
+          child: ElevatedButton(
             onPressed: () {
               // Навигация к полному расписанию
             },
-            child: const Text(
-              'Полное расписание →',
-              style: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-              ),
+            style: AppStyles.secondaryButtonStyle.copyWith(
+              backgroundColor: MaterialStateProperty.all(Colors.transparent),
+              foregroundColor: MaterialStateProperty.all(AppColors.primary),
+              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              )),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Полное расписание',
+                  style: AppTextStyles.buttonSmall.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ],
             ),
           ),
         ),
@@ -57,37 +80,185 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
 
   Widget _buildDateSelector(List<DateTime> dates) {
     return SizedBox(
-      height: 50,
+      height: 48,
       child: ListView(
         scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         children: dates.map((date) {
           final isSelected = _isSameDay(date, _selectedDate);
+          final isToday = _isSameDay(date, DateTime.now());
+          
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ChoiceChip(
-              label: Text(
-                _formatDateShort(date),
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.blue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                }
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedDate = date;
+                });
               },
-              selectedColor: Colors.blue,
-              backgroundColor: Colors.blue.withOpacity(0.1),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : Colors.transparent,
+                  borderRadius: AppStyles.borderRadiusFull,
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : AppColors.border,
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _formatDay(date),
+                      style: AppTextStyles.caption.copyWith(
+                        color: isSelected ? Colors.white : AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      _formatDateShort(date),
+                      style: AppTextStyles.overline.copyWith(
+                        color: isSelected ? Colors.white : AppColors.textTertiary,
+                        fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildClassItem(dynamic classItem) {
+    final availableSpots = classItem.maxParticipants - classItem.currentParticipants;
+    final isAlmostFull = availableSpots <= 2;
+    final isFull = availableSpots == 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: AppStyles.paddingMd,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Иконка занятия
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: AppStyles.borderRadiusFull,
+            ),
+            child: Icon(
+              Icons.fitness_center,
+              size: 20,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(width: 12),
+          
+          // Информация о занятии
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  classItem.name,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${_formatTime(classItem.startTime)} • ${classItem.trainerName}',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Индикатор свободных мест
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: isFull
+                  ? AppColors.error.withOpacity(0.1)
+                  : isAlmostFull
+                      ? AppColors.warning.withOpacity(0.1)
+                      : AppColors.success.withOpacity(0.1),
+              borderRadius: AppStyles.borderRadiusSm,
+              border: Border.all(
+                color: isFull
+                    ? AppColors.error.withOpacity(0.3)
+                    : isAlmostFull
+                        ? AppColors.warning.withOpacity(0.3)
+                        : AppColors.success.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              isFull ? 'Нет мест' : '$availableSpots мест',
+              style: AppTextStyles.overline.copyWith(
+                color: isFull
+                    ? AppColors.error
+                    : isAlmostFull
+                        ? AppColors.warning
+                        : AppColors.success,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyTodayClasses() {
+    return Container(
+      padding: AppStyles.paddingLg,
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: AppStyles.borderRadiusLg,
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.calendar_today,
+            size: 40,
+            color: AppColors.textTertiary,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Сегодня нет занятий',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Посмотрите расписание на другие дни',
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textTertiary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -111,6 +282,11 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
         date1.day == date2.day;
   }
 
+  String _formatDay(DateTime date) {
+    final days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+    return days[date.weekday % 7];
+  }
+
   String _formatDateShort(DateTime date) {
     final today = DateTime.now();
     final tomorrow = today.add(const Duration(days: 1));
@@ -118,77 +294,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     if (_isSameDay(date, today)) return 'Сегодня';
     if (_isSameDay(date, tomorrow)) return 'Завтра';
     
-    return '${date.day}.${date.month}';
-  }
-
-  Widget _buildEmptyTodayClasses() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Column(
-        children: [
-          Icon(Icons.calendar_today, size: 32, color: Colors.grey),
-          SizedBox(height: 8),
-          Text(
-            'Сегодня нет занятий',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildClassItemSimple(dynamic classItem) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.fitness_center, size: 16, color: Colors.blue),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  classItem.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '${_formatTime(classItem.startTime)} • ${classItem.trainerName}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '${classItem.maxParticipants - classItem.currentParticipants} мест',
-            style: TextStyle(
-              fontSize: 12,
-              color: (classItem.maxParticipants - classItem.currentParticipants) > 0
-                  ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
+    return '${date.day}';
   }
 
   String _formatTime(DateTime time) {

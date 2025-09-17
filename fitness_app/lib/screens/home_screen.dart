@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
-import '../models/user_model.dart';
-import '../models/booking_model.dart';
 import 'home_welcome_section.dart';
 import 'home_quick_actions.dart';
 import 'home_bookings_section.dart';
@@ -9,7 +7,9 @@ import 'home_classes_section.dart';
 import 'home_membership_section.dart';
 import 'home_statistics_section.dart';
 import 'home_section_widget.dart';
-import 'home_utils.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String) onQuickAccessNavigate;
@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showTodayClasses = true;
   bool _showMembershipInfo = true;
   bool _showStatistics = true;
-  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +45,32 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Фитнес Центр',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
+          style: AppTextStyles.headline4.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.black),
+            icon: Icon(Icons.notifications, color: AppColors.textPrimary),
             onPressed: () {},
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             // Приветствие и баланс
-            Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.white,
-              child: HomeWelcomeSection(user: user),
-            ),
-            const SizedBox(height: 1),
+            HomeWelcomeSection(user: user),
+            const SizedBox(height: 16),
 
             // Быстрый доступ
             HomeSectionWidget(
@@ -88,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Мои бронирования сегодня
             if (todayBookings.isNotEmpty) ...[
+              const SizedBox(height: 12),
               HomeSectionWidget(
                 title: 'Мои бронирования сегодня',
                 isExpanded: _showTodayBookings,
@@ -102,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Мои бронирования
             if (upcomingBookings.isNotEmpty) ...[
+              const SizedBox(height: 12),
               HomeSectionWidget(
                 title: 'Мои бронирования',
                 isExpanded: _showUpcomingBookings,
@@ -115,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
 
             // Групповые занятия сегодня
+            const SizedBox(height: 12),
             HomeSectionWidget(
               title: 'Занятия сегодня',
               isExpanded: _showTodayClasses,
@@ -124,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Информация о действующем абонементе
             if (user.membership != null) ...[
+              const SizedBox(height: 12),
               HomeSectionWidget(
                 title: 'Ваш абонемент',
                 isExpanded: _showMembershipInfo,
@@ -136,12 +134,15 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
 
             // Статистика посещений
+            const SizedBox(height: 12),
             HomeSectionWidget(
               title: 'Статистика посещений',
               isExpanded: _showStatistics,
               onToggle: () => setState(() => _showStatistics = !_showStatistics),
               child: HomeStatisticsSection(),
             ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -156,24 +157,49 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Отменить бронирование'),
-        content: const Text('Вы уверены, что хотите отменить это бронирование?'),
+        title: Text(
+          'Отменить бронирование',
+          style: AppTextStyles.headline5,
+        ),
+        content: Text(
+          'Вы уверены, что хотите отменить это бронирование?',
+          style: AppTextStyles.bodyMedium,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Нет'),
+            child: Text(
+              'Нет',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Бронирование отменено'),
-                  backgroundColor: Colors.green,
+                SnackBar(
+                  content: Text(
+                    'Бронирование отменено',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppStyles.borderRadiusLg,
+                  ),
                 ),
               );
             },
-            child: const Text('Да, отменить', style: TextStyle(color: Colors.red)),
+            child: Text(
+              'Да, отменить',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.error,
+              ),
+            ),
           ),
         ],
       ),
@@ -184,12 +210,23 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Перенести бронирование'),
-        content: const Text('Функция переноса бронирования будет доступна в ближайшее время.'),
+        title: Text(
+          'Перенести бронирование',
+          style: AppTextStyles.headline5,
+        ),
+        content: Text(
+          'Функция переноса бронирования будет доступна в ближайшее время.',
+          style: AppTextStyles.bodyMedium,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(
+              'OK',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
           ),
         ],
       ),
