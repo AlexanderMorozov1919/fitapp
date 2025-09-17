@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/booking_model.dart';
 import 'calendar_filter.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
 class HomeBookingsSection extends StatefulWidget {
   final List<Booking> allBookings;
@@ -73,20 +75,6 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
           datesWithBookings: datesWithBookings,
         ),
         const SizedBox(height: 16),
-        
-        // Заголовок с выбранной датой
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            _getSectionTitle(_selectedDate),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
         
         // Список бронирований
         if (_filteredBookings.isNotEmpty) ...[
@@ -180,60 +168,75 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[100]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Информация о бронировании
+          // Основная информация
           Row(
             children: [
-              Icon(
-                _getBookingIcon(booking),
-                size: 20,
-                color: _getStatusColor(booking.status),
+              // Иконка типа бронирования
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: _getStatusColor(booking.status).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  _getBookingIcon(booking),
+                  size: 20,
+                  color: _getStatusColor(booking.status),
+                ),
               ),
               const SizedBox(width: 12),
+              
+              // Детали бронирования
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       booking.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       '${_formatDate(booking.startTime)} • ${_formatTime(booking.startTime)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     if (booking.description != null) ...[
                       const SizedBox(height: 2),
                       Text(
                         booking.description!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
+                        style: AppTextStyles.overline.copyWith(
+                          color: AppColors.textTertiary,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ],
                 ),
               ),
+              
+              // Статус
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -242,8 +245,7 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
                 ),
                 child: Text(
                   _getStatusText(booking.status),
-                  style: TextStyle(
-                    fontSize: 10,
+                  style: AppTextStyles.overline.copyWith(
                     color: _getStatusColor(booking.status),
                     fontWeight: FontWeight.bold,
                   ),
@@ -251,24 +253,27 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           
-          // Кнопки действий
+          // Кнопки действий (только иконки)
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _buildActionButton(
-                'Отменить',
-                Icons.cancel,
+              // Кнопка отмены
+              _buildIconButton(
+                Icons.close,
                 Colors.red,
                 () => widget.onCancelBooking(booking),
+                tooltip: 'Отменить',
               ),
               const SizedBox(width: 8),
-              _buildActionButton(
-                'Перенести',
+              
+              // Кнопка переноса
+              _buildIconButton(
                 Icons.calendar_today,
                 Colors.blue,
                 () => widget.onRescheduleBooking(booking),
+                tooltip: 'Перенести',
               ),
             ],
           ),
@@ -277,18 +282,22 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
     );
   }
 
-  Widget _buildActionButton(String text, IconData icon, Color color, VoidCallback onPressed) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 16),
-      label: Text(text),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color.withOpacity(0.1),
-        foregroundColor: color,
-        textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+  Widget _buildIconButton(IconData icon, Color color, VoidCallback onPressed, {String? tooltip}) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
+      ),
+      child: IconButton(
+        icon: Icon(icon, size: 18, color: color),
+        onPressed: onPressed,
+        padding: EdgeInsets.zero,
+        tooltip: tooltip,
+        style: IconButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),
     );

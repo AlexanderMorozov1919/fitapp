@@ -40,18 +40,6 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
         ),
         const SizedBox(height: 16),
         
-        // Заголовок с выбранной датой
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            _getSectionTitle(_selectedDate),
-            style: AppTextStyles.headline5.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        
         // Список занятий
         selectedDateClasses.isEmpty
             ? _buildEmptyTodayClasses()
@@ -126,92 +114,144 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     final isAlmostFull = availableSpots <= 2;
     final isFull = availableSpots == 0;
 
+    Color statusColor;
+    if (isFull) {
+      statusColor = AppColors.error;
+    } else if (isAlmostFull) {
+      statusColor = AppColors.warning;
+    } else {
+      statusColor = AppColors.success;
+    }
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: AppStyles.paddingMd,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: AppStyles.borderRadiusLg,
-        boxShadow: AppColors.shadowSm,
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Иконка занятия
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: AppStyles.borderRadiusFull,
-            ),
-            child: Icon(
-              Icons.fitness_center,
-              size: 20,
-              color: AppColors.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          
-          // Информация о занятии
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  classItem.name,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${_formatTime(classItem.startTime)} • ${classItem.trainerName}',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Индикатор свободных мест
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isFull
-                  ? AppColors.error.withOpacity(0.1)
-                  : isAlmostFull
-                      ? AppColors.warning.withOpacity(0.1)
-                      : AppColors.success.withOpacity(0.1),
-              borderRadius: AppStyles.borderRadiusSm,
-              border: Border.all(
-                color: isFull
-                    ? AppColors.error.withOpacity(0.3)
-                    : isAlmostFull
-                        ? AppColors.warning.withOpacity(0.3)
-                        : AppColors.success.withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              isFull ? 'Нет мест' : '$availableSpots мест',
-              style: AppTextStyles.overline.copyWith(
-                color: isFull
-                    ? AppColors.error
-                    : isAlmostFull
-                        ? AppColors.warning
-                        : AppColors.success,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[100]!),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Основная информация
+          Row(
+            children: [
+              // Иконка занятия
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.fitness_center,
+                  size: 20,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              
+              // Детали занятия
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      classItem.name,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_formatTime(classItem.startTime)} • ${classItem.trainerName}',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Индикатор свободных мест
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  isFull ? 'Нет мест' : '$availableSpots мест',
+                  style: AppTextStyles.overline.copyWith(
+                    color: statusColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Кнопки действий (только иконки)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Кнопка записи
+              _buildIconButton(
+                Icons.add,
+                AppColors.primary,
+                () {
+                  // Заглушка для записи на занятие
+                },
+                tooltip: 'Записаться',
+              ),
+              const SizedBox(width: 8),
+              
+              // Кнопка информации
+              _buildIconButton(
+                Icons.info_outline,
+                AppColors.textSecondary,
+                () {
+                  // Заглушка для информации о занятии
+                },
+                tooltip: 'Информация',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, Color color, VoidCallback onPressed, {String? tooltip}) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
+      ),
+      child: IconButton(
+        icon: Icon(icon, size: 18, color: color),
+        onPressed: onPressed,
+        padding: EdgeInsets.zero,
+        tooltip: tooltip,
+        style: IconButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
       ),
     );
   }
