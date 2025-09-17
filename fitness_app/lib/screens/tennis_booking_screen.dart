@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/booking_model.dart';
+import '../main.dart';
 
 class TennisBookingScreen extends StatefulWidget {
   const TennisBookingScreen({super.key});
@@ -105,7 +106,13 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
         title: const Text('Бронирование теннисных кортов'),
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: null,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            final navigationService = NavigationService.of(context);
+            navigationService?.onBack();
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

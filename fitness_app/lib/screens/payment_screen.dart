@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/payment_model.dart';
 import '../models/user_model.dart';
+import '../main.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -55,6 +56,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
         title: const Text('Пополнение счета'),
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            final navigationService = NavigationService.of(context);
+            navigationService?.onBack();
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

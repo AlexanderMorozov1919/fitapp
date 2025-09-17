@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/trainer_model.dart';
 import '../widgets/phone_frame.dart';
+import '../main.dart';
 
 class TrainersScreen extends StatefulWidget {
   const TrainersScreen({super.key});
@@ -27,6 +28,13 @@ class _TrainersScreenState extends State<TrainersScreen> {
         title: const Text('Тренеры'),
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            final navigationService = NavigationService.of(context);
+            navigationService?.onBack();
+          },
+        ),
       ),
       body: Column(
         children: [

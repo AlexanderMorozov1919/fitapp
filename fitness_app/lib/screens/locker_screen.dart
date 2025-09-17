@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/booking_model.dart';
+import '../main.dart';
 
 class LockerScreen extends StatefulWidget {
   const LockerScreen({super.key});
@@ -28,6 +29,13 @@ class _LockerScreenState extends State<LockerScreen> {
         title: const Text('Управление шкафчиками'),
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            final navigationService = NavigationService.of(context);
+            navigationService?.onBack();
+          },
+        ),
       ),
       body: DefaultTabController(
         length: 2,

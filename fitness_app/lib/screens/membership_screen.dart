@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/payment_model.dart';
 import '../models/user_model.dart';
+import '../main.dart';
 
 class MembershipScreen extends StatefulWidget {
   const MembershipScreen({super.key});
@@ -22,6 +23,13 @@ class _MembershipScreenState extends State<MembershipScreen> {
         title: const Text('Абонементы'),
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            final navigationService = NavigationService.of(context);
+            navigationService?.onBack();
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

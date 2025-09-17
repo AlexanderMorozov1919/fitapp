@@ -15,6 +15,26 @@ void main() {
   runApp(const FitnessApp());
 }
 
+// Простой InheritedWidget для передачи функции навигации назад
+class NavigationService extends InheritedWidget {
+  final VoidCallback onBack;
+
+  const NavigationService({
+    super.key,
+    required this.onBack,
+    required super.child,
+  });
+
+  static NavigationService? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<NavigationService>();
+  }
+
+  @override
+  bool updateShouldNotify(NavigationService oldWidget) {
+    return oldWidget.onBack != onBack;
+  }
+}
+
 class FitnessApp extends StatelessWidget {
   const FitnessApp({super.key});
 
@@ -108,8 +128,11 @@ class _MainNavigationState extends State<MainNavigation> {
     Widget currentBody;
 
     if (_currentQuickAccessScreen != null) {
-      // Показываем экран быстрого доступа
-      currentBody = _quickAccessScreens[_currentQuickAccessScreen]!;
+      // Показываем экран быстрого доступа с оберткой для навигации назад
+      currentBody = NavigationService(
+        onBack: _navigateBack,
+        child: _quickAccessScreens[_currentQuickAccessScreen]!,
+      );
     } else {
       // Показываем основной экран навигации
       currentBody = _screens[_currentIndex];
