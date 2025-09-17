@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
 import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 import '../main.dart';
 
 class CancelBookingScreen extends StatefulWidget {
@@ -53,66 +54,133 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
           },
         ),
       ),
-      body: Padding(
-        padding: AppStyles.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Выберите причину отмены:',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
+      body: Column(
+        children: [
+          // Информация о бронировании
+          Container(
+            padding: AppStyles.paddingLg,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: AppColors.shadowSm,
             ),
-            const SizedBox(height: 16),
-            
-            // Список причин отмены
-            Expanded(
-              child: ListView(
-                children: _cancellationReasons.map((reason) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: RadioListTile<String>(
-                    title: Text(
-                      reason,
-                      style: AppTextStyles.bodyMedium,
-                    ),
-                    value: reason,
-                    groupValue: _selectedReason,
-                    onChanged: (value) => setState(() => _selectedReason = value),
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                  ),
-                )).toList(),
-              ),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Кнопки действий
-            Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: SecondaryButton(
-                    text: 'Назад',
-                    onPressed: () {
-                      final navigationService = NavigationService.of(context);
-                      navigationService?.onBack();
-                    },
+                Text(
+                  widget.booking.title,
+                  style: AppTextStyles.headline6.copyWith(
+                    color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: PrimaryButton(
-                    text: 'Подтвердить отмену',
-                    onPressed: _confirmCancellation,
-                    isEnabled: _selectedReason != null,
-                  ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: AppColors.textTertiary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      DateFormatters.formatDateDisplay(widget.booking.startTime),
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Icon(
+                      Icons.access_time,
+                      size: 16,
+                      color: AppColors.textTertiary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${DateFormatters.formatTime(widget.booking.startTime)}-${DateFormatters.formatTime(widget.booking.endTime)}',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-          ],
-        ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Выбор причины
+          Expanded(
+            child: Padding(
+              padding: AppStyles.paddingLg,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Выберите причину отмены:',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Список причин отмены
+                  Expanded(
+                    child: ListView(
+                      children: _cancellationReasons.map((reason) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: AppStyles.borderRadiusLg,
+                            boxShadow: AppColors.shadowSm,
+                          ),
+                          child: RadioListTile<String>(
+                            title: Text(
+                              reason,
+                              style: AppTextStyles.bodyMedium,
+                            ),
+                            value: reason,
+                            groupValue: _selectedReason,
+                            onChanged: (value) => setState(() => _selectedReason = value),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                            tileColor: Colors.white,
+                            activeColor: AppColors.primary,
+                          ),
+                        ),
+                      )).toList(),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // Кнопки действий
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SecondaryButton(
+                          text: 'Назад',
+                          onPressed: () {
+                            final navigationService = NavigationService.of(context);
+                            navigationService?.onBack();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: PrimaryButton(
+                          text: 'Подтвердить отмену',
+                          onPressed: _confirmCancellation,
+                          isEnabled: _selectedReason != null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

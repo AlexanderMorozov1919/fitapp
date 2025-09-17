@@ -86,8 +86,15 @@ class _MainNavigationState extends State<MainNavigation> {
     'reschedule_booking': (data) => RescheduleBookingScreen(booking: data),
   };
 
-  String? _currentQuickAccessScreen;
-  dynamic _quickAccessData;
+  List<Map<String, dynamic>> _navigationStack = [];
+  
+  String? get _currentQuickAccessScreen => _navigationStack.isNotEmpty
+      ? _navigationStack.last['screen']
+      : null;
+      
+  dynamic get _quickAccessData => _navigationStack.isNotEmpty
+      ? _navigationStack.last['data']
+      : null;
 
   static Widget _buildPlaceholderScreen(String title) {
     return Scaffold(
@@ -118,20 +125,24 @@ class _MainNavigationState extends State<MainNavigation> {
   void _onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
-      _currentQuickAccessScreen = null; // Сбрасываем быстрый доступ при переключении табов
+      _navigationStack.clear(); // Сбрасываем стек при переключении табов
     });
   }
 
   void _navigateToQuickAccess(String screenKey, [dynamic data]) {
     setState(() {
-      _currentQuickAccessScreen = screenKey;
-      _quickAccessData = data;
+      _navigationStack.add({
+        'screen': screenKey,
+        'data': data,
+      });
     });
   }
 
   void _navigateBack() {
     setState(() {
-      _currentQuickAccessScreen = null;
+      if (_navigationStack.isNotEmpty) {
+        _navigationStack.removeLast();
+      }
     });
   }
 
