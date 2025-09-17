@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/booking_model.dart';
 import '../main.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 
 class LockerScreen extends StatefulWidget {
   const LockerScreen({super.key});
@@ -41,11 +46,25 @@ class _LockerScreenState extends State<LockerScreen> {
         length: 2,
         child: Column(
           children: [
-            const TabBar(
-              tabs: [
-                Tab(text: 'Доступные'),
-                Tab(text: 'Мои шкафчики'),
-              ],
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: TabBar(
+                indicatorColor: AppColors.primary,
+                labelColor: AppColors.primary,
+                unselectedLabelColor: AppColors.textSecondary,
+                tabs: const [
+                  Tab(text: 'Доступные'),
+                  Tab(text: 'Мои шкафчики'),
+                ],
+              ),
             ),
             Expanded(
               child: TabBarView(
@@ -66,33 +85,46 @@ class _LockerScreenState extends State<LockerScreen> {
 
   Widget _buildAvailableLockers(List<Locker> availableLockers) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: AppStyles.paddingLg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Доступные шкафчики:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: AppTextStyles.headline5.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           
           // Выбор количества дней
-          const Text('Количество дней аренды:'),
+          Text(
+            'Количество дней аренды:',
+            style: AppTextStyles.bodyMedium,
+          ),
+          const SizedBox(height: 8),
           Slider(
             value: _rentalDays.toDouble(),
             min: 1,
             max: 30,
             divisions: 29,
             label: _rentalDays.toString(),
+            activeColor: AppColors.primary,
+            inactiveColor: AppColors.border,
             onChanged: (value) {
               setState(() {
                 _rentalDays = value.toInt();
               });
             },
           ),
-          Text('$_rentalDays дней • ${_calculatePrice()} руб.'),
+          Text(
+            '$_rentalDays дней • ${_calculatePrice()} руб.',
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           
           // Список шкафчиков
           Expanded(
@@ -117,7 +149,7 @@ class _LockerScreenState extends State<LockerScreen> {
 
   Widget _buildMyLockers(List<Locker> userLockers) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: AppStyles.paddingLg,
       child: userLockers.isEmpty
           ? _buildEmptyLockersState()
           : ListView.builder(
@@ -133,8 +165,8 @@ class _LockerScreenState extends State<LockerScreen> {
   Widget _buildLockerCard(Locker locker) {
     final isSelected = locker == _selectedLocker;
     
-    return Card(
-      color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.white,
+    return AppCard(
+      backgroundColor: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
       child: InkWell(
         onTap: () {
           setState(() {
@@ -142,42 +174,44 @@ class _LockerScreenState extends State<LockerScreen> {
           });
         },
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: AppStyles.paddingMd,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.lock,
                 size: 40,
-                color: isSelected ? Colors.blue : Colors.grey,
+                color: isSelected ? AppColors.primary : AppColors.textTertiary,
               ),
               const SizedBox(height: 8),
               Text(
                 locker.number,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.blue : Colors.black,
+                style: AppTextStyles.headline6.copyWith(
+                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Размер: ${locker.size}',
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 '${locker.pricePerDay} руб./день',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 8),
               if (isSelected)
-                ElevatedButton(
+                PrimaryButton(
+                  text: 'Арендовать',
                   onPressed: () => _rentLocker(locker),
-                  child: const Text('Арендовать'),
+                  width: double.infinity,
                 ),
             ],
           ),
@@ -187,10 +221,9 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   Widget _buildUserLockerCard(Locker locker) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return AppCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppStyles.paddingLg,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -199,49 +232,39 @@ class _LockerScreenState extends State<LockerScreen> {
               children: [
                 Text(
                   locker.number,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  style: AppTextStyles.headline6.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green),
-                  ),
-                  child: const Text(
-                    'Активен',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                StatusBadge(
+                  text: 'Активен',
+                  color: AppColors.success,
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text('Размер: ${locker.size}'),
-            Text('Действует до: ${_formatDate(locker.rentalEndDate!)}'),
             const SizedBox(height: 12),
+            Text(
+              'Размер: ${locker.size}',
+              style: AppTextStyles.bodyMedium,
+            ),
+            Text(
+              'Действует до: ${_formatDate(locker.rentalEndDate!)}',
+              style: AppTextStyles.bodyMedium,
+            ),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: SecondaryButton(
+                    text: 'Продлить',
                     onPressed: () => _extendRental(locker),
-                    child: const Text('Продлить'),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: ElevatedButton(
+                  child: PrimaryButton(
+                    text: 'Открыть',
                     onPressed: () => _openLocker(locker),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                    ),
-                    child: const Text('Открыть'),
                   ),
                 ),
               ],
@@ -253,35 +276,11 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   Widget _buildEmptyLockersState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.lock_open,
-            size: 64,
-            color: Colors.grey[300],
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'У вас нет арендованных шкафчиков',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Арендуйте шкафчик для удобного хранения вещей',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: Icons.lock_open,
+      title: 'У вас нет арендованных шкафчиков',
+      subtitle: 'Арендуйте шкафчик для удобного хранения вещей',
+      iconColor: AppColors.textTertiary,
     );
   }
 
@@ -291,73 +290,78 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   void _rentLocker(Locker locker) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Аренда шкафчика'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Шкафчик: ${locker.number}'),
-            Text('Размер: ${locker.size}'),
-            Text('Период: $_rentalDays дней'),
-            Text('Стоимость: ${_calculatePrice()} руб.'),
-            const SizedBox(height: 16),
-            const Text('Подтвердить аренду?'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showRentalSuccess(locker);
-            },
-            child: const Text('Арендовать'),
-          ),
-        ],
-      ),
-    );
+      title: 'Аренда шкафчика',
+      content: 'Шкафчик: ${locker.number}\n'
+          'Размер: ${locker.size}\n'
+          'Период: $_rentalDays дней\n'
+          'Стоимость: ${_calculatePrice()} руб.\n\n'
+          'Подтвердить аренду?',
+      confirmText: 'Арендовать',
+      cancelText: 'Отмена',
+      confirmColor: AppColors.primary,
+    ).then((confirmed) {
+      if (confirmed == true) {
+        _showRentalSuccess(locker);
+      }
+    });
   }
 
   void _extendRental(Locker locker) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Продление аренды'),
+        title: Text(
+          'Продление аренды',
+          style: AppTextStyles.headline5,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Выберите количество дополнительных дней:'),
+            Text(
+              'Выберите количество дополнительных дней:',
+              style: AppTextStyles.bodyMedium,
+            ),
+            const SizedBox(height: 16),
             Slider(
               value: _rentalDays.toDouble(),
               min: 1,
               max: 30,
               divisions: 29,
               label: _rentalDays.toString(),
+              activeColor: AppColors.primary,
+              inactiveColor: AppColors.border,
               onChanged: (value) {
                 setState(() {
                   _rentalDays = value.toInt();
                 });
               },
             ),
-            Text('$_rentalDays дней • ${locker.pricePerDay * _rentalDays} руб.'),
+            Text(
+              '$_rentalDays дней • ${locker.pricePerDay * _rentalDays} руб.',
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
+            child: Text(
+              'Отмена',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _showExtensionSuccess();
             },
+            style: AppStyles.primaryButtonStyle,
             child: const Text('Продлить'),
           ),
         ],
@@ -369,27 +373,41 @@ class _LockerScreenState extends State<LockerScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Открыть шкафчик'),
+        title: Text(
+          'Открыть шкафчик',
+          style: AppTextStyles.headline5,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.lock_open, size: 48, color: Colors.green),
+            Icon(
+              Icons.lock_open,
+              size: 48,
+              color: AppColors.success,
+            ),
             const SizedBox(height: 16),
             Text(
               'Шкафчик ${locker.number} открыт',
-              style: const TextStyle(fontSize: 16),
+              style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Не забудьте закрыть его после использования',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textTertiary,
+              ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(
+              'OK',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
           ),
         ],
       ),
@@ -397,20 +415,16 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   void _showRentalSuccess(Locker locker) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Шкафчик ${locker.number} успешно арендован!'),
-        backgroundColor: Colors.green,
-      ),
+    showSuccessSnackBar(
+      context,
+      'Шкафчик ${locker.number} успешно арендован!',
     );
   }
 
   void _showExtensionSuccess() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Аренда успешно продлена!'),
-        backgroundColor: Colors.green,
-      ),
+    showSuccessSnackBar(
+      context,
+      'Аренда успешно продлена!',
     );
   }
 

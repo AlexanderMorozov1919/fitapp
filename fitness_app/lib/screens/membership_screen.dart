@@ -3,6 +3,11 @@ import '../services/mock_data_service.dart';
 import '../models/payment_model.dart';
 import '../models/user_model.dart';
 import '../main.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 
 class MembershipScreen extends StatefulWidget {
   const MembershipScreen({super.key});
@@ -32,7 +37,7 @@ class _MembershipScreenState extends State<MembershipScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: AppStyles.paddingLg,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -42,11 +47,13 @@ class _MembershipScreenState extends State<MembershipScreen> {
             const SizedBox(height: 24),
             
             // Доступные абонементы
-            const Text(
+            Text(
               'Доступные абонементы:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTextStyles.headline5.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             
             Expanded(
               child: ListView(
@@ -54,53 +61,55 @@ class _MembershipScreenState extends State<MembershipScreen> {
                   final isSelected = membership == _selectedMembership;
                   final isCurrent = currentMembership?.type == membership.name;
                   
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    color: isSelected 
-                        ? Colors.blue.withOpacity(0.1) 
+                  return AppCard(
+                    backgroundColor: isSelected 
+                        ? AppColors.primary.withOpacity(0.05) 
                         : isCurrent
-                            ? Colors.green.withOpacity(0.1)
+                            ? AppColors.success.withOpacity(0.1)
                             : Colors.white,
                     child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
+                      contentPadding: AppStyles.paddingLg,
                       leading: Icon(
                         isCurrent ? Icons.check_circle : Icons.credit_card,
-                        color: isCurrent ? Colors.green : Colors.blue,
+                        color: isCurrent ? AppColors.success : AppColors.primary,
+                        size: 28,
                       ),
                       title: Text(
                         membership.name,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isCurrent ? Colors.green : Colors.black,
+                        style: AppTextStyles.headline6.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isCurrent ? AppColors.success : AppColors.textPrimary,
                         ),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(membership.description),
-                          const SizedBox(height: 4),
                           Text(
-                            '${membership.price} руб. / ${membership.durationDays} дней',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                            membership.description,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.textSecondary,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${membership.price} руб. / ${membership.durationDays} дней',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           _buildMembershipFeatures(membership),
                         ],
                       ),
                       trailing: isCurrent
-                          ? const Text(
-                              'Активен',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          ? StatusBadge(
+                              text: 'Активен',
+                              color: AppColors.success,
                             )
                           : Icon(
                               isSelected ? Icons.check : Icons.arrow_forward,
-                              color: isSelected ? Colors.blue : Colors.grey,
+                              color: isSelected ? AppColors.primary : AppColors.textTertiary,
                             ),
                       onTap: isCurrent ? null : () {
                         setState(() {
@@ -125,41 +134,56 @@ class _MembershipScreenState extends State<MembershipScreen> {
   }
 
   Widget _buildCurrentMembership(Membership membership) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.green),
+    return GradientCard(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [AppColors.success, AppColors.success.withOpacity(0.8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Текущий абонемент:',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Colors.green,
+            style: AppTextStyles.headline6.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             membership.type,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            style: AppTextStyles.headline5.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
-          Text('Действует до: ${_formatDate(membership.endDate)}'),
-          Text('Осталось дней: ${membership.daysRemaining}'),
+          const SizedBox(height: 12),
+          Text(
+            'Действует до: ${_formatDate(membership.endDate)}',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white.withOpacity(0.9),
+            ),
+          ),
+          Text(
+            'Осталось дней: ${membership.daysRemaining}',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white.withOpacity(0.9),
+            ),
+          ),
           if (membership.remainingVisits > 0)
-            Text('Осталось посещений: ${membership.remainingVisits}'),
+            Text(
+              'Осталось посещений: ${membership.remainingVisits}',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white.withOpacity(0.9),
+              ),
+            ),
           if (membership.autoRenew)
-            const Text(
+            Text(
               'Автопродление: Включено',
-              style: TextStyle(color: Colors.green),
+              style: AppTextStyles.caption.copyWith(
+                color: Colors.white.withOpacity(0.8),
+              ),
             ),
         ],
       ),
@@ -203,11 +227,13 @@ class _MembershipScreenState extends State<MembershipScreen> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          const Icon(Icons.check, size: 16, color: Colors.green),
-          const SizedBox(width: 4),
+          Icon(Icons.check, size: 16, color: AppColors.success),
+          const SizedBox(width: 6),
           Text(
             text,
-            style: const TextStyle(fontSize: 12),
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -215,66 +241,38 @@ class _MembershipScreenState extends State<MembershipScreen> {
   }
 
   Widget _buildPurchaseButton() {
-    return SizedBox(
+    return PrimaryButton(
+      text: 'Купить за ${_selectedMembership?.price} руб.',
+      onPressed: _purchaseMembership,
+      isEnabled: _selectedMembership != null,
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _selectedMembership != null ? _purchaseMembership : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: Text(
-          'Купить за ${_selectedMembership?.price} руб.',
-          style: const TextStyle(fontSize: 16, color: Colors.white),
-        ),
-      ),
     );
   }
 
   void _purchaseMembership() {
     if (_selectedMembership == null) return;
 
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Покупка абонемента'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Абонемент: ${_selectedMembership!.name}'),
-            Text('Стоимость: ${_selectedMembership!.price} руб.'),
-            Text('Длительность: ${_selectedMembership!.durationDays} дней'),
-            const SizedBox(height: 16),
-            const Text('Подтвердить покупку?'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showPurchaseSuccess();
-            },
-            child: const Text('Купить'),
-          ),
-        ],
-      ),
-    );
+      title: 'Покупка абонемента',
+      content: 'Абонемент: ${_selectedMembership!.name}\n'
+          'Стоимость: ${_selectedMembership!.price} руб.\n'
+          'Длительность: ${_selectedMembership!.durationDays} дней\n\n'
+          'Подтвердить покупку?',
+      confirmText: 'Купить',
+      cancelText: 'Отмена',
+      confirmColor: AppColors.primary,
+    ).then((confirmed) {
+      if (confirmed == true) {
+        _showPurchaseSuccess();
+      }
+    });
   }
 
   void _showPurchaseSuccess() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Абонемент "${_selectedMembership!.name}" успешно приобретен!'),
-        backgroundColor: Colors.green,
-      ),
+    showSuccessSnackBar(
+      context,
+      'Абонемент "${_selectedMembership!.name}" успешно приобретен!',
     );
     
     setState(() {

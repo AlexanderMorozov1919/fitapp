@@ -3,6 +3,10 @@ import '../services/mock_data_service.dart';
 import '../models/trainer_model.dart';
 import '../widgets/phone_frame.dart';
 import '../main.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
 
 class TrainersScreen extends StatefulWidget {
   const TrainersScreen({super.key});
@@ -24,12 +28,17 @@ class _TrainersScreenState extends State<TrainersScreen> {
             .toList();
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Тренеры'),
+        title: Text(
+          'Тренеры',
+          style: AppTextStyles.headline5,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
+        foregroundColor: AppColors.textPrimary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             final navigationService = NavigationService.of(context);
             navigationService?.onBack();
@@ -40,7 +49,7 @@ class _TrainersScreenState extends State<TrainersScreen> {
         children: [
           // Фильтр по видам спорта
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: AppStyles.paddingLg,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -48,16 +57,14 @@ class _TrainersScreenState extends State<TrainersScreen> {
                   final isSelected = sport == _selectedSport;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      label: Text(sport),
-                      selected: isSelected,
-                      onSelected: (selected) {
+                    child: FilterChipWidget(
+                      label: sport,
+                      isSelected: isSelected,
+                      onTap: () {
                         setState(() {
                           _selectedSport = sport;
                         });
                       },
-                      selectedColor: Colors.blue,
-                      checkmarkColor: Colors.white,
                     ),
                   );
                 }).toList(),
@@ -68,7 +75,7 @@ class _TrainersScreenState extends State<TrainersScreen> {
           // Список тренеров
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: AppStyles.paddingLg,
               itemCount: filteredTrainers.length,
               itemBuilder: (context, index) {
                 final trainer = filteredTrainers[index];
@@ -82,8 +89,9 @@ class _TrainersScreenState extends State<TrainersScreen> {
   }
 
   Widget _buildTrainerCard(Trainer trainer) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      decoration: AppStyles.elevatedCardDecoration,
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -96,7 +104,7 @@ class _TrainersScreenState extends State<TrainersScreen> {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: AppStyles.paddingLg,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -105,7 +113,7 @@ class _TrainersScreenState extends State<TrainersScreen> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: AppColors.background,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: trainer.photoUrl != null
@@ -119,7 +127,7 @@ class _TrainersScreenState extends State<TrainersScreen> {
                     : Icon(
                         Icons.person,
                         size: 40,
-                        color: Colors.grey[600],
+                        color: AppColors.textTertiary,
                       ),
               ),
               const SizedBox(width: 16),
@@ -131,17 +139,16 @@ class _TrainersScreenState extends State<TrainersScreen> {
                   children: [
                     Text(
                       trainer.fullName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: AppTextStyles.headline6.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       trainer.specialty,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -150,20 +157,22 @@ class _TrainersScreenState extends State<TrainersScreen> {
                         // Рейтинг
                         Icon(
                           Icons.star,
-                          color: Colors.amber,
+                          color: AppColors.warning,
                           size: 16,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           trainer.displayRating,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: AppTextStyles.caption.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '(${trainer.totalReviews} отзывов)',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -174,14 +183,21 @@ class _TrainersScreenState extends State<TrainersScreen> {
                       runSpacing: 4,
                       children: trainer.availableSports
                           .take(3)
-                          .map((sport) => Chip(
-                                label: Text(
-                                  sport,
-                                  style: const TextStyle(fontSize: 12),
+                          .map((sport) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
                                 ),
-                                backgroundColor: Colors.blue.withOpacity(0.1),
-                                labelPadding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withOpacity(0.1),
+                                  borderRadius: AppStyles.borderRadiusSm,
+                                ),
+                                child: Text(
+                                  sport,
+                                  style: AppTextStyles.overline.copyWith(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
                               ))
                           .toList(),
                     ),
@@ -194,15 +210,14 @@ class _TrainersScreenState extends State<TrainersScreen> {
                 children: [
                   Icon(
                     trainer.isAvailable ? Icons.circle : Icons.circle_outlined,
-                    color: trainer.isAvailable ? Colors.green : Colors.grey,
+                    color: trainer.isAvailable ? AppColors.success : AppColors.textTertiary,
                     size: 12,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     trainer.isAvailable ? 'Доступен' : 'Занят',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: trainer.isAvailable ? Colors.green : Colors.grey,
+                    style: AppTextStyles.overline.copyWith(
+                      color: trainer.isAvailable ? AppColors.success : AppColors.textTertiary,
                     ),
                   ),
                 ],
@@ -223,11 +238,18 @@ class TrainerDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(trainer.fullName),
+        title: Text(
+          trainer.fullName,
+          style: AppTextStyles.headline5,
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: AppColors.textPrimary,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: AppStyles.paddingLg,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -239,7 +261,7 @@ class TrainerDetailScreen extends StatelessWidget {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: AppColors.background,
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: trainer.photoUrl != null
@@ -253,44 +275,42 @@ class TrainerDetailScreen extends StatelessWidget {
                         : Icon(
                             Icons.person,
                             size: 60,
-                            color: Colors.grey[600],
+                            color: AppColors.textTertiary,
                           ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     trainer.fullName,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.headline4.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     trainer.specialty,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.star, color: Colors.amber, size: 24),
+                      Icon(Icons.star, color: AppColors.warning, size: 24),
                       const SizedBox(width: 8),
                       Text(
                         trainer.displayRating,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        style: AppTextStyles.headline6.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '(${trainer.totalReviews} отзывов)',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -302,28 +322,31 @@ class TrainerDetailScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // О тренере
-            const Text(
+            Text(
               'О тренере:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              style: AppTextStyles.headline6.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               trainer.bio,
-              style: const TextStyle(fontSize: 16, height: 1.5),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
             ),
 
             const SizedBox(height: 24),
 
             // Сертификаты
             if (trainer.certifications.isNotEmpty) ...[
-              const Text(
+              Text(
                 'Сертификаты:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.headline6.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 8),
@@ -334,9 +357,14 @@ class TrainerDetailScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 2),
                           child: Row(
                             children: [
-                              Icon(Icons.verified, size: 16, color: Colors.green),
+                              Icon(Icons.verified, size: 16, color: AppColors.success),
                               const SizedBox(width: 8),
-                              Text(cert),
+                              Text(
+                                cert,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
                             ],
                           ),
                         ))
@@ -347,11 +375,11 @@ class TrainerDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Виды спорта
-            const Text(
+            Text(
               'Специализация:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              style: AppTextStyles.headline6.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
@@ -359,9 +387,22 @@ class TrainerDetailScreen extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: trainer.availableSports
-                  .map((sport) => Chip(
-                        label: Text(sport),
-                        backgroundColor: Colors.blue.withOpacity(0.1),
+                  .map((sport) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.1),
+                          borderRadius: AppStyles.borderRadiusLg,
+                        ),
+                        child: Text(
+                          sport,
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ))
                   .toList(),
             ),
@@ -369,11 +410,11 @@ class TrainerDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Стоимость занятий
-            const Text(
+            Text(
               'Стоимость занятий:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              style: AppTextStyles.headline6.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
@@ -387,13 +428,15 @@ class TrainerDetailScreen extends StatelessWidget {
                           children: [
                             Text(
                               entry.key,
-                              style: const TextStyle(fontSize: 16),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                              ),
                             ),
                             Text(
-                              '${entry.value} руб./час',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                              '${entry.value.toInt()} ₽/час',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -411,16 +454,14 @@ class TrainerDetailScreen extends StatelessWidget {
                 onPressed: () {
                   _showBookingDialog(context);
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                style: AppStyles.primaryButtonStyle.copyWith(
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.symmetric(vertical: 16),
                   ),
                 ),
-                child: const Text(
+                child: Text(
                   'Записаться на тренировку',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: AppTextStyles.buttonMedium,
                 ),
               ),
             ),
@@ -436,18 +477,40 @@ class TrainerDetailScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Запись к тренеру'),
+        title: Text(
+          'Запись к тренеру',
+          style: AppTextStyles.headline5,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Тренер: ${trainer.fullName}'),
+            Text(
+              'Тренер: ${trainer.fullName}',
+              style: AppTextStyles.bodyMedium,
+            ),
             const SizedBox(height: 16),
-            const Text('Выберите тип тренировки:'),
+            Text(
+              'Выберите тип тренировки:',
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 8),
             ...trainer.hourlyRates.entries.map((entry) => ListTile(
-                  title: Text(entry.key),
-                  trailing: Text('${entry.value} руб./час'),
+                  title: Text(
+                    entry.key,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  trailing: Text(
+                    '${entry.value.toInt()} ₽/час',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     _showTimeSelectionDialog(context, entry.key, entry.value);
@@ -458,7 +521,12 @@ class TrainerDetailScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
+            child: Text(
+              'Отмена',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
         ],
       ),
@@ -470,23 +538,44 @@ class TrainerDetailScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Выберите дату и время'),
-        content: const Text('Функционал выбора времени будет реализован позже'),
+        title: Text(
+          'Выберите дату и время',
+          style: AppTextStyles.headline5,
+        ),
+        content: Text(
+          'Функционал выбора времени будет реализован позже',
+          style: AppTextStyles.bodyMedium,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
+            child: Text(
+              'Отмена',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Запись к ${trainer.fullName} оформлена!'),
-                  backgroundColor: Colors.green,
+                  content: Text(
+                    'Запись к ${trainer.fullName} оформлена!',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppStyles.borderRadiusLg,
+                  ),
                 ),
               );
             },
+            style: AppStyles.primaryButtonStyle,
             child: const Text('Записаться'),
           ),
         ],

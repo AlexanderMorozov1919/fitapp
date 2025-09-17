@@ -74,6 +74,8 @@ class _MainNavigationState extends State<MainNavigation> {
     'membership': const MembershipScreen(),
     'payment': const PaymentScreen(),
     'locker': const LockerScreen(),
+    'bookings': const BookingsScreen(),
+    'schedule': const ScheduleScreen(),
   };
 
   String? _currentQuickAccessScreen;

@@ -4,6 +4,8 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
 import 'calendar_filter.dart';
+import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 
 class HomeClassesSection extends StatefulWidget {
   const HomeClassesSection({super.key});
@@ -28,7 +30,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Календарь фильтр (как в "Мои бронирования")
+        // Календарь фильтр
         CalendarFilter(
           selectedDate: _selectedDate,
           onDateSelected: (date) {
@@ -52,61 +54,15 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
         
         // Кнопка полного расписания
         Center(
-          child: ElevatedButton(
+          child: SecondaryButton(
+            text: 'Полное расписание →',
             onPressed: () {
               // Навигация к полному расписанию
             },
-            style: AppStyles.secondaryButtonStyle.copyWith(
-              backgroundColor: MaterialStateProperty.all(Colors.transparent),
-              foregroundColor: MaterialStateProperty.all(AppColors.primary),
-              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              )),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Полное расписания',
-                  style: AppTextStyles.buttonSmall.copyWith(
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-              ],
-            ),
           ),
         ),
       ],
     );
-  }
-
-  String _getSectionTitle(DateTime date) {
-    final today = DateTime.now();
-    final tomorrow = today.add(const Duration(days: 1));
-    final yesterday = today.subtract(const Duration(days: 1));
-
-    if (date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day) {
-      return 'Занятия сегодня';
-    } else if (date.year == tomorrow.year &&
-        date.month == tomorrow.month &&
-        date.day == tomorrow.day) {
-      return 'Занятия завтра';
-    } else if (date.year == yesterday.year &&
-        date.month == yesterday.month &&
-        date.day == yesterday.day) {
-      return 'Занятия вчера';
-    } else {
-      return 'Занятия ${date.day}.${date.month}';
-    }
   }
 
   Widget _buildClassItem(dynamic classItem) {
@@ -123,21 +79,8 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
       statusColor = AppColors.success;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[100]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return AppCard(
+      padding: AppStyles.paddingLg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -150,7 +93,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                 height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppStyles.borderRadiusLg,
                 ),
                 child: Icon(
                   Icons.fitness_center,
@@ -176,7 +119,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${_formatTime(classItem.startTime)} • ${classItem.trainerName}',
+                      '${DateFormatters.formatTime(classItem.startTime)} • ${classItem.trainerName}',
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -186,19 +129,9 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
               ),
               
               // Индикатор свободных мест
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  isFull ? 'Нет мест' : '$availableSpots мест',
-                  style: AppTextStyles.overline.copyWith(
-                    color: statusColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              StatusBadge(
+                text: isFull ? 'Нет мест' : '$availableSpots мест',
+                color: statusColor,
               ),
             ],
           ),
@@ -207,59 +140,11 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     );
   }
 
-  Widget _buildIconButton(IconData icon, Color color, VoidCallback onPressed, {String? tooltip}) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
-      ),
-      child: IconButton(
-        icon: Icon(icon, size: 18, color: color),
-        onPressed: onPressed,
-        padding: EdgeInsets.zero,
-        tooltip: tooltip,
-        style: IconButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmptyTodayClasses() {
-    return Container(
-      padding: AppStyles.paddingLg,
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: AppStyles.borderRadiusLg,
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.calendar_today,
-            size: 40,
-            color: AppColors.textTertiary,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Сегодня нет занятий',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Посмотрите расписание на другие дни',
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.textTertiary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: Icons.calendar_today,
+      title: 'Сегодня нет занятий',
+      subtitle: 'Посмотрите расписание на другие дни',
     );
   }
 
@@ -274,30 +159,5 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
       dates.add(date);
     }
     return dates.toList()..sort();
-  }
-
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  String _formatDay(DateTime date) {
-    final days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
-    return days[date.weekday % 7];
-  }
-
-  String _formatDateShort(DateTime date) {
-    final today = DateTime.now();
-    final tomorrow = today.add(const Duration(days: 1));
-    
-    if (_isSameDay(date, today)) return 'Сегодня';
-    if (_isSameDay(date, tomorrow)) return 'Завтра';
-    
-    return '${date.day}';
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }

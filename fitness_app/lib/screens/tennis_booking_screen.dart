@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/booking_model.dart';
 import '../main.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
+import 'calendar_filter.dart';
 
 class TennisBookingScreen extends StatefulWidget {
   const TennisBookingScreen({super.key});
@@ -54,29 +59,46 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Подтверждение бронирования'),
+        title: Text(
+          'Подтверждение бронирования',
+          style: AppTextStyles.headline5,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Корт: ${_selectedCourt!.number}'),
-            Text('Дата: ${_selectedDate.day}.${_selectedDate.month}.${_selectedDate.year}'),
-            Text('Время: ${_selectedStartTime!.format(context)} - ${_selectedEndTime!.format(context)}'),
-            Text('Стоимость: $_totalPrice руб.'),
+            Text('Корт: ${_selectedCourt!.number}', style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 8),
+            Text('Дата: ${_selectedDate.day}.${_selectedDate.month}.${_selectedDate.year}', style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 8),
+            Text('Время: ${_selectedStartTime!.format(context)} - ${_selectedEndTime!.format(context)}', style: AppTextStyles.bodyMedium),
+            const SizedBox(height: 8),
+            Text('Стоимость: ${_totalPrice.toStringAsFixed(0)} ₽', style: AppTextStyles.bodyMedium),
             const SizedBox(height: 16),
-            const Text('Подтвердить бронирование?'),
+            Text(
+              'Подтвердить бронирование?',
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Отмена'),
+            child: Text(
+              'Отмена',
+              style: AppTextStyles.buttonMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _showBookingSuccess();
             },
+            style: AppStyles.primaryButtonStyle,
             child: const Text('Подтвердить'),
           ),
         ],
@@ -87,8 +109,17 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
   void _showBookingSuccess() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Корт успешно забронирован!'),
-        backgroundColor: Colors.green,
+        content: Text(
+          'Корт успешно забронирован!',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppStyles.borderRadiusLg,
+        ),
       ),
     );
     
@@ -102,101 +133,102 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Бронирование теннисных кортов'),
+        title: Text(
+          'Бронирование теннисных кортов',
+          style: AppTextStyles.headline5,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
+        foregroundColor: AppColors.textPrimary,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             final navigationService = NavigationService.of(context);
             navigationService?.onBack();
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Выбор даты
-            _buildDateSelector(),
-            const SizedBox(height: 24),
-            
-            // Список кортов
-            const Text(
-              'Доступные корты:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            _buildCourtsList(),
-            
-            // Выбор времени
-            if (_selectedCourt != null) ...[
-              const SizedBox(height: 24),
-              const Text(
-                'Выберите время:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body: Column(
+        children: [
+          // Календарный фильтр как на главной странице и расписании
+          CalendarFilter(
+            selectedDate: _selectedDate,
+            onDateSelected: (date) {
+              setState(() {
+                _selectedDate = date;
+                _selectedCourt = null;
+                _selectedStartTime = null;
+                _selectedEndTime = null;
+              });
+            },
+            datesWithBookings: _getDatesWithAvailableCourts(),
+          ),
+          
+          Expanded(
+            child: Padding(
+              padding: AppStyles.paddingLg,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  
+                  // Список кортов
+                  Text(
+                    'Доступные корты:',
+                    style: AppTextStyles.headline6.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildCourtsList(),
+                  
+                  // Выбор времени
+                  if (_selectedCourt != null) ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Выберите время:',
+                      style: AppTextStyles.headline6.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildTimeSelector(),
+                  ],
+                  
+                  // Итоговая стоимость
+                  if (_canBook) ...[
+                    const SizedBox(height: 24),
+                    _buildTotalPrice(),
+                    const SizedBox(height: 16),
+                    _buildBookButton(),
+                  ],
+                ],
               ),
-              const SizedBox(height: 12),
-              _buildTimeSelector(),
-            ],
-            
-            // Итоговая стоимость
-            if (_canBook) ...[
-              const SizedBox(height: 24),
-              _buildTotalPrice(),
-              const SizedBox(height: 16),
-              _buildBookButton(),
-            ],
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDateSelector() {
-    return Row(
-      children: [
-        const Text(
-          'Дата:',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: InkWell(
-            onTap: () async {
-              final pickedDate = await showDatePicker(
-                context: context,
-                initialDate: _selectedDate,
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(const Duration(days: 30)),
-              );
-              
-              if (pickedDate != null) {
-                setState(() {
-                  _selectedDate = pickedDate;
-                  _selectedCourt = null;
-                  _selectedStartTime = null;
-                  _selectedEndTime = null;
-                });
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${_selectedDate.day}.${_selectedDate.month}.${_selectedDate.year}',
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+  List<DateTime> _getDatesWithAvailableCourts() {
+    final dates = <DateTime>{};
+    final today = DateTime.now();
+    
+    // Добавляем даты на 21 день вперед (как в CalendarFilter)
+    for (int i = 0; i <= 21; i++) {
+      final date = today.add(Duration(days: i));
+      
+      // Проверяем, есть ли доступные корты на эту дату
+      final hasAvailableCourts = MockDataService.tennisCourts.any((court) => court.isAvailable);
+      if (hasAvailableCourts) {
+        dates.add(date);
+      }
+    }
+    
+    return dates.toList()..sort();
   }
 
   Widget _buildCourtsList() {
@@ -205,30 +237,41 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
         final isSelected = court == _selectedCourt;
         final isAvailable = court.isAvailable;
         
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8),
-          color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.white,
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: AppStyles.elevatedCardDecoration.copyWith(
+            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+          ),
           child: ListTile(
             leading: Icon(
               Icons.sports_tennis,
-              color: isAvailable ? Colors.green : Colors.grey,
+              color: isAvailable ? AppColors.success : AppColors.textTertiary,
+              size: 24,
             ),
             title: Text(
               court.number,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isAvailable ? Colors.black : Colors.grey,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isAvailable ? AppColors.textPrimary : AppColors.textTertiary,
               ),
             ),
             subtitle: Text(
-              '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour} руб/час',
-              style: TextStyle(color: isAvailable ? Colors.grey : Colors.red),
+              '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
+              style: AppTextStyles.caption.copyWith(
+                color: isAvailable ? AppColors.textSecondary : AppColors.error,
+              ),
             ),
             trailing: isAvailable
-                ? const Icon(Icons.chevron_right)
-                : const Text(
+                ? Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textTertiary,
+                  )
+                : Text(
                     'Занят',
-                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
             onTap: isAvailable
                 ? () {
@@ -249,20 +292,26 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Начальное время:',
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _availableTimes.map((time) {
             final isSelected = time == _selectedStartTime;
-            final isAfterSelected = _selectedStartTime != null && 
-                                  time.hour > _selectedStartTime!.hour;
             
-            return FilterChip(
-              label: Text(time.format(context)),
-              selected: isSelected,
-              onSelected: (selected) {
+            return FilterChipWidget(
+              label: time.format(context),
+              isSelected: isSelected,
+              onTap: () {
                 setState(() {
-                  if (selected) {
+                  if (!isSelected) {
                     _selectedStartTime = time;
                     _selectedEndTime = null;
                   } else {
@@ -271,36 +320,36 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
                   }
                 });
               },
-              selectedColor: Colors.blue,
-              checkmarkColor: Colors.white,
             );
           }).toList(),
         ),
         
         if (_selectedStartTime != null) ...[
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Конечное время:',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _availableTimes.where((time) => 
+            children: _availableTimes.where((time) =>
                 time.hour > _selectedStartTime!.hour).map((time) {
               final isSelected = time == _selectedEndTime;
               
-              return FilterChip(
-                label: Text(time.format(context)),
-                selected: isSelected,
-                onSelected: (selected) {
+              return FilterChipWidget(
+                label: time.format(context),
+                isSelected: isSelected,
+                onTap: () {
                   setState(() {
-                    _selectedEndTime = selected ? time : null;
+                    _selectedEndTime = !isSelected ? time : null;
                   });
                 },
-                selectedColor: Colors.green,
-                checkmarkColor: Colors.white,
+                selectedColor: AppColors.success,
               );
             }).toList(),
           ),
@@ -311,24 +360,26 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
 
   Widget _buildTotalPrice() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: AppStyles.paddingLg,
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: AppStyles.borderRadiusLg,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             'Итоговая стоимость:',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
           ),
           Text(
-            '$_totalPrice руб.',
-            style: const TextStyle(
+            '${_totalPrice.toStringAsFixed(0)} ₽',
+            style: AppTextStyles.price.copyWith(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              color: AppColors.primary,
             ),
           ),
         ],
@@ -341,16 +392,20 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: _canBook ? _bookCourt : null,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+        style: AppStyles.primaryButtonStyle.copyWith(
+          backgroundColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.disabled)) {
+              return AppColors.textTertiary;
+            }
+            return AppColors.primary;
+          }),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(vertical: 16),
           ),
         ),
-        child: const Text(
+        child: Text(
           'Забронировать',
-          style: TextStyle(fontSize: 16, color: Colors.white),
+          style: AppTextStyles.buttonMedium,
         ),
       ),
     );

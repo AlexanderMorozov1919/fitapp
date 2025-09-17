@@ -3,6 +3,8 @@ import '../models/user_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 
 class HomeMembershipSection extends StatelessWidget {
   final User user;
@@ -26,13 +28,8 @@ class HomeMembershipSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Карточка абонемента
-        Container(
-          padding: AppStyles.paddingLg,
-          decoration: BoxDecoration(
-            gradient: AppColors.secondaryGradient,
-            borderRadius: AppStyles.borderRadiusLg,
-            boxShadow: AppColors.shadowLg,
-          ),
+        GradientCard(
+          gradient: AppColors.secondaryGradient,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -83,35 +80,12 @@ class HomeMembershipSection extends StatelessWidget {
         
         // Кнопка управления
         Center(
-          child: ElevatedButton(
+          child: SecondaryButton(
+            text: 'Управление абонементом →',
             onPressed: () {
               onQuickAccessNavigate('membership');
             },
-            style: AppStyles.secondaryButtonStyle.copyWith(
-              backgroundColor: MaterialStateProperty.all(Colors.transparent),
-              foregroundColor: MaterialStateProperty.all(AppColors.secondary),
-              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              )),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Управление абонементом',
-                  style: AppTextStyles.buttonSmall.copyWith(
-                    color: AppColors.secondary,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 16,
-                  color: AppColors.secondary,
-                ),
-              ],
-            ),
+            color: AppColors.secondary,
           ),
         ),
       ],
@@ -120,7 +94,7 @@ class HomeMembershipSection extends StatelessWidget {
 
   Widget _buildDaysProgress(Membership membership) {
     final progress = membership.daysRemaining / 30; // Пример: 30 дней в месяце
-    final daysText = membership.daysRemaining == 1 ? 'день' : 'дней';
+    final daysText = DateFormatters.formatDays(membership.daysRemaining);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +109,7 @@ class HomeMembershipSection extends StatelessWidget {
               ),
             ),
             Text(
-              '${membership.daysRemaining} $daysText',
+              daysText,
               style: AppTextStyles.bodySmall.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -167,7 +141,7 @@ class HomeMembershipSection extends StatelessWidget {
         _buildDetailRow(
           Icons.calendar_today,
           'Действует до',
-          _formatDateFull(membership.endDate),
+          DateFormatters.formatDateWithMonth(membership.endDate),
         ),
         const SizedBox(height: 8),
         if (membership.remainingVisits > 0)
@@ -268,6 +242,6 @@ class HomeMembershipSection extends StatelessWidget {
   }
 
   String _formatDateFull(DateTime date) {
-    return '${date.day}.${date.month}.${date.year}';
+    return DateFormatters.formatDateWithMonth(date);
   }
 }

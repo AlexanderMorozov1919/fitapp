@@ -10,6 +10,7 @@ import 'home_section_widget.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String) onQuickAccessNavigate;
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Быстрый доступ',
               isExpanded: _showQuickAccess,
               onToggle: () => setState(() => _showQuickAccess = !_showQuickAccess),
-              child: HomeQuickActions(onQuickAccessNavigate: onQuickAccessNavigate),
+              child: HomeQuickActions(onQuickAccessNavigate: widget.onQuickAccessNavigate),
             ),
 
             // Объединенная секция бронирований с фильтром
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Занятия сегодня',
               isExpanded: _showTodayClasses,
               onToggle: () => setState(() => _showTodayClasses = !_showTodayClasses),
-              child: HomeClassesSection(),
+              child: const HomeClassesSection(),
             ),
 
             // Информация о действующем абонементе
@@ -83,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onToggle: () => setState(() => _showMembershipInfo = !_showMembershipInfo),
                 child: HomeMembershipSection(
                   user: user,
-                  onQuickAccessNavigate: onQuickAccessNavigate,
+                  onQuickAccessNavigate: widget.onQuickAccessNavigate,
                 ),
               ),
             ],
@@ -94,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Статистика посещений',
               isExpanded: _showStatistics,
               onToggle: () => setState(() => _showStatistics = !_showStatistics),
-              child: HomeStatisticsSection(),
+              child: const HomeStatisticsSection(),
             ),
 
             const SizedBox(height: 20),
@@ -104,61 +105,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void onQuickAccessNavigate(String screenKey) {
-    widget.onQuickAccessNavigate(screenKey);
-  }
-
   void _showCancelDialog(dynamic booking) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Отменить бронирование',
-          style: AppTextStyles.headline5,
-        ),
-        content: Text(
-          'Вы уверены, что хотите отменить это бронирование?',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Нет',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Бронирование отменено',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: AppColors.success,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppStyles.borderRadiusLg,
-                  ),
-                ),
-              );
-            },
-            child: Text(
-              'Да, отменить',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.error,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+      title: 'Отменить бронирование',
+      content: 'Вы уверены, что хотите отменить это бронирование?',
+      confirmText: 'Да, отменить',
+      cancelText: 'Нет',
+      confirmColor: AppColors.error,
+    ).then((confirmed) {
+      if (confirmed == true) {
+        showSuccessSnackBar(context, 'Бронирование отменено');
+      }
+    });
   }
 
   void _showRescheduleDialog(dynamic booking) {

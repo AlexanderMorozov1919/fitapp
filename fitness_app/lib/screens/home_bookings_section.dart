@@ -1,8 +1,12 @@
+
 import 'package:flutter/material.dart';
 import '../models/booking_model.dart';
 import 'calendar_filter.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 
 class HomeBookingsSection extends StatefulWidget {
   final List<Booking> allBookings;
@@ -78,20 +82,14 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
         
         // Список бронирований
         if (_filteredBookings.isNotEmpty) ...[
-          ..._filteredBookings.map((booking) => _buildBookingItemWithActions(booking, context)).toList(),
+          ..._filteredBookings.map((booking) => _buildBookingItem(booking)).toList(),
           const SizedBox(height: 8),
           Center(
-            child: TextButton(
+            child: SecondaryButton(
+              text: 'Все записи →',
               onPressed: () {
                 // Навигация к экрану всех записей
               },
-              child: const Text(
-                'Все записи →',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
           ),
         ] else ...[
@@ -101,83 +99,9 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
     );
   }
 
-  String _getSectionTitle(DateTime date) {
-    final today = DateTime.now();
-    final tomorrow = today.add(const Duration(days: 1));
-    final yesterday = today.subtract(const Duration(days: 1));
-
-    if (date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day) {
-      return 'Мои бронирования сегодня';
-    } else if (date.year == tomorrow.year &&
-        date.month == tomorrow.month &&
-        date.day == tomorrow.day) {
-      return 'Мои бронирования завтра';
-    } else if (date.year == yesterday.year &&
-        date.month == yesterday.month &&
-        date.day == yesterday.day) {
-      return 'Мои бронирования вчера';
-    } else {
-      return 'Мои бронирования ${date.day}.${date.month}';
-    }
-  }
-
-  Widget _buildEmptyState(DateTime date) {
-    final today = DateTime.now();
-    
-    String message;
-    if (date.isBefore(DateTime(today.year, today.month, today.day))) {
-      message = 'На выбранную дату нет бронирований';
-    } else {
-      message = 'На выбранную дату нет запланированных бронирований';
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(24),
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.calendar_today,
-            size: 48,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            message,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookingItemWithActions(Booking booking, BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[100]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+  Widget _buildBookingItem(Booking booking) {
+    return AppCard(
+      padding: AppStyles.paddingLg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -190,7 +114,7 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
                 height: 40,
                 decoration: BoxDecoration(
                   color: _getStatusColor(booking.status).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppStyles.borderRadiusLg,
                 ),
                 child: Icon(
                   _getBookingIcon(booking),
@@ -216,7 +140,7 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${_formatDate(booking.startTime)} • ${_formatTime(booking.startTime)}',
+                      '${DateFormatters.formatDate(booking.startTime)} • ${DateFormatters.formatTime(booking.startTime)}',
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -237,46 +161,57 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
               ),
               
               // Статус
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(booking.status).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  _getStatusText(booking.status),
-                  style: AppTextStyles.overline.copyWith(
-                    color: _getStatusColor(booking.status),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              StatusBadge(
+                text: _getStatusText(booking.status),
+                color: _getStatusColor(booking.status),
               ),
             ],
           ),
 
+          const SizedBox(height: 12),
+
+          // Действия
+          if (booking.status == BookingStatus.confirmed && booking.canCancel)
+            Row(
+              children: [
+                Expanded(
+                  child: SecondaryButton(
+                    text: 'Отменить',
+                    onPressed: () => widget.onCancelBooking(booking),
+                    color: AppColors.error,
+                  ),
+                ),
+                if (booking.type == BookingType.tennisCourt ||
+                    booking.type == BookingType.personalTraining) ...[
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: PrimaryButton(
+                      text: 'Изменить',
+                      onPressed: () => widget.onRescheduleBooking(booking),
+                    ),
+                  ),
+                ],
+              ],
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildIconButton(IconData icon, Color color, VoidCallback onPressed, {String? tooltip}) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
-      ),
-      child: IconButton(
-        icon: Icon(icon, size: 18, color: color),
-        onPressed: onPressed,
-        padding: EdgeInsets.zero,
-        tooltip: tooltip,
-        style: IconButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      ),
+  Widget _buildEmptyState(DateTime date) {
+    final today = DateTime.now();
+    
+    String message;
+    if (date.isBefore(DateTime(today.year, today.month, today.day))) {
+      message = 'На выбранную дату нет бронирований';
+    } else {
+      message = 'На выбранную дату нет запланированных бронирований';
+    }
+
+    return EmptyState(
+      icon: Icons.calendar_today,
+      title: message,
+      subtitle: 'Попробуйте выбрать другую дату',
     );
   }
 
@@ -296,15 +231,15 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
   Color _getStatusColor(BookingStatus status) {
     switch (status) {
       case BookingStatus.confirmed:
-        return Colors.green;
+        return AppColors.success;
       case BookingStatus.pending:
-        return Colors.orange;
+        return AppColors.warning;
       case BookingStatus.cancelled:
-        return Colors.red;
+        return AppColors.error;
       case BookingStatus.completed:
-        return Colors.blue;
+        return AppColors.info;
     }
-    return Colors.grey;
+    return AppColors.textTertiary;
   }
 
   String _getStatusText(BookingStatus status) {
@@ -319,13 +254,5 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
         return 'Завершено';
     }
     return 'Неизвестно';
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}.${date.month}';
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
+import '../utils/formatters.dart';
 
 class CalendarFilter extends StatefulWidget {
   final DateTime selectedDate;
@@ -88,41 +89,6 @@ class _CalendarFilterState extends State<CalendarFilter> {
         bookingDate.day == date.day);
   }
 
-  String _getDayName(DateTime date) {
-    final today = DateTime.now();
-    final tomorrow = today.add(const Duration(days: 1));
-
-    if (date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day) {
-      return 'Сегодня';
-    } else if (date.year == tomorrow.year &&
-        date.month == tomorrow.month &&
-        date.day == tomorrow.day) {
-      return 'Завтра';
-    } else {
-      final weekday = date.weekday;
-      switch (weekday) {
-        case 1:
-          return 'Пн';
-        case 2:
-          return 'Вт';
-        case 3:
-          return 'Ср';
-        case 4:
-          return 'Чт';
-        case 5:
-          return 'Пт';
-        case 6:
-          return 'Сб';
-        case 7:
-          return 'Вс';
-        default:
-          return '';
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final dates = _generateDateRange();
@@ -132,7 +98,7 @@ class _CalendarFilterState extends State<CalendarFilter> {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          bottom: BorderSide(color: Colors.grey[200]!, width: 1),
+          bottom: BorderSide(color: AppColors.border, width: 1),
         ),
       ),
       child: ListView.builder(
@@ -166,7 +132,7 @@ class _CalendarFilterState extends State<CalendarFilter> {
                       ? AppColors.primary
                       : hasBookings
                           ? AppColors.primary.withOpacity(0.3)
-                          : Colors.grey[300]!,
+                          : AppColors.border,
                   width: isSelected ? 2 : 1,
                 ),
               ),
@@ -207,5 +173,28 @@ class _CalendarFilterState extends State<CalendarFilter> {
         },
       ),
     );
+  }
+
+  String _getDayName(DateTime date) {
+    final today = DateTime.now();
+    final tomorrow = today.add(const Duration(days: 1));
+
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
+      return 'Сегодня';
+    } else if (date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day) {
+      return 'Завтра';
+    } else {
+      return DateFormatters.getWeekdayName(date);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

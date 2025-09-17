@@ -4,6 +4,8 @@ import '../models/booking_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
+import '../utils/formatters.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -34,7 +36,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       ),
       body: Column(
         children: [
-          // Фильтры - горизонтальный скролл как в расписании
+          // Фильтры - горизонтальный скролл
           Container(
             padding: AppStyles.paddingLg,
             decoration: BoxDecoration(
@@ -48,30 +50,14 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   final isSelected = filter == _selectedFilter;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
+                    child: FilterChipWidget(
+                      label: filter,
+                      isSelected: isSelected,
                       onTap: () {
                         setState(() {
                           _selectedFilter = filter;
                         });
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: isSelected ? AppColors.primary : AppColors.background,
-                          borderRadius: AppStyles.borderRadiusFull,
-                          border: Border.all(
-                            color: isSelected ? AppColors.primary : AppColors.border,
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          filter,
-                          style: AppTextStyles.caption.copyWith(
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
                     ),
                   );
                 }).toList(),
@@ -79,7 +65,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
             ),
           ),
 
-          // Список бронирований
           // Список бронирований
           Expanded(
             child: filteredBookings.isEmpty
@@ -113,10 +98,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   Widget _buildBookingCard(Booking booking) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+    return AppCard(
       padding: AppStyles.paddingLg,
-      decoration: AppStyles.elevatedCardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -135,19 +118,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: booking.statusColor.withOpacity(0.1),
-                  borderRadius: AppStyles.borderRadiusSm,
-                ),
-                child: Text(
-                  booking.statusText,
-                  style: AppTextStyles.overline.copyWith(
-                    color: booking.statusColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              StatusBadge(
+                text: booking.statusText,
+                color: booking.statusColor,
               ),
             ],
           ),
@@ -177,7 +150,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
               ),
               const SizedBox(width: 4),
               Text(
-                _formatDate(booking.startTime),
+                DateFormatters.formatDateDisplay(booking.startTime),
                 style: AppTextStyles.caption.copyWith(
                   color: AppColors.textTertiary,
                 ),
@@ -190,7 +163,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
               ),
               const SizedBox(width: 4),
               Text(
-                '${_formatTime(booking.startTime)}-${_formatTime(booking.endTime)}',
+                '${DateFormatters.formatTime(booking.startTime)}-${DateFormatters.formatTime(booking.endTime)}',
                 style: AppTextStyles.caption.copyWith(
                   color: AppColors.textTertiary,
                 ),
@@ -212,7 +185,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           
           if (booking.price > 0) ...[
             const SizedBox(height: 12),
-            _buildDetailItem('Стоимость:', '${booking.price} ₽'),
+            _buildDetailItem('Стоимость:', DateFormatters.formatPrice(booking.price)),
           ],
           
           const SizedBox(height: 16),
@@ -222,23 +195,19 @@ class _BookingsScreenState extends State<BookingsScreen> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: SecondaryButton(
+                    text: 'Отменить',
                     onPressed: () => _cancelBooking(booking),
-                    style: AppStyles.secondaryButtonStyle.copyWith(
-                      foregroundColor: MaterialStateProperty.all(AppColors.error),
-                      side: MaterialStateProperty.all(BorderSide(color: AppColors.error)),
-                    ),
-                    child: const Text('Отменить'),
+                    color: AppColors.error,
                   ),
                 ),
                 if (booking.type == BookingType.tennisCourt ||
                     booking.type == BookingType.personalTraining) ...[
                   const SizedBox(width: 8),
                   Expanded(
-                    child: ElevatedButton(
+                    child: PrimaryButton(
+                      text: 'Изменить',
                       onPressed: () => _modifyBooking(booking),
-                      style: AppStyles.primaryButtonStyle,
-                      child: const Text('Изменить'),
                     ),
                   ),
                 ],
@@ -274,36 +243,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: AppStyles.paddingLg,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.calendar_today,
-              size: 64,
-              color: AppColors.textTertiary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _getEmptyStateMessage(),
-              style: AppTextStyles.headline5.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _getEmptyStateSubtitle(),
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textTertiary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+    return EmptyState(
+      icon: Icons.calendar_today,
+      title: _getEmptyStateMessage(),
+      subtitle: _getEmptyStateSubtitle(),
     );
   }
 
@@ -334,92 +277,30 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   void _cancelBooking(Booking booking) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Отмена бронирования',
-          style: AppTextStyles.headline5,
-        ),
-        content: Text(
-          'Вы уверены, что хотите отменить бронирование?',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Нет',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showCancellationSuccess();
-            },
-            child: Text(
-              'Да, отменить',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.error,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+      title: 'Отмена бронирования',
+      content: 'Вы уверены, что хотите отменить это бронирование?',
+      confirmText: 'Да, отменить',
+      confirmColor: AppColors.error,
+    ).then((confirmed) {
+      if (confirmed == true) {
+        _showCancellationSuccess();
+      }
+    });
   }
 
   void _modifyBooking(Booking booking) {
-    // TODO: Реализовать изменение бронирования
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Функционал изменения бронирования в разработке',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: AppColors.info,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: AppStyles.borderRadiusLg,
-        ),
-      ),
-    );
+    showSuccessSnackBar(context, 'Функционал изменения бронирования в разработке');
   }
 
   void _showCancellationSuccess() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Бронирование успешно отменено',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: AppStyles.borderRadiusLg,
-        ),
-      ),
-    );
+    showSuccessSnackBar(context, 'Бронирование успешно отменено');
   }
 
   String _getTrainerName(String trainerId) {
     final trainer = MockDataService.trainers
         .firstWhere((t) => t.id == trainerId, orElse: () => MockDataService.trainers.first);
     return trainer.fullName;
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}.${date.month}.${date.year}';
-  }
-
-  String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }

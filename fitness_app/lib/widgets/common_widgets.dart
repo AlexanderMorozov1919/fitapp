@@ -1,0 +1,437 @@
+import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_styles.dart';
+
+/// Общие виджеты для единого дизайна приложения
+
+/// Карточка с тенью и скруглением (стандартный стиль)
+class AppCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+  final Color? backgroundColor;
+  final BorderRadius? borderRadius;
+
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding,
+    this.backgroundColor,
+    this.borderRadius,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding ?? AppStyles.paddingLg,
+      decoration: BoxDecoration(
+        color: backgroundColor ?? AppColors.card,
+        borderRadius: borderRadius ?? AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowMd,
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Карточка с градиентным фоном
+class GradientCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+  final Gradient? gradient;
+
+  const GradientCard({
+    super.key,
+    required this.child,
+    this.padding,
+    this.gradient,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding ?? AppStyles.paddingLg,
+      decoration: BoxDecoration(
+        gradient: gradient ?? AppColors.primaryGradient,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowLg,
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Заголовок секции с единым стилем
+class SectionHeader extends StatelessWidget {
+  final String title;
+  final Widget? trailing;
+  final VoidCallback? onTrailingTap;
+
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.trailing,
+    this.onTrailingTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: AppStyles.paddingLg,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.headline5.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          if (trailing != null)
+            GestureDetector(
+              onTap: onTrailingTap,
+              child: trailing!,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Кнопка с единым стилем
+class PrimaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final bool isEnabled;
+  final double? width;
+
+  const PrimaryButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.isEnabled = true,
+    this.width,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: ElevatedButton(
+        onPressed: isEnabled ? onPressed : null,
+        style: AppStyles.primaryButtonStyle.copyWith(
+          backgroundColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.disabled)) {
+              return AppColors.textTertiary;
+            }
+            return AppColors.primary;
+          }),
+        ),
+        child: Text(
+          text,
+          style: AppTextStyles.buttonMedium,
+        ),
+      ),
+    );
+  }
+}
+
+/// Вторичная кнопка с обводкой
+class SecondaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final bool isEnabled;
+  final Color? color;
+
+  const SecondaryButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.isEnabled = true,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: isEnabled ? onPressed : null,
+      style: AppStyles.secondaryButtonStyle.copyWith(
+        side: MaterialStateProperty.all(
+          BorderSide(
+            color: isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+          ),
+        ),
+        foregroundColor: MaterialStateProperty.all(
+          isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+        ),
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.buttonMedium.copyWith(
+          color: isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+        ),
+      ),
+    );
+  }
+}
+
+/// Чип для фильтров с единым стилем
+class FilterChipWidget extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final Color? selectedColor;
+
+  const FilterChipWidget({
+    super.key,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    this.selectedColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? (selectedColor ?? AppColors.primary) : AppColors.background,
+          borderRadius: AppStyles.borderRadiusFull,
+          border: Border.all(
+            color: isSelected ? (selectedColor ?? AppColors.primary) : AppColors.border,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppTextStyles.caption.copyWith(
+            color: isSelected ? Colors.white : AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Элемент списка с иконкой и текстом
+class ListItemWithIcon extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onTap;
+  final Color? iconColor;
+
+  const ListItemWithIcon({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.onTap,
+    this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
+      ),
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: iconColor ?? AppColors.primary,
+        ),
+        title: Text(
+          title,
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle!,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              )
+            : null,
+        trailing: onTap != null
+            ? const Icon(
+                Icons.chevron_right,
+                color: AppColors.textTertiary,
+              )
+            : null,
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+/// Статусный бейдж
+class StatusBadge extends StatelessWidget {
+  final String text;
+  final Color color;
+
+  const StatusBadge({
+    super.key,
+    required this.text,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: AppStyles.borderRadiusSm,
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.overline.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+/// Пустое состояние с иконкой и текстом
+class EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color? iconColor;
+
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: AppStyles.paddingLg,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 64,
+              color: iconColor ?? AppColors.textTertiary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: AppTextStyles.headline5.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textTertiary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Диалог подтверждения с единым стилем
+Future<bool?> showConfirmDialog({
+  required BuildContext context,
+  required String title,
+  required String content,
+  String confirmText = 'Подтвердить',
+  String cancelText = 'Отмена',
+  Color confirmColor = AppColors.primary,
+}) async {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        title,
+        style: AppTextStyles.headline5,
+      ),
+      content: Text(
+        content,
+        style: AppTextStyles.bodyMedium,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(
+            cancelText,
+            style: AppTextStyles.buttonMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, true),
+          style: AppStyles.primaryButtonStyle.copyWith(
+            backgroundColor: MaterialStateProperty.all(confirmColor),
+          ),
+          child: Text(confirmText),
+        ),
+      ],
+    ),
+  );
+}
+
+/// Успешное уведомление
+void showSuccessSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: AppColors.success,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppStyles.borderRadiusLg,
+      ),
+    ),
+  );
+}
+
+/// Ошибка уведомления
+void showErrorSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: AppColors.error,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppStyles.borderRadiusLg,
+      ),
+    ),
+  );
+}

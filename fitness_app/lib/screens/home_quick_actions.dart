@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
 
 class HomeQuickActions extends StatefulWidget {
   final Function(String) onQuickAccessNavigate;
@@ -48,7 +49,6 @@ class _HomeQuickActionsState extends State<HomeQuickActions>
       _buildActionData(Icons.account_balance_wallet, 'Пополнить', AppColors.success, 'payment'),
       _buildActionData(Icons.lock, 'Шкафчик', AppColors.warning, 'locker'),
       _buildActionData(Icons.book_online, 'Мои записи', AppColors.primaryLight, 'bookings'),
-      _buildActionData(Icons.star, 'Рейтинги', AppColors.error, 'ratings'),
     ];
 
     return SizedBox(
