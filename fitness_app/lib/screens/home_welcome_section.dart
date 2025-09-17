@@ -25,12 +25,6 @@ class HomeWelcomeSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Добро пожаловать!',
-                  style: AppTextStyles.caption.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                  ),
-                ),
                 const SizedBox(height: 2),
                 Text(
                   user.firstName,

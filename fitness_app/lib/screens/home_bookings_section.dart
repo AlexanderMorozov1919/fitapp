@@ -253,30 +253,7 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          
-          // Кнопки действий (только иконки)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Кнопка отмены
-              _buildIconButton(
-                Icons.close,
-                Colors.red,
-                () => widget.onCancelBooking(booking),
-                tooltip: 'Отменить',
-              ),
-              const SizedBox(width: 8),
-              
-              // Кнопка переноса
-              _buildIconButton(
-                Icons.calendar_today,
-                Colors.blue,
-                () => widget.onRescheduleBooking(booking),
-                tooltip: 'Перенести',
-              ),
-            ],
-          ),
+
         ],
       ),
     );

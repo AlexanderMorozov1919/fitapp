@@ -202,34 +202,6 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          
-          // Кнопки действий (только иконки)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Кнопка записи
-              _buildIconButton(
-                Icons.add,
-                AppColors.primary,
-                () {
-                  // Заглушка для записи на занятие
-                },
-                tooltip: 'Записаться',
-              ),
-              const SizedBox(width: 8),
-              
-              // Кнопка информации
-              _buildIconButton(
-                Icons.info_outline,
-                AppColors.textSecondary,
-                () {
-                  // Заглушка для информации о занятии
-                },
-                tooltip: 'Информация',
-              ),
-            ],
-          ),
         ],
       ),
     );
