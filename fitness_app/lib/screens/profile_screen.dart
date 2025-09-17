@@ -154,8 +154,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+              ),
               borderRadius: BorderRadius.circular(50),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: _user.photoUrl != null
                 ? ClipRRect(
@@ -165,10 +176,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fit: BoxFit.cover,
                     ),
                   )
-                : Icon(
+                : const Icon(
                     Icons.person,
-                    size: 60,
-                    color: Colors.grey[600],
+                    size: 50,
+                    color: Colors.white,
                   ),
           ),
           const SizedBox(height: 16),

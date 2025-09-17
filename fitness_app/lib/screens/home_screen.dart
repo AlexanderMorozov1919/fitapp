@@ -171,13 +171,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildWelcomeSection(User user) {
     return Row(
       children: [
-        // Аватар
+        // Аватар - красивый цветной человечек
         Container(
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+            ),
             borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: user.photoUrl != null
               ? ClipRRect(
@@ -189,8 +200,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : const Icon(
                   Icons.person,
-                  size: 40,
-                  color: Colors.blue,
+                  size: 32,
+                  color: Colors.white,
                 ),
         ),
         const SizedBox(width: 16),
