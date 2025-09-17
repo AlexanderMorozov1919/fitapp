@@ -109,45 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showCancelDialog(dynamic booking) {
-    showConfirmDialog(
-      context: context,
-      title: 'Отменить бронирование',
-      content: 'Вы уверены, что хотите отменить это бронирование?',
-      confirmText: 'Да, отменить',
-      cancelText: 'Нет',
-      confirmColor: AppColors.error,
-    ).then((confirmed) {
-      if (confirmed == true) {
-        showSuccessSnackBar(context, 'Бронирование отменено');
-      }
-    });
+    widget.onQuickAccessNavigate('cancel_booking', booking);
   }
 
   void _showRescheduleDialog(dynamic booking) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Перенести бронирование',
-          style: AppTextStyles.headline5,
-        ),
-        content: Text(
-          'Функция переноса бронирования будет доступна в ближайшее время.',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    widget.onQuickAccessNavigate('reschedule_booking', booking);
   }
 
   void _navigateToBookingDetail(Booking booking) {

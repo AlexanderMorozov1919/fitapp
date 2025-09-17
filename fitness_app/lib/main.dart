@@ -9,6 +9,8 @@ import 'package:fitness_app/screens/bookings_screen.dart';
 import 'package:fitness_app/screens/payment_screen.dart';
 import 'package:fitness_app/screens/locker_screen.dart';
 import 'package:fitness_app/screens/booking_detail_screen.dart';
+import 'package:fitness_app/screens/cancel_booking_screen.dart';
+import 'package:fitness_app/screens/reschedule_booking_screen.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
@@ -16,13 +18,15 @@ void main() {
   runApp(const FitnessApp());
 }
 
-// Простой InheritedWidget для передачи функции навигации назад
+// Расширенный InheritedWidget для передачи функций навигации
 class NavigationService extends InheritedWidget {
   final VoidCallback onBack;
+  final Function(String, [dynamic]) navigateTo;
 
   const NavigationService({
     super.key,
     required this.onBack,
+    required this.navigateTo,
     required super.child,
   });
 
@@ -32,7 +36,7 @@ class NavigationService extends InheritedWidget {
 
   @override
   bool updateShouldNotify(NavigationService oldWidget) {
-    return oldWidget.onBack != onBack;
+    return oldWidget.onBack != onBack || oldWidget.navigateTo != navigateTo;
   }
 }
 
@@ -78,6 +82,8 @@ class _MainNavigationState extends State<MainNavigation> {
     'bookings': (_) => const BookingsScreen(),
     'schedule': (_) => const ScheduleScreen(),
     'booking_detail': (data) => BookingDetailScreen(booking: data),
+    'cancel_booking': (data) => CancelBookingScreen(booking: data),
+    'reschedule_booking': (data) => RescheduleBookingScreen(booking: data),
   };
 
   String? _currentQuickAccessScreen;
@@ -137,6 +143,7 @@ class _MainNavigationState extends State<MainNavigation> {
       // Показываем экран быстрого доступа с оберткой для навигации назад
       currentBody = NavigationService(
         onBack: _navigateBack,
+        navigateTo: _navigateToQuickAccess,
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {

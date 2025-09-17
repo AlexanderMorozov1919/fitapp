@@ -6,6 +6,8 @@ import '../theme/app_styles.dart';
 import '../widgets/common_widgets.dart';
 import '../utils/formatters.dart';
 import '../main.dart';
+import 'cancel_booking_modal.dart';
+import 'reschedule_booking_modal.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final Booking booking;
@@ -295,46 +297,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   }
 
   void _showCancelDialog() {
-    showConfirmDialog(
-      context: context,
-      title: 'Отменить бронирование',
-      content: 'Вы уверены, что хотите отменить это бронирование?',
-      confirmText: 'Да, отменить',
-      cancelText: 'Нет',
-      confirmColor: AppColors.error,
-    ).then((confirmed) {
-      if (confirmed == true) {
-        showSuccessSnackBar(context, 'Бронирование отменено');
-        final navigationService = NavigationService.of(context);
-        navigationService?.onBack();
-      }
-    });
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('cancel_booking', widget.booking);
   }
 
   void _showRescheduleDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Перенести бронирование',
-          style: AppTextStyles.headline5,
-        ),
-        content: Text(
-          'Функция переноса бронирования будет доступна в ближайшее время.',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('reschedule_booking', widget.booking);
   }
 }
