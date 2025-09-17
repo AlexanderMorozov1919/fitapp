@@ -22,7 +22,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _showQuickAccess = true;
-  bool _showTodayBookings = true;
   bool _showUpcomingBookings = true;
   bool _showTodayClasses = true;
   bool _showMembershipInfo = true;
@@ -31,18 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = MockDataService.currentUser;
-    final upcomingBookings = MockDataService.userBookings
-        .where((booking) => booking.startTime.isAfter(DateTime.now()))
-        .toList();
-    
-    final todayBookings = MockDataService.userBookings
-        .where((booking) {
-          final today = DateTime.now();
-          return booking.startTime.year == today.year &&
-                 booking.startTime.month == today.month &&
-                 booking.startTime.day == today.day;
-        })
-        .toList();
+    final allBookings = MockDataService.userBookings;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -80,30 +68,15 @@ class _HomeScreenState extends State<HomeScreen> {
               child: HomeQuickActions(onQuickAccessNavigate: onQuickAccessNavigate),
             ),
 
-            // Мои бронирования сегодня
-            if (todayBookings.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              HomeSectionWidget(
-                title: 'Мои бронирования сегодня',
-                isExpanded: _showTodayBookings,
-                onToggle: () => setState(() => _showTodayBookings = !_showTodayBookings),
-                child: HomeBookingsSection(
-                  bookings: todayBookings,
-                  onCancelBooking: _showCancelDialog,
-                  onRescheduleBooking: _showRescheduleDialog,
-                ),
-              ),
-            ],
-
-            // Мои бронирования
-            if (upcomingBookings.isNotEmpty) ...[
+            // Объединенная секция бронирований с фильтром
+            if (allBookings.isNotEmpty) ...[
               const SizedBox(height: 12),
               HomeSectionWidget(
                 title: 'Мои бронирования',
                 isExpanded: _showUpcomingBookings,
                 onToggle: () => setState(() => _showUpcomingBookings = !_showUpcomingBookings),
                 child: HomeBookingsSection(
-                  bookings: upcomingBookings,
+                  allBookings: allBookings,
                   onCancelBooking: _showCancelDialog,
                   onRescheduleBooking: _showRescheduleDialog,
                 ),

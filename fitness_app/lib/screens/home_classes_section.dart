@@ -3,6 +3,7 @@ import '../services/mock_data_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import 'calendar_filter.dart';
 
 class HomeClassesSection extends StatefulWidget {
   const HomeClassesSection({super.key});
@@ -27,9 +28,29 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Селектор дат с улучшенным дизайном
-        _buildDateSelector(availableDates),
+        // Календарь фильтр (как в "Мои бронирования")
+        CalendarFilter(
+          selectedDate: _selectedDate,
+          onDateSelected: (date) {
+            setState(() {
+              _selectedDate = date;
+            });
+          },
+          datesWithBookings: availableDates,
+        ),
         const SizedBox(height: 16),
+        
+        // Заголовок с выбранной датой
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text(
+            _getSectionTitle(_selectedDate),
+            style: AppTextStyles.headline5.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
         
         // Список занятий
         selectedDateClasses.isEmpty
@@ -59,7 +80,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Полное расписание',
+                  'Полное расписания',
                   style: AppTextStyles.buttonSmall.copyWith(
                     color: AppColors.primary,
                   ),
@@ -78,59 +99,26 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     );
   }
 
-  Widget _buildDateSelector(List<DateTime> dates) {
-    return SizedBox(
-      height: 48,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        children: dates.map((date) {
-          final isSelected = _isSameDay(date, _selectedDate);
-          final isToday = _isSameDay(date, DateTime.now());
-          
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedDate = date;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: AppStyles.borderRadiusFull,
-                  border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.border,
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _formatDay(date),
-                      style: AppTextStyles.caption.copyWith(
-                        color: isSelected ? Colors.white : AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      _formatDateShort(date),
-                      style: AppTextStyles.overline.copyWith(
-                        color: isSelected ? Colors.white : AppColors.textTertiary,
-                        fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
+  String _getSectionTitle(DateTime date) {
+    final today = DateTime.now();
+    final tomorrow = today.add(const Duration(days: 1));
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
+      return 'Занятия сегодня';
+    } else if (date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day) {
+      return 'Занятия завтра';
+    } else if (date.year == yesterday.year &&
+        date.month == yesterday.month &&
+        date.day == yesterday.day) {
+      return 'Занятия вчера';
+    } else {
+      return 'Занятия ${date.day}.${date.month}';
+    }
   }
 
   Widget _buildClassItem(dynamic classItem) {
