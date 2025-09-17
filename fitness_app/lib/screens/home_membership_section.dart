@@ -76,19 +76,8 @@ class HomeMembershipSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
         
-        // Кнопка управления
-        Center(
-          child: SecondaryButton(
-            text: 'Управление абонементом →',
-            onPressed: () {
-              onQuickAccessNavigate('membership');
-            },
-            color: AppColors.secondary,
-          ),
-        ),
-      ],
+   ],
     );
   }
 

@@ -8,7 +8,9 @@ import '../widgets/common_widgets.dart';
 import '../utils/formatters.dart';
 
 class HomeClassesSection extends StatefulWidget {
-  const HomeClassesSection({super.key});
+  final Function(dynamic) onClassTap;
+
+  const HomeClassesSection({super.key, required this.onClassTap});
 
   @override
   State<HomeClassesSection> createState() => _HomeClassesSectionState();
@@ -47,20 +49,13 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
             ? _buildEmptyTodayClasses()
             : Column(
                 children: selectedDateClasses
-                    .map((classItem) => _buildClassItem(classItem))
+                    .map((classItem) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildClassItem(classItem),
+                        ))
                     .toList(),
               ),
-        const SizedBox(height: 12),
         
-        // Кнопка полного расписания
-        Center(
-          child: SecondaryButton(
-            text: 'Полное расписание →',
-            onPressed: () {
-              // Навигация к полному расписанию
-            },
-          ),
-        ),
       ],
     );
   }
@@ -79,64 +74,104 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
       statusColor = AppColors.success;
     }
 
-    return AppCard(
-      padding: AppStyles.paddingLg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Основная информация
-          Row(
-            children: [
-              // Иконка занятия
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: AppStyles.borderRadiusLg,
-                ),
-                child: Icon(
-                  Icons.fitness_center,
-                  size: 20,
-                  color: AppColors.primary,
-                ),
+    return StatefulBuilder(
+      builder: (context, setState) {
+        var isHovered = false;
+        var isPressed = false;
+        
+        return GestureDetector(
+          onTap: () => widget.onClassTap(classItem),
+          onTapDown: (_) => setState(() => isPressed = true),
+          onTapUp: (_) => setState(() => isPressed = false),
+          onTapCancel: () => setState(() => isPressed = false),
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() {
+              isHovered = false;
+              isPressed = false;
+            }),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              transform: Matrix4.identity()
+                ..scale(isHovered ? 1.02 : 1.0)
+                ..translate(0.0, isPressed ? 1.0 : 0.0),
+              decoration: BoxDecoration(
+                borderRadius: AppStyles.borderRadiusLg,
+                boxShadow: isHovered
+                  ? AppColors.shadowLg
+                  : isPressed
+                    ? AppColors.shadowSm
+                    : AppColors.shadowMd,
               ),
-              const SizedBox(width: 12),
-              
-              // Детали занятия
-              Expanded(
+              child: AppCard(
+                padding: AppStyles.paddingLg,
+                backgroundColor: isHovered
+                  ? AppColors.primary.withOpacity(0.05)
+                  : isPressed
+                    ? AppColors.primary.withOpacity(0.1)
+                    : Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      classItem.name,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${DateFormatters.formatTime(classItem.startTime)} • ${classItem.trainerName}',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    // Основная информация
+                    Row(
+                      children: [
+                        // Иконка занятия
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.1),
+                            borderRadius: AppStyles.borderRadiusLg,
+                          ),
+                          child: Icon(
+                            Icons.fitness_center,
+                            size: 20,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        
+                        // Детали занятия
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                classItem.name,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${DateFormatters.formatTime(classItem.startTime)} • ${classItem.trainerName}',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Индикатор свободных мест
+                        StatusBadge(
+                          text: isFull ? 'Нет мест' : '$availableSpots мест',
+                          color: statusColor,
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              
-              // Индикатор свободных мест
-              StatusBadge(
-                text: isFull ? 'Нет мест' : '$availableSpots мест',
-                color: statusColor,
-              ),
-            ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

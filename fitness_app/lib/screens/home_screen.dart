@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Занятия сегодня',
               isExpanded: _showTodayClasses,
               onToggle: () => setState(() => _showTodayClasses = !_showTodayClasses),
-              child: const HomeClassesSection(),
+              child: HomeClassesSection(onClassTap: _navigateToClassDetail),
             ),
 
             // Информация о действующем абонементе
@@ -118,5 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToBookingDetail(Booking booking) {
     widget.onQuickAccessNavigate('booking_detail', booking);
+  }
+  void _navigateToClassDetail(dynamic classItem) {
+    widget.onQuickAccessNavigate('class_detail', classItem);
   }
 }

@@ -83,16 +83,11 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
         
         // Список бронирований
         if (_filteredBookings.isNotEmpty) ...[
-          ..._filteredBookings.map((booking) => _buildBookingItem(booking)).toList(),
-          const SizedBox(height: 8),
-          Center(
-            child: SecondaryButton(
-              text: 'Все записи →',
-              onPressed: () {
-                // Навигация к экрану всех записей
-              },
-            ),
-          ),
+          ..._filteredBookings.map((booking) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildBookingItem(booking),
+              )).toList(),
+
         ] else ...[
           _buildEmptyState(_selectedDate),
         ],
@@ -114,8 +109,13 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               transform: Matrix4.identity()..scale(isHovered ? 1.02 : 1.0),
+              decoration: BoxDecoration(
+                borderRadius: AppStyles.borderRadiusLg,
+                boxShadow: isHovered ? AppColors.shadowLg : AppColors.shadowMd,
+              ),
               child: AppCard(
                 padding: AppStyles.paddingLg,
+                backgroundColor: isHovered ? AppColors.primary.withOpacity(0.05) : Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -182,31 +182,8 @@ class _HomeBookingsSectionState extends State<HomeBookingsSection> {
                       ],
                     ),
 
-                    const SizedBox(height: 12),
 
-                    // Действия
-                    if (booking.status == BookingStatus.confirmed && booking.canCancel)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SecondaryButton(
-                              text: 'Отменить',
-                              onPressed: () => widget.onCancelBooking(booking),
-                              color: AppColors.error,
-                            ),
-                          ),
-                          if (booking.type == BookingType.tennisCourt ||
-                              booking.type == BookingType.personalTraining) ...[
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: PrimaryButton(
-                                text: 'Изменить',
-                                onPressed: () => widget.onRescheduleBooking(booking),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                      
                   ],
                 ),
               ),

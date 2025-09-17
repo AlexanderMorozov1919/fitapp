@@ -47,39 +47,6 @@ class HomeStatisticsSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         
-        // Кнопка подробной статистики
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
-              // Навигация к детальной статистике
-            },
-            style: AppStyles.secondaryButtonStyle.copyWith(
-              backgroundColor: MaterialStateProperty.all(Colors.transparent),
-              foregroundColor: MaterialStateProperty.all(AppColors.primary),
-              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              )),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Подробная статистика',
-                  style: AppTextStyles.buttonSmall.copyWith(
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-              ],
-            ),
-          ),
-        ),
       ],
     );
   }
