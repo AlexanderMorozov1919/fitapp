@@ -31,11 +31,13 @@ void main() {
 class NavigationService extends InheritedWidget {
   final VoidCallback onBack;
   final Function(String, [dynamic]) navigateTo;
+  final VoidCallback navigateToHome;
 
   const NavigationService({
     super.key,
     required this.onBack,
     required this.navigateTo,
+    required this.navigateToHome,
     required super.child,
   });
 
@@ -45,7 +47,9 @@ class NavigationService extends InheritedWidget {
 
   @override
   bool updateShouldNotify(NavigationService oldWidget) {
-    return oldWidget.onBack != onBack || oldWidget.navigateTo != navigateTo;
+    return oldWidget.onBack != onBack ||
+           oldWidget.navigateTo != navigateTo ||
+           oldWidget.navigateToHome != navigateToHome;
   }
 }
 
@@ -192,6 +196,12 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
+  void _navigateToHome() {
+    setState(() {
+      _navigationStack.clear(); // Полностью очищаем стек навигации
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget currentBody;
@@ -201,6 +211,7 @@ class _MainNavigationState extends State<MainNavigation> {
       currentBody = NavigationService(
         onBack: _navigateBack,
         navigateTo: _navigateToQuickAccess,
+        navigateToHome: _navigateToHome,
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {

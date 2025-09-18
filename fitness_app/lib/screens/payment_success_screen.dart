@@ -3,6 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
 import '../main.dart';
+import '../widgets/common_widgets.dart';
 
 class PaymentSuccessScreen extends StatefulWidget {
   final double amount;
@@ -58,8 +59,15 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen>
   }
 
   void _navigateToHome() {
-    // Полностью очищаем стек навигации и возвращаемся к главному экрану
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    // Используем навигацию через NavigationService приложения
+    final navigationService = NavigationService.of(context);
+    if (navigationService != null) {
+      // Полностью очищаем стек быстрого доступа, возвращаясь к главному экрану
+      navigationService.navigateToHome();
+    } else {
+      // Fallback навигация для случая, если NavigationService недоступен
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   @override
@@ -175,7 +183,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen>
               
               const SizedBox(height: 32),
               
-              // Кнопка для ручного перехода
+              // Кнопка для ручного перехода с анимацией нажатия
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: SizedBox(
