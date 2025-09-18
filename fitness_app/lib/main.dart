@@ -145,6 +145,7 @@ class _MainNavigationState extends State<MainNavigation> {
         paymentMethod: 'Неизвестно',
       );
     },
+    'chat': (_) => const ChatScreen(),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
@@ -179,7 +180,6 @@ class _MainNavigationState extends State<MainNavigation> {
       HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
       const ScheduleScreen(),
       const BookingsScreen(),
-      const ChatScreen(),
       const ProfileScreen(),
     ];
   }

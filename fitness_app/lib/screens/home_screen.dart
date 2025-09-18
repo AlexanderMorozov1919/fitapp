@@ -43,7 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             // Приветствие и баланс
-            HomeWelcomeSection(user: user),
+            HomeWelcomeSection(
+              user: user,
+              onQuickAccessNavigate: widget.onQuickAccessNavigate,
+            ),
             const SizedBox(height: 16),
 
             // Быстрый доступ
