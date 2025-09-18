@@ -16,6 +16,7 @@ import 'package:fitness_app/screens/trainer_confirmation_screen.dart';
 import 'package:fitness_app/screens/schedule_screen.dart';
 import 'package:fitness_app/screens/schedule_confirmation_screen.dart';
 import 'package:fitness_app/screens/profile_screen.dart';
+import 'package:fitness_app/screens/chat_screen.dart';
 import 'package:fitness_app/screens/bookings_screen.dart';
 import 'package:fitness_app/screens/payment_screen.dart';
 import 'package:fitness_app/screens/payment_success_screen.dart';
@@ -178,6 +179,7 @@ class _MainNavigationState extends State<MainNavigation> {
       HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
       const ScheduleScreen(),
       const BookingsScreen(),
+      const ChatScreen(),
       const ProfileScreen(),
     ];
   }

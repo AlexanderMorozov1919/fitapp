@@ -46,6 +46,10 @@ class BottomNavigation extends StatelessWidget {
             label: 'Мои записи',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Чат',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Профиль',
           ),
