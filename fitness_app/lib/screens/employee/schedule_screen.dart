@@ -1,298 +1,476 @@
 import 'package:flutter/material.dart';
+import '../../services/mock_data_service.dart';
+import '../../models/booking_model.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
+import '../../widgets/common_widgets.dart';
+import '../../utils/formatters.dart';
+import '../../main.dart';
+import 'training_detail_screen.dart';
+import '../clietnt/calendar_filter.dart';
 
-class EmployeeScheduleScreen extends StatelessWidget {
+class EmployeeScheduleScreen extends StatefulWidget {
   const EmployeeScheduleScreen({super.key});
 
   @override
+  State<EmployeeScheduleScreen> createState() => _EmployeeScheduleScreenState();
+}
+
+class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
+  String _selectedFilter = 'Все';
+  DateTime _selectedDate = DateTime.now();
+
+  final List<String> _filters = ['Все', 'Предстоящие', 'Завершенные', 'Отмененные'];
+
+  @override
   Widget build(BuildContext context) {
+    final filteredTrainings = _filterTrainings();
+    final datesWithTrainings = _getDatesWithTrainings();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Мое расписание'),
+        title: Text(
+          'Мое расписание',
+          style: AppTextStyles.headline5,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: AppColors.textPrimary,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Фильтр по дате
-            _buildDateFilter(),
-            const SizedBox(height: 20),
-
-            // Расписание на сегодня
-            Text(
-              'Сегодня, 18 сентября',
-              style: AppTextStyles.headline6.copyWith(
-                color: AppColors.textPrimary,
-              ),
+      body: Column(
+        children: [
+          // Календарный фильтр
+          CalendarFilter(
+            selectedDate: _selectedDate,
+            onDateSelected: (date) {
+              setState(() {
+                _selectedDate = date;
+              });
+            },
+            datesWithBookings: datesWithTrainings,
+          ),
+          
+          // Фильтры - горизонтальный скролл
+          Container(
+            padding: AppStyles.paddingLg,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: AppColors.shadowSm,
             ),
-            const SizedBox(height: 16),
-
-            _buildScheduleItem(
-              time: '09:00 - 10:30',
-              type: 'Персональная тренировка',
-              client: 'Иванов Александр Сергеевич',
-              status: 'Подтверждено',
-              statusColor: AppColors.success,
-            ),
-            const SizedBox(height: 12),
-            _buildScheduleItem(
-              time: '11:00 - 12:00',
-              type: 'Групповое занятие: Йога',
-              client: 'Группа (12 человек)',
-              status: 'Подтверждено',
-              statusColor: AppColors.success,
-            ),
-            const SizedBox(height: 12),
-            _buildScheduleItem(
-              time: '14:00 - 15:30',
-              type: 'Персональная тренировка',
-              client: 'Петрова Елена Владимировна',
-              status: 'Ожидание',
-              statusColor: AppColors.warning,
-            ),
-            const SizedBox(height: 12),
-            _buildScheduleItem(
-              time: '16:00 - 17:00',
-              type: 'Консультация',
-              client: 'Сидоров Михаил Иванович',
-              status: 'Подтверждено',
-              statusColor: AppColors.success,
-            ),
-
-            const SizedBox(height: 24),
-
-            // Расписание на завтра
-            Text(
-              'Завтра, 19 сентября',
-              style: AppTextStyles.headline6.copyWith(
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            _buildScheduleItem(
-              time: '10:00 - 11:30',
-              type: 'Персональная тренировка',
-              client: 'Кузнецова Ольга Петровна',
-              status: 'Подтверждено',
-              statusColor: AppColors.success,
-            ),
-            const SizedBox(height: 12),
-            _buildScheduleItem(
-              time: '12:00 - 13:00',
-              type: 'Групповое занятие: Фитнес',
-              client: 'Группа (15 человек)',
-              status: 'Подтверждено',
-              statusColor: AppColors.success,
-            ),
-            const SizedBox(height: 12),
-            _buildScheduleItem(
-              time: '15:00 - 16:30',
-              type: 'Персональная тренировка',
-              client: 'Николаев Дмитрий Алексеевич',
-              status: 'Отменено',
-              statusColor: AppColors.error,
-            ),
-
-            const SizedBox(height: 24),
-
-            // Статистика недели
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: AppStyles.borderRadiusLg,
-                boxShadow: AppColors.shadowSm,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Статистика недели',
-                    style: AppTextStyles.headline6.copyWith(
-                      color: AppColors.textPrimary,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _filters.map((filter) {
+                  final isSelected = filter == _selectedFilter;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChipWidget(
+                      label: filter,
+                      isSelected: isSelected,
+                      onTap: () {
+                        setState(() {
+                          _selectedFilter = filter;
+                        });
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildWeekStat(
-                        value: '18',
-                        label: 'Всего\nзанятий',
-                      ),
-                      _buildWeekStat(
-                        value: '12',
-                        label: 'Персональных\nтренировок',
-                      ),
-                      _buildWeekStat(
-                        value: '6',
-                        label: 'Групповых\nзанятий',
-                      ),
-                    ],
-                  ),
-                ],
+                  );
+                }).toList(),
               ),
             ),
+          ),
 
-            const SizedBox(height: 20),
-          ],
-        ),
+          // Список тренировок
+          Expanded(
+            child: filteredTrainings.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: AppStyles.paddingLg,
+                    itemCount: filteredTrainings.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _buildTrainingItem(filteredTrainings[index]),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDateFilter() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppStyles.borderRadiusLg,
-        boxShadow: AppColors.shadowSm,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Период:',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-          Row(
-            children: [
-              Text(
-                'Эта неделя',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.arrow_drop_down,
-                color: AppColors.primary,
+  List<Booking> _filterTrainings() {
+    return MockDataService.employeeTrainings.where((training) {
+      // Фильтр по дате
+      final isDateMatch = training.startTime.year == _selectedDate.year &&
+          training.startTime.month == _selectedDate.month &&
+          training.startTime.day == _selectedDate.day;
+      
+      if (!isDateMatch) return false;
+      
+      // Фильтр по статусу
+      switch (_selectedFilter) {
+        case 'Предстоящие':
+          return training.isUpcoming;
+        case 'Завершенные':
+          return training.status == BookingStatus.completed;
+        case 'Отмененные':
+          return training.status == BookingStatus.cancelled;
+        default:
+          return true;
+      }
+    }).toList();
+  }
+
+  List<DateTime> _getDatesWithTrainings() {
+    final dates = <DateTime>[];
+    for (final training in MockDataService.employeeTrainings) {
+      final date = DateTime(
+        training.startTime.year,
+        training.startTime.month,
+        training.startTime.day,
+      );
+      if (!dates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day)) {
+        dates.add(date);
+      }
+    }
+    return dates;
+  }
+
+  Widget _buildTrainingItem(Booking training) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _navigateToTrainingDetail(training),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: AppStyles.paddingLg,
+          decoration: AppStyles.elevatedCardDecoration.copyWith(
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScheduleItem({
-    required String time,
-    required String type,
-    required String client,
-    required String status,
-    required Color statusColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppStyles.borderRadiusLg,
-        boxShadow: AppColors.shadowSm,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Время
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: AppStyles.borderRadiusSm,
-            ),
-            child: Text(
-              time,
-              style: AppTextStyles.caption.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-
-          // Информация о занятии
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  type,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  client,
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: AppStyles.borderRadiusSm,
-                  ),
-                  child: Text(
-                    status,
-                    style: AppTextStyles.caption.copyWith(
-                      color: statusColor,
-                      fontWeight: FontWeight.w500,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Заголовок и время с индикатором кликабельности
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            training.title,
+                            style: AppTextStyles.headline6.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: AppColors.textTertiary,
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: AppStyles.borderRadiusLg,
+                    ),
+                    child: Text(
+                      '${DateFormatters.formatTime(training.startTime)}-${DateFormatters.formatTime(training.endTime)}',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 12),
+              
+              // Информация о тренировке
+              Text(
+                _getTrainingDetails(training),
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
                 ),
+              ),
+              
+              const SizedBox(height: 8),
+              
+              if (training.description != null)
+                Text(
+                  training.description!,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              
+              const SizedBox(height: 12),
+              
+              // Детали и статус
+              Row(
+                children: [
+                  // Дата
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        size: 16,
+                        color: AppColors.textTertiary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        DateFormatters.formatDate(training.startTime),
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  const Spacer(),
+                  
+                  // Статус
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(training.status).withOpacity(0.1),
+                      borderRadius: AppStyles.borderRadiusSm,
+                    ),
+                    child: Text(
+                      _getStatusText(training.status),
+                      style: AppTextStyles.overline.copyWith(
+                        color: _getStatusColor(training.status),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Клиент и действия
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Клиент
+                  if (training.clientName != null)
+                    Text(
+                      'Клиент: ${training.clientName}',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+                  
+                ],
+              ),
+              
+              // Дополнительная информация
+              if (training.courtNumber != null ||
+                  training.trainerId != null ||
+                  training.className != null ||
+                  training.lockerNumber != null) ...[
+                
+                if (training.courtNumber != null)
+                  _buildDetailItem('Корт:', training.courtNumber!),
+                if (training.lockerNumber != null)
+                  _buildDetailItem('Шкафчик:', training.lockerNumber!),
               ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.caption.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
             ),
           ),
-
-          // Действия
-          IconButton(
-            icon: const Icon(Icons.more_vert, size: 20),
-            onPressed: () {
-              // TODO: Реализовать меню действий
-            },
+          const SizedBox(width: 4),
+          Text(
+            value,
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textPrimary,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildWeekStat({
-    required String value,
-    required String label,
-  }) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: AppTextStyles.headline5.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppTextStyles.caption.copyWith(
-            color: AppColors.textSecondary,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+  String _getTrainingDetails(Booking training) {
+    final details = <String>[];
+    
+    switch (training.type) {
+      case BookingType.tennisCourt:
+        details.add('Теннисный корт');
+        break;
+      case BookingType.groupClass:
+        details.add('Групповое занятие');
+        break;
+      case BookingType.personalTraining:
+        details.add('Персональная тренировка');
+        break;
+      case BookingType.locker:
+        details.add('Аренда шкафчика');
+        break;
+    }
+    
+    if (training.clientName != null) {
+      details.add('Клиент: ${training.clientName}');
+    }
+    
+    return details.join(' • ');
+  }
+
+  Widget _buildEmptyState() {
+    return EmptyState(
+      icon: Icons.calendar_today,
+      title: _getEmptyStateMessage(),
+      subtitle: _getEmptyStateSubtitle(),
     );
+  }
+
+  String _getEmptyStateMessage() {
+    switch (_selectedFilter) {
+      case 'Предстоящие':
+        return 'Нет предстоящих тренировок';
+      case 'Завершенные':
+        return 'Нет завершенных тренировок';
+      case 'Отмененные':
+        return 'Нет отмененных тренировок';
+      default:
+        return 'У вас пока нет тренировок';
+    }
+  }
+
+  String _getEmptyStateSubtitle() {
+    switch (_selectedFilter) {
+      case 'Предстоящие':
+        return 'Здесь будут отображаться ваши предстоящие тренировки';
+      case 'Завершенные':
+        return 'Здесь будут отображаться ваши завершенные занятия';
+      case 'Отмененные':
+        return 'Здесь будут отображаться отмененные тренировки';
+      default:
+        return 'Начните планировать свои тренировки';
+    }
+  }
+
+  void _cancelTraining(Booking training) {
+    showConfirmDialog(
+      context: context,
+      title: 'Отмена тренировки',
+      content: 'Вы уверены, что хотите отменить эту тренировку?',
+      confirmText: 'Да, отменить',
+      confirmColor: AppColors.error,
+    ).then((confirmed) {
+      if (confirmed == true) {
+        _showCancellationSuccess();
+      }
+    });
+  }
+
+  void _confirmTraining(Booking training) {
+    showSuccessSnackBar(context, 'Тренировка успешно подтверждена');
+  }
+
+  void _showCancellationSuccess() {
+    showSuccessSnackBar(context, 'Тренировка успешно отменена');
+  }
+
+  String _getTrainerName(String trainerId) {
+    final trainer = MockDataService.trainers
+        .firstWhere((t) => t.id == trainerId, orElse: () => MockDataService.trainers.first);
+    return trainer.fullName;
+  }
+
+  void _navigateToTrainingDetail(Booking training) {
+    final navigationService = NavigationService.of(context);
+    if (navigationService != null) {
+      navigationService.navigateTo('training_detail', training);
+    } else {
+      // Альтернативная навигация для случаев, когда NavigationService недоступен
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => TrainingDetailScreen(training: training),
+        ),
+      );
+    }
+  }
+
+  IconData _getTrainingIcon(Booking training) {
+    switch (training.type) {
+      case BookingType.tennisCourt:
+        return Icons.sports_tennis;
+      case BookingType.groupClass:
+        return Icons.group;
+      case BookingType.personalTraining:
+        return Icons.person;
+      case BookingType.locker:
+        return Icons.lock;
+      default:
+        return Icons.calendar_today;
+    }
+  }
+
+  Color _getStatusColor(BookingStatus status) {
+    switch (status) {
+      case BookingStatus.confirmed:
+        return AppColors.success;
+      case BookingStatus.pending:
+        return AppColors.warning;
+      case BookingStatus.cancelled:
+        return AppColors.error;
+      case BookingStatus.completed:
+        return AppColors.info;
+    }
+    return AppColors.textTertiary;
+  }
+
+  String _getStatusText(BookingStatus status) {
+    switch (status) {
+      case BookingStatus.confirmed:
+        return 'Подтверждено';
+      case BookingStatus.pending:
+        return 'Ожидание';
+      case BookingStatus.cancelled:
+        return 'Отменено';
+      case BookingStatus.completed:
+        return 'Завершено';
+    }
+    return 'Неизвестно';
   }
 }

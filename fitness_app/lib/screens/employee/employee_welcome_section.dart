@@ -33,7 +33,7 @@ class EmployeeWelcomeSection extends StatelessWidget {
               children: [
                 const SizedBox(height: 2),
                 Text(
-                  'Виноградов Игорь',
+                  'Игорь',
                   style: AppTextStyles.headline4.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
