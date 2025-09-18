@@ -29,16 +29,29 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _user = MockDataService.currentUser;
+    _user = User(
+      id: 'employee-igor-vinogradov',
+      firstName: 'Игорь',
+      lastName: 'Виноградов',
+      email: 'igor.vinogradov@fitness.ru',
+      phone: '+7 (999) 123-45-67',
+      birthDate: DateTime(1985, 6, 15),
+      photoUrl: null,
+      preferences: const [],
+      membership: null,
+      bookings: const [],
+      lockers: const [],
+      balance: 0,
+    );
     _fillFormData();
   }
 
   void _fillFormData() {
-    _firstNameController.text = _user.firstName;
-    _lastNameController.text = _user.lastName;
-    _middleNameController.text = 'Вячеславович'; // Для сотрудника
-    _emailController.text = _user.email;
-    _phoneController.text = _user.phone;
+    _firstNameController.text = 'Игорь';
+    _lastNameController.text = 'Виноградов';
+    _middleNameController.text = 'Вячеславович';
+    _emailController.text = 'igor.vinogradov@fitness.ru';
+    _phoneController.text = '+7 (999) 123-45-67';
     _positionController.text = 'Старший тренер';
     _specializationController.text = 'Фитнес, Йога, Персональные тренировки';
   }
@@ -360,46 +373,92 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   Widget _buildEmployeeInfo() {
     return Column(
       children: [
-        TextFormField(
-          controller: _positionController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Должность',
-          ),
-          enabled: _isEditing,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите должность';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _specializationController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Специализация',
-          ),
-          enabled: _isEditing,
-          maxLines: 2,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите специализацию';
-            }
-            return null;
-          },
-        ),
-        const SizedBox(height: 16),
         Container(
           padding: AppStyles.paddingLg,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: Colors.white,
             borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.work,
+                color: AppColors.primary,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Должность',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      'Старший тренер',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.school,
+                color: AppColors.secondary,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Специализация',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      'Фитнес, Йога, Персональные тренировки',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
           child: Row(
             children: [
               Icon(
                 Icons.work_history,
-                color: AppColors.textSecondary,
+                color: AppColors.accent,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -424,18 +483,19 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         Container(
           padding: AppStyles.paddingLg,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: Colors.white,
             borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
           child: Row(
             children: [
               Icon(
                 Icons.badge,
-                color: AppColors.textSecondary,
+                color: AppColors.success,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -617,6 +677,27 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
               // TODO: Реализовать экран настроек безопасности
+            },
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
+          ),
+          child: ListTile(
+            leading: Icon(Icons.help, color: AppColors.accent),
+            title: Text(
+              'Помощь и поддержка',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+            ),
+            trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
+            onTap: () {
+              // TODO: Реализовать экран поддержки
             },
           ),
         ),
