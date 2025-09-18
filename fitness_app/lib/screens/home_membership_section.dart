@@ -28,56 +28,88 @@ class HomeMembershipSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Карточка абонемента
-        GestureDetector(
-          onTap: () => onQuickAccessNavigate('membership_detail', membership),
-          child: GradientCard(
-            gradient: AppColors.secondaryGradient,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              // Заголовок и тип абонемента
-              Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: AppStyles.borderRadiusFull,
-                    ),
-                    child: Icon(
-                      Icons.credit_card,
-                      size: 18,
-                      color: Colors.white,
+        StatefulBuilder(
+          builder: (context, setState) {
+            var isHovered = false;
+            var isPressed = false;
+            
+            return GestureDetector(
+              onTap: () => onQuickAccessNavigate('membership_detail', membership),
+              onTapDown: (_) => setState(() => isPressed = true),
+              onTapUp: (_) => setState(() => isPressed = false),
+              onTapCancel: () => setState(() => isPressed = false),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                onEnter: (_) => setState(() => isHovered = true),
+                onExit: (_) => setState(() {
+                  isHovered = false;
+                  isPressed = false;
+                }),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  transform: Matrix4.identity()
+                    ..scale(isHovered ? 1.02 : 1.0)
+                    ..translate(0.0, isPressed ? 1.0 : 0.0),
+                  decoration: BoxDecoration(
+                    borderRadius: AppStyles.borderRadiusLg,
+                    boxShadow: isHovered
+                      ? AppColors.shadowLg
+                      : isPressed
+                        ? AppColors.shadowSm
+                        : AppColors.shadowMd,
+                  ),
+                  child: GradientCard(
+                    gradient: AppColors.secondaryGradient,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Заголовок и тип абонемента
+                        Row(
+                          children: [
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: AppStyles.borderRadiusFull,
+                              ),
+                              child: Icon(
+                                Icons.credit_card,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                membership.type,
+                                style: AppTextStyles.headline5.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Прогресс бар дней
+                        _buildDaysProgress(membership),
+                        const SizedBox(height: 16),
+                        
+                        // Детали абонемента
+                        _buildMembershipDetails(membership),
+                        const SizedBox(height: 12),
+                        
+                        // Включенные услуги
+                        _buildIncludedServices(membership),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      membership.type,
-                      style: AppTextStyles.headline5.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: 16),
-              
-              // Прогресс бар дней
-              _buildDaysProgress(membership),
-              const SizedBox(height: 16),
-              
-              // Детали абонемента
-              _buildMembershipDetails(membership),
-              const SizedBox(height: 12),
-              
-              // Включенные услуги
-              _buildIncludedServices(membership),
-            ],
-            ),
-          ),
+            );
+          },
         ),
         
       ],
