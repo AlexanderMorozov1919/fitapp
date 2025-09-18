@@ -77,7 +77,7 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
-          'Бронирование теннисного корта',
+          'Бронирование корта',
           style: AppTextStyles.headline5,
         ),
         backgroundColor: Colors.white,
@@ -88,114 +88,120 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
           onPressed: _navigateBack,
         ),
       ),
-      body: SingleChildScrollView(
-        padding: AppStyles.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: Column(
+        children: [
 
-            // Выбор клиента
-            AppCard(
+          Expanded(
+            child: SingleChildScrollView(
               padding: AppStyles.paddingLg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Клиент',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildClientSelector(),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Выбор корта
-            AppCard(
-              padding: AppStyles.paddingLg,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Выберите корт:',
-                    style: AppTextStyles.headline6.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  ...MockDataService.tennisCourts.map((court) {
-                    final isSelected = court == _selectedCourt;
-                    final isAvailable = court.isAvailable;
-                    
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: AppStyles.elevatedCardDecoration.copyWith(
-                        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
-                      ),
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.sports_tennis,
-                          color: isAvailable ? AppColors.success : AppColors.textTertiary,
-                          size: 24,
-                        ),
-                        title: Text(
-                          court.number,
+                  // Выбор клиента
+                  AppCard(
+                    padding: AppStyles.paddingLg,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Клиент',
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: isAvailable ? AppColors.textPrimary : AppColors.textTertiary,
+                            color: AppColors.textPrimary,
                           ),
                         ),
-                        subtitle: Text(
-                          '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
-                          style: AppTextStyles.caption.copyWith(
-                            color: isAvailable ? AppColors.textSecondary : AppColors.error,
+                        const SizedBox(height: 8),
+                        _buildClientSelector(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Выбор корта
+                  AppCard(
+                    padding: AppStyles.paddingLg,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Выберите корт:',
+                          style: AppTextStyles.headline6.copyWith(
+                            color: AppColors.textPrimary,
                           ),
                         ),
-                        trailing: isAvailable
-                            ? Icon(
-                                Icons.chevron_right,
-                                color: AppColors.textTertiary,
-                              )
-                            : Text(
-                                'Занят',
-                                style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.error,
+                        const SizedBox(height: 12),
+                        
+                        ...MockDataService.tennisCourts.map((court) {
+                          final isSelected = court == _selectedCourt;
+                          final isAvailable = court.isAvailable;
+                          
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: AppStyles.elevatedCardDecoration.copyWith(
+                              color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+                            ),
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.sports_tennis,
+                                color: isAvailable ? AppColors.success : AppColors.textTertiary,
+                                size: 24,
+                              ),
+                              title: Text(
+                                court.number,
+                                style: AppTextStyles.bodyMedium.copyWith(
                                   fontWeight: FontWeight.w600,
+                                  color: isAvailable ? AppColors.textPrimary : AppColors.textTertiary,
                                 ),
                               ),
-                        onTap: isAvailable
-                            ? () {
-                                setState(() {
-                                  _selectedCourt = court;
-                                });
-                              }
-                            : null,
-                      ),
-                    );
-                  }).toList(),
+                              subtitle: Text(
+                                '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: isAvailable ? AppColors.textSecondary : AppColors.error,
+                                ),
+                              ),
+                              trailing: isAvailable
+                                  ? Icon(
+                                      Icons.chevron_right,
+                                      color: AppColors.textTertiary,
+                                    )
+                                  : Text(
+                                      'Занят',
+                                      style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.error,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                              onTap: isAvailable
+                                  ? () {
+                                      setState(() {
+                                        _selectedCourt = court;
+                                      });
+                                    }
+                                  : null,
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 80), // Отступ для кнопки
                 ],
               ),
             ),
-            
-            if (_selectedCourt != null && _selectedClient != null) ...[
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: PrimaryButton(
-                  text: 'Выбрать время',
-                  onPressed: _navigateToTimeSelection,
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ],
-        ),
+          ),
+        ],
       ),
+      // Кнопка продолжения внизу экрана
+      bottomNavigationBar: _selectedCourt != null && _selectedClient != null
+          ? Container(
+              padding: AppStyles.paddingLg,
+              color: Colors.white,
+              child: PrimaryButton(
+                text: 'Выбрать время',
+                onPressed: _navigateToTimeSelection,
+              ),
+            )
+          : null,
     );
   }
 
@@ -203,38 +209,52 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Красивое поле выбора клиента
         GestureDetector(
           onTap: () => setState(() => _isClientDropdownOpen = !_isClientDropdownOpen),
           child: Container(
             padding: AppStyles.paddingMd,
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
-              borderRadius: AppStyles.borderRadiusMd,
               color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
+              border: Border.all(color: AppColors.border),
+              boxShadow: AppColors.shadowSm,
             ),
             child: Row(
               children: [
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Icon(
                     Icons.person,
                     color: AppColors.primary,
-                    size: 16,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _selectedClient != null
-                      ? Text(
-                          '${_selectedClient!.firstName} ${_selectedClient!.lastName}',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textPrimary,
-                          ),
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${_selectedClient!.firstName} ${_selectedClient!.lastName}',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              _selectedClient!.phone,
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         )
                       : Text(
                           'Выберите клиента...',
@@ -251,13 +271,15 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
             ),
           ),
         ),
+
+        // Выпадающий список клиентов
         if (_isClientDropdownOpen) ...[
           const SizedBox(height: 8),
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
-              borderRadius: AppStyles.borderRadiusMd,
               color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
+              boxShadow: AppColors.shadowLg,
             ),
             child: Column(
               children: [
@@ -267,17 +289,19 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
                   child: TextFormField(
                     controller: _clientSearchController,
                     decoration: InputDecoration(
-                      hintText: 'Поиск клиента...',
+                      hintText: 'Поиск по имени или телефону...',
                       prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+                      filled: true,
+                      fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: AppStyles.borderRadiusSm,
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderRadius: AppStyles.borderRadiusMd,
+                        borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     ),
                   ),
                 ),
-                const Divider(height: 1),
+                
                 // Список клиентов
                 Container(
                   constraints: const BoxConstraints(maxHeight: 200),
@@ -287,7 +311,40 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
                     itemBuilder: (context, index) {
                       final client = _filteredClients[index];
                       final isSelected = client == _selectedClient;
-                      return GestureDetector(
+                      return ListTile(
+                        leading: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Icon(
+                            Icons.person,
+                            size: 18,
+                            color: isSelected ? Colors.white : AppColors.primary,
+                          ),
+                        ),
+                        title: Text(
+                          '${client.firstName} ${client.lastName}',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
+                        subtitle: Text(
+                          client.phone,
+                          style: AppTextStyles.caption.copyWith(
+                            color: isSelected ? AppColors.primary.withOpacity(0.8) : AppColors.textSecondary,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? Icon(
+                                Icons.check_circle,
+                                color: AppColors.primary,
+                                size: 20,
+                              )
+                            : null,
                         onTap: () {
                           setState(() {
                             _selectedClient = client;
@@ -295,61 +352,6 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
                             _clientSearchController.clear();
                           });
                         },
-                        child: Container(
-                          padding: AppStyles.paddingMd,
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-                            border: Border(
-                              bottom: index != _filteredClients.length - 1
-                                  ? BorderSide(color: AppColors.border)
-                                  : BorderSide.none,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Icon(
-                                  Icons.person,
-                                  color: AppColors.primary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${client.firstName} ${client.lastName}',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                      ),
-                                    ),
-                                    Text(
-                                      client.phone,
-                                      style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (isSelected)
-                                Icon(
-                                  Icons.check,
-                                  color: AppColors.primary,
-                                  size: 20,
-                                ),
-                            ],
-                          ),
-                        ),
                       );
                     },
                   ),
