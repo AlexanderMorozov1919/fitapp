@@ -9,9 +9,7 @@ import '../../utils/formatters.dart';
 import '../../main.dart';
 
 class AddClientScreen extends StatefulWidget {
-  final Function(String, [dynamic]) onNavigate;
-
-  const AddClientScreen({super.key, required this.onNavigate});
+  const AddClientScreen({super.key});
 
   @override
   State<AddClientScreen> createState() => _AddClientScreenState();
@@ -105,39 +103,61 @@ class _AddClientScreenState extends State<AddClientScreen> {
   void _showTrainingConfirmation(User client) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Клиент добавлен',
-          style: AppTextStyles.headline5,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppStyles.borderRadiusXl,
         ),
-        content: Text(
-          'Хотите записать ${client.firstName} ${client.lastName} на тренировку?',
-          style: AppTextStyles.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _navigateBack();
-            },
-            child: Text(
-              'Позже',
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.textSecondary,
+        child: Padding(
+          padding: AppStyles.paddingXl,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Клиент добавлен',
+                style: AppTextStyles.headline5.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
+              const SizedBox(height: 16),
+              Text(
+                'Хотите записать ${client.firstName} ${client.lastName} на тренировку?',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SecondaryButton(
+                      text: 'Позже',
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _navigateBack();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: PrimaryButton(
+                      text: 'Записать сейчас',
+                      onPressed: () {
+                        Navigator.pop(context);
+                        final navigationService = NavigationService.of(context);
+                        navigationService?.navigateTo('employee_schedule', {
+                          'preselectedClient': client,
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              widget.onNavigate('employee_schedule', {
-                'preselectedClient': client,
-              });
-            },
-            style: AppStyles.primaryButtonStyle,
-            child: Text('Записать сейчас'),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -176,180 +196,195 @@ class _AddClientScreenState extends State<AddClientScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Заголовок
-              Text(
-                'Основная информация',
-                style: AppTextStyles.headline6.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Основная информация',
+                      style: AppTextStyles.headline6.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Заполните данные нового клиента',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),
 
               // Имя
-              Text(
-                'Имя',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Имя',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _firstNameController,
+                      decoration: AppStyles.inputDecoration.copyWith(
+                        hintText: 'Введите имя',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Пожалуйста, введите имя';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _firstNameController,
-                decoration: InputDecoration(
-                  hintText: 'Введите имя',
-                  border: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.primary),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите имя';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
               // Фамилия
-              Text(
-                'Фамилия',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Фамилия',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _lastNameController,
+                      decoration: AppStyles.inputDecoration.copyWith(
+                        hintText: 'Введите фамилию',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Пожалуйста, введите фамилию';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _lastNameController,
-                decoration: InputDecoration(
-                  hintText: 'Введите фамилию',
-                  border: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.primary),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите фамилию';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
               // Email
-              Text(
-                'Email',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Email',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: AppStyles.inputDecoration.copyWith(
+                        hintText: 'Введите email',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Пожалуйста, введите email';
+                        }
+                        if (!value.contains('@')) {
+                          return 'Пожалуйста, введите корректный email';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: 'Введите email',
-                  border: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.primary),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите email';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Пожалуйста, введите корректный email';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
               // Телефон
-              Text(
-                'Телефон',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Телефон',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: AppStyles.inputDecoration.copyWith(
+                        hintText: '+7 (999) 999-99-99',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Пожалуйста, введите телефон';
+                        }
+                        if (value.length < 10) {
+                          return 'Пожалуйста, введите корректный телефон';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  hintText: '+7 (999) 999-99-99',
-                  border: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.primary),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите телефон';
-                  }
-                  if (value.length < 10) {
-                    return 'Пожалуйста, введите корректный телефон';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
 
               // Дата рождения
-              Text(
-                'Дата рождения',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: _selectBirthDate,
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _birthDateController,
-                    decoration: InputDecoration(
-                      hintText: 'Выберите дату рождения',
-                      suffixIcon: Icon(Icons.calendar_today, color: AppColors.textSecondary),
-                      border: OutlineInputBorder(
-                        borderRadius: AppStyles.borderRadiusMd,
-                        borderSide: BorderSide(color: AppColors.border),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: AppStyles.borderRadiusMd,
-                        borderSide: BorderSide(color: AppColors.primary),
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Дата рождения',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Пожалуйста, выберите дату рождения';
-                      }
-                      return null;
-                    },
-                  ),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: _selectBirthDate,
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          controller: _birthDateController,
+                          decoration: AppStyles.inputDecoration.copyWith(
+                            hintText: 'Выберите дату рождения',
+                            suffixIcon: Icon(Icons.calendar_today, color: AppColors.textSecondary),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Пожалуйста, выберите дату рождения';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 32),

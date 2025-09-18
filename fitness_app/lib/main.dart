@@ -180,8 +180,8 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
             // Обновление будет происходить автоматически при возврате на экран расписания
           },
         ),
-    'employee_schedule_calendar': (_) => EmployeeScheduleScreen(onNavigate: (String screen, [dynamic data]) {}),
-    'add_client': (_) => AddClientScreen(onNavigate: (String screen, [dynamic data]) {}),
+    'employee_schedule_calendar': (_) => EmployeeScheduleScreen(),
+    'add_client': (_) => const AddClientScreen(),
     'employee_tennis': (_) => EmployeeTennisScreen(),
     'employee_tennis_time_selection': (data) => EmployeeTennisTimeSelectionScreen(
           selectedCourt: data['court'],

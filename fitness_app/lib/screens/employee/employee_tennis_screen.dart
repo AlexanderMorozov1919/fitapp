@@ -88,84 +88,97 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
           onPressed: _navigateBack,
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: AppStyles.paddingLg,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Выбор клиента
-            Text(
-              'Клиент',
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildClientSelector(),
-            const SizedBox(height: 24),
 
-            // Выбор корта
-            Text(
-              'Выберите корт для бронирования:',
-              style: AppTextStyles.headline6.copyWith(
-                color: AppColors.textPrimary,
+            // Выбор клиента
+            AppCard(
+              padding: AppStyles.paddingLg,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Клиент',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildClientSelector(),
+                ],
               ),
             ),
             const SizedBox(height: 16),
-            
-            Expanded(
-              child: ListView(
-                children: MockDataService.tennisCourts.map((court) {
-                  final isSelected = court == _selectedCourt;
-                  final isAvailable = court.isAvailable;
+
+            // Выбор корта
+            AppCard(
+              padding: AppStyles.paddingLg,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Выберите корт:',
+                    style: AppTextStyles.headline6.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: AppStyles.elevatedCardDecoration.copyWith(
-                      color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
-                    ),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.sports_tennis,
-                        color: isAvailable ? AppColors.success : AppColors.textTertiary,
-                        size: 24,
+                  ...MockDataService.tennisCourts.map((court) {
+                    final isSelected = court == _selectedCourt;
+                    final isAvailable = court.isAvailable;
+                    
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: AppStyles.elevatedCardDecoration.copyWith(
+                        color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
                       ),
-                      title: Text(
-                        court.number,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: isAvailable ? AppColors.textPrimary : AppColors.textTertiary,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.sports_tennis,
+                          color: isAvailable ? AppColors.success : AppColors.textTertiary,
+                          size: 24,
                         ),
-                      ),
-                      subtitle: Text(
-                        '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
-                        style: AppTextStyles.caption.copyWith(
-                          color: isAvailable ? AppColors.textSecondary : AppColors.error,
+                        title: Text(
+                          court.number,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: isAvailable ? AppColors.textPrimary : AppColors.textTertiary,
+                          ),
                         ),
-                      ),
-                      trailing: isAvailable
-                          ? Icon(
-                              Icons.chevron_right,
-                              color: AppColors.textTertiary,
-                            )
-                          : Text(
-                              'Занят',
-                              style: AppTextStyles.caption.copyWith(
-                                color: AppColors.error,
-                                fontWeight: FontWeight.w600,
+                        subtitle: Text(
+                          '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
+                          style: AppTextStyles.caption.copyWith(
+                            color: isAvailable ? AppColors.textSecondary : AppColors.error,
+                          ),
+                        ),
+                        trailing: isAvailable
+                            ? Icon(
+                                Icons.chevron_right,
+                                color: AppColors.textTertiary,
+                              )
+                            : Text(
+                                'Занят',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                      onTap: isAvailable
-                          ? () {
-                              setState(() {
-                                _selectedCourt = court;
-                              });
-                            }
-                          : null,
-                    ),
-                  );
-                }).toList(),
+                        onTap: isAvailable
+                            ? () {
+                                setState(() {
+                                  _selectedCourt = court;
+                                });
+                              }
+                            : null,
+                      ),
+                    );
+                  }).toList(),
+                ],
               ),
             ),
             
@@ -173,19 +186,12 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: PrimaryButton(
+                  text: 'Выбрать время',
                   onPressed: _navigateToTimeSelection,
-                  style: AppStyles.primaryButtonStyle.copyWith(
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                  child: Text(
-                    'Выбрать время',
-                    style: AppTextStyles.buttonMedium,
-                  ),
                 ),
               ),
+              const SizedBox(height: 16),
             ],
           ],
         ),
@@ -204,6 +210,7 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
             decoration: BoxDecoration(
               border: Border.all(color: AppColors.border),
               borderRadius: AppStyles.borderRadiusMd,
+              color: Colors.white,
             ),
             child: Row(
               children: [

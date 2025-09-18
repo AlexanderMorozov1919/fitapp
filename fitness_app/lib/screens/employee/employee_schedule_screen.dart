@@ -11,9 +11,7 @@ import '../../utils/formatters.dart';
 import '../../main.dart';
 
 class EmployeeScheduleScreen extends StatefulWidget {
-  final Function(String, [dynamic]) onNavigate;
-
-  const EmployeeScheduleScreen({super.key, required this.onNavigate});
+  const EmployeeScheduleScreen({super.key});
 
   @override
   State<EmployeeScheduleScreen> createState() => _EmployeeScheduleScreenState();
@@ -112,7 +110,8 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
   }
 
   void _onFreeTimeTap(FreeTimeSlot freeTimeSlot) {
-    widget.onNavigate('create_training', {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('create_training', {
       'freeTimeSlot': freeTimeSlot,
       'onTrainingCreated': () {
         setState(() {
