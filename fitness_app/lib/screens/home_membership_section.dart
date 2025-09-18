@@ -8,7 +8,7 @@ import '../utils/formatters.dart';
 
 class HomeMembershipSection extends StatelessWidget {
   final User user;
-  final Function(String) onQuickAccessNavigate;
+  final Function(String, [dynamic]) onQuickAccessNavigate;
 
   const HomeMembershipSection({
     super.key,
@@ -28,11 +28,13 @@ class HomeMembershipSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Карточка абонемента
-        GradientCard(
-          gradient: AppColors.secondaryGradient,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        GestureDetector(
+          onTap: () => onQuickAccessNavigate('membership_detail', membership),
+          child: GradientCard(
+            gradient: AppColors.secondaryGradient,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               // Заголовок и тип абонемента
               Row(
                 children: [
@@ -74,10 +76,11 @@ class HomeMembershipSection extends StatelessWidget {
               // Включенные услуги
               _buildIncludedServices(membership),
             ],
+            ),
           ),
         ),
         
-   ],
+      ],
     );
   }
 

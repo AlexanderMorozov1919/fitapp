@@ -12,6 +12,7 @@ import 'package:fitness_app/screens/booking_detail_screen.dart';
 import 'package:fitness_app/screens/cancel_booking_screen.dart';
 import 'package:fitness_app/screens/reschedule_booking_screen.dart';
 import 'package:fitness_app/screens/class_detail_screen.dart';
+import 'package:fitness_app/screens/membership_detail_screen.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
@@ -86,6 +87,7 @@ class _MainNavigationState extends State<MainNavigation> {
     'cancel_booking': (data) => CancelBookingScreen(booking: data),
     'reschedule_booking': (data) => RescheduleBookingScreen(booking: data),
     'class_detail': (data) => ClassDetailScreen(groupClass: data),
+    'membership_detail': (data) => MembershipDetailScreen(membership: data),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

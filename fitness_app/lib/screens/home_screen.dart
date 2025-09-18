@@ -9,6 +9,7 @@ import 'home_membership_section.dart';
 import 'home_statistics_section.dart';
 import 'home_section_widget.dart';
 import 'booking_detail_screen.dart';
+import 'membership_detail_screen.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
@@ -121,5 +122,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   void _navigateToClassDetail(dynamic classItem) {
     widget.onQuickAccessNavigate('class_detail', classItem);
+  }
+
+  void _navigateToMembershipDetail(dynamic membership) {
+    widget.onQuickAccessNavigate('membership_detail', membership);
   }
 }
