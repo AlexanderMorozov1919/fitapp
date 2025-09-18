@@ -15,6 +15,9 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../widgets/news_banner_widget.dart';
+import '../../widgets/stories_preview_widget.dart';
+import 'story_view_screen.dart';
+import '../../services/mock_data/story_data.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String, [dynamic]) onQuickAccessNavigate;
@@ -48,7 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
               user: user,
               onQuickAccessNavigate: widget.onQuickAccessNavigate,
             ),
-            const SizedBox(height: 16),
+
+            // Сториз новостей
+            StoriesPreviewWidget(
+              onStoryTap: _openStoryView,
+            ),
 
             // Быстрый доступ
             HomeSectionWidget(
@@ -134,5 +141,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToMembershipDetail(dynamic membership) {
     widget.onQuickAccessNavigate('membership_detail', membership);
+  }
+
+  void _openStoryView(String storyId) {
+    final stories = StoryData.getActiveStories();
+    if (stories.isNotEmpty) {
+      widget.onQuickAccessNavigate('story_view', {
+        'initialStoryId': storyId,
+        'stories': stories,
+      });
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:fitness_app/models/booking_model.dart';
 import 'package:fitness_app/models/trainer_model.dart';
 import 'package:fitness_app/models/user_model.dart';
@@ -40,6 +41,8 @@ import 'package:fitness_app/screens/clietnt/reschedule_booking_screen.dart';
 import 'package:fitness_app/screens/clietnt/class_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/membership_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/user_type_selection_screen.dart';
+import 'package:fitness_app/screens/clietnt/story_view_screen.dart';
+import 'package:fitness_app/services/story_service.dart';
 import 'package:fitness_app/theme/app_colors.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/employee_bottom_navigation.dart';
@@ -121,17 +124,20 @@ class FitnessApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Фитнес Трекер',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
+    return ChangeNotifierProvider(
+      create: (context) => StoryService(),
+      child: MaterialApp(
+        title: 'Фитнес Трекер',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: const SimplePhoneBorder(
+          child: MainNavigation(),
+        ),
+        debugShowCheckedModeBanner: false,
       ),
-      home: const SimplePhoneBorder(
-        child: MainNavigation(),
-      ),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -141,17 +147,20 @@ class EmployeeFitnessApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Фитнес Трекер - Сотрудник',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
+    return ChangeNotifierProvider(
+      create: (context) => StoryService(),
+      child: MaterialApp(
+        title: 'Фитнес Трекер - Сотрудник',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: const SimplePhoneBorder(
+          child: EmployeeMainNavigation(),
+        ),
+        debugShowCheckedModeBanner: false,
       ),
-      home: const SimplePhoneBorder(
-        child: EmployeeMainNavigation(),
-      ),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -363,6 +372,18 @@ class _MainNavigationState extends State<MainNavigation> {
       );
     },
     'chat': (_) => const ChatScreen(),
+    'story_view': (data) {
+      if (data is Map<String, dynamic>) {
+        return StoryViewScreen(
+          initialStoryId: data['initialStoryId'],
+          stories: data['stories'],
+        );
+      }
+      return const StoryViewScreen(
+        initialStoryId: '',
+        stories: [],
+      );
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
