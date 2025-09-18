@@ -10,6 +10,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
 import '../widgets/common_widgets.dart';
+import 'payment_success_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final Map<String, dynamic>? bookingData;
@@ -637,71 +638,84 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
 
     final description = widget.bookingData?['description'] ?? 'Пополнение счета';
+    final paymentMethodName = _getMethodName(_selectedMethod);
     
-    showConfirmDialog(
+    showPaymentConfirmDialog(
       context: context,
       title: 'Подтверждение оплаты',
-      content: 'Сумма: $_amount руб.\n'
-          'Способ: ${_getMethodName(_selectedMethod)}\n'
-          '${widget.bookingData != null ? 'Назначение: $description\n\n' : '\n'}'
-          'Подтвердить оплату?',
-      confirmText: 'Оплатить',
-      cancelText: 'Отмена',
-      confirmColor: AppColors.primary,
+      content: widget.bookingData != null ? 'Назначение: $description' : '',
+      amount: _amount,
+      paymentMethod: paymentMethodName,
     ).then((confirmed) {
       if (confirmed == true) {
-        _processPaymentCompletion();
+        _showPaymentProcessing();
       }
     });
   }
 
-  void _processPaymentCompletion() {
-    if (widget.bookingData != null) {
-      // Обработка оплаты бронирования
-      final booking = widget.bookingData!['booking'] as Booking;
-      // TODO: Сохранить бронирование в системе
-      _showBookingSuccess(booking);
-    } else if (widget.bookingData?['membership'] != null) {
-      // Обработка покупки абонемента
-      final membershipType = widget.bookingData!['membership'] as MembershipType;
-      _showMembershipPurchaseSuccess(membershipType);
-    } else {
-      // Обработка пополнения счета
-      _showPaymentSuccess();
-    }
-  }
-
-  void _showPaymentSuccess() {
-    showSuccessSnackBar(
-      context,
-      'Счет успешно пополнен на $_amount руб.!',
+  void _showPaymentProcessing() {
+    // Показываем экран обработки платежа с задержкой для имитации процесса
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+        ),
+      ),
     );
 
-    // Очищаем форму
-    setState(() {
-      _amount = 0;
-      _cardNumberController.clear();
-      _cardHolderController.clear();
-      _expiryController.clear();
-      _cvvController.clear();
+    // Имитация обработки платежа
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pop(context); // Закрываем индикатор загрузки
+      _processPaymentCompletion();
     });
   }
 
-  void _showBookingSuccess(Booking booking) {
-    showSuccessSnackBar(
-      context,
-      'Бронирование успешно оплачено и подтверждено!',
-    );
+  void _processPaymentCompletion() {
+    final paymentMethodName = _getMethodName(_selectedMethod);
+    String? description;
 
-    // TODO: Навигация обратно к списку бронирований или главному экрану
+    if (widget.bookingData != null) {
+      // Обработка оплаты бронирования
+      final booking = widget.bookingData!['booking'] as Booking;
+      description = 'Бронирование: ${booking.className}';
+      // TODO: Сохранить бронирование в системе
+    } else if (widget.bookingData?['membership'] != null) {
+      // Обработка покупки абонемента
+      final membershipType = widget.bookingData!['membership'] as MembershipType;
+      description = 'Абонемент: ${membershipType.name}';
+      _processMembershipPurchase(membershipType);
+    } else {
+      // Обработка пополнения счета
+      description = 'Пополнение баланса';
+      _processBalanceTopUp();
+    }
+
+    // Переход на экран успеха через навигацию приложения
     final navigationService = NavigationService.of(context);
-    // Очищаем весь стек навигации и возвращаемся на главный экран
-    for (int i = 0; i < 4; i++) { // Очищаем 4 уровня: оплата -> подтверждение -> время -> выбор
-      navigationService?.onBack();
+    if (navigationService != null) {
+      navigationService.navigateTo('payment_success', {
+        'amount': _amount,
+        'paymentMethod': paymentMethodName,
+        'description': description,
+      });
+    } else {
+      // Fallback навигация
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaymentSuccessScreen(
+            amount: _amount,
+            paymentMethod: paymentMethodName,
+            description: description,
+          ),
+        ),
+      );
     }
   }
 
-  void _showMembershipPurchaseSuccess(MembershipType membershipType) {
+  void _processMembershipPurchase(MembershipType membershipType) {
     // Создаем новый абонемент
     final newMembership = Membership(
       id: 'mem_${DateTime.now().millisecondsSinceEpoch}',
@@ -716,23 +730,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     // Обновляем данные пользователя
     MockDataService.updateUserMembership(newMembership);
-
-    // Показываем уведомление об успехе через NotificationService
-    NotificationService.showSuccess(
-      context,
-      'Абонемент "${membershipType.name}" успешно приобретен!\n'
-      'Действует до ${_formatDate(newMembership.endDate)}',
-    );
-
-    // Очищаем весь стек навигации и возвращаемся на главный экран
-    // Используем тот же подход, что и в _showBookingSuccess
-    final navigationService = NavigationService.of(context);
-    // Очищаем все уровни навигации до главного экрана
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    
-    // Обновляем состояние для отображения изменений
-    setState(() {});
   }
+
+  void _processBalanceTopUp() {
+    // TODO: Реализовать пополнение баланса
+    // Пока просто имитируем успешное пополнение
+  }
+
 
   List<String> _getIncludedServicesFromType(MembershipType membershipType) {
     final services = <String>[];

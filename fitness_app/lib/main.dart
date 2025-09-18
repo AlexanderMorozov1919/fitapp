@@ -13,6 +13,7 @@ import 'package:fitness_app/screens/schedule_screen.dart';
 import 'package:fitness_app/screens/profile_screen.dart';
 import 'package:fitness_app/screens/bookings_screen.dart';
 import 'package:fitness_app/screens/payment_screen.dart';
+import 'package:fitness_app/screens/payment_success_screen.dart';
 import 'package:fitness_app/screens/locker_screen.dart';
 import 'package:fitness_app/screens/booking_detail_screen.dart';
 import 'package:fitness_app/screens/cancel_booking_screen.dart';
@@ -116,6 +117,19 @@ class _MainNavigationState extends State<MainNavigation> {
     'reschedule_booking': (data) => RescheduleBookingScreen(booking: data),
     'class_detail': (data) => ClassDetailScreen(groupClass: data),
     'membership_detail': (data) => MembershipDetailScreen(membershipData: data),
+    'payment_success': (data) {
+      if (data is Map<String, dynamic>) {
+        return PaymentSuccessScreen(
+          amount: data['amount'],
+          paymentMethod: data['paymentMethod'],
+          description: data['description'],
+        );
+      }
+      return const PaymentSuccessScreen(
+        amount: 0,
+        paymentMethod: 'Неизвестно',
+      );
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

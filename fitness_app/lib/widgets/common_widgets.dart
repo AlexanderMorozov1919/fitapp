@@ -398,6 +398,134 @@ Future<bool?> showConfirmDialog({
   );
 }
 
+/// Красивый диалог подтверждения оплаты в стиле приложения
+Future<bool?> showPaymentConfirmDialog({
+  required BuildContext context,
+  required String title,
+  required String content,
+  required double amount,
+  required String paymentMethod,
+  String confirmText = 'Оплатить',
+  String cancelText = 'Отмена',
+}) async {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppStyles.borderRadiusXl,
+      ),
+      child: Padding(
+        padding: AppStyles.paddingXl,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Заголовок
+            Center(
+              child: Text(
+                title,
+                style: AppTextStyles.headline4.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Сумма оплаты
+            Container(
+              padding: AppStyles.paddingLg,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.05),
+                borderRadius: AppStyles.borderRadiusLg,
+                border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Сумма:',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    '$amount руб.',
+                    style: AppTextStyles.headline5.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Способ оплаты
+            Container(
+              padding: AppStyles.paddingLg,
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: AppStyles.borderRadiusLg,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Способ:',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    paymentMethod,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Дополнительная информация
+            if (content.isNotEmpty)
+              Text(
+                content,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            
+            const SizedBox(height: 24),
+            
+            // Кнопки
+            Row(
+              children: [
+                Expanded(
+                  child: SecondaryButton(
+                    text: cancelText,
+                    onPressed: () => Navigator.pop(context, false),
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: PrimaryButton(
+                    text: confirmText,
+                    onPressed: () => Navigator.pop(context, true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 /// Успешное уведомление
 void showSuccessSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(
