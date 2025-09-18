@@ -8,11 +8,57 @@ enum PaymentStatus {
 }
 
 enum PaymentMethod {
-  creditCard,
-  debitCard,
+  bankCard,
   applePay,
   googlePay,
   balance,
+  sberPay,
+  sbp,
+}
+
+enum CardType {
+  visa,
+  mastercard,
+  mir,
+  unionpay,
+  unknown,
+}
+
+class BankCard {
+  final String id;
+  final String lastFourDigits;
+  final CardType type;
+  final String holderName;
+  final DateTime expiryDate;
+  final bool isDefault;
+
+  BankCard({
+    required this.id,
+    required this.lastFourDigits,
+    required this.type,
+    required this.holderName,
+    required this.expiryDate,
+    this.isDefault = false,
+  });
+
+  String get maskedNumber => '**** **** **** $lastFourDigits';
+  
+  String get typeName {
+    switch (type) {
+      case CardType.visa:
+        return 'Visa';
+      case CardType.mastercard:
+        return 'Mastercard';
+      case CardType.mir:
+        return 'Мир';
+      case CardType.unionpay:
+        return 'UnionPay';
+      case CardType.unknown:
+        return 'Карта';
+    }
+  }
+
+  String get formattedExpiry => '${expiryDate.month.toString().padLeft(2, '0')}/${expiryDate.year.toString().substring(2)}';
 }
 
 class Payment {

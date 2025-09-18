@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../services/notification_service.dart';
@@ -21,13 +22,9 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   late double _amount;
-
-  @override
-  void initState() {
-    super.initState();
-    _amount = widget.bookingData?['amount'] ?? 0;
-  }
-  PaymentMethod _selectedMethod = PaymentMethod.creditCard;
+  PaymentMethod _selectedMethod = PaymentMethod.bankCard;
+  BankCard? _selectedCard;
+  bool _useNewCard = false;
   final TextEditingController _cardNumberController = TextEditingController();
   final TextEditingController _cardHolderController = TextEditingController();
   final TextEditingController _expiryController = TextEditingController();
@@ -35,15 +32,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   final List<Map<String, dynamic>> _paymentMethods = [
     {
-      'method': PaymentMethod.creditCard,
-      'name': 'Кредитная карта',
+      'method': PaymentMethod.bankCard,
+      'name': 'Банковская карта',
       'icon': Icons.credit_card,
       'color': AppColors.primary,
     },
     {
-      'method': PaymentMethod.debitCard,
-      'name': 'Дебетовая карта',
-      'icon': Icons.credit_card,
+      'method': PaymentMethod.balance,
+      'name': 'Баланс счета',
+      'icon': Icons.account_balance_wallet,
+      'color': AppColors.success,
+    },
+    {
+      'method': PaymentMethod.sbp,
+      'name': 'СБП',
+      'icon': Icons.qr_code,
+      'color': AppColors.info,
+    },
+    {
+      'method': PaymentMethod.sberPay,
+      'name': 'СберПэй',
+      'icon': Icons.phone_iphone,
       'color': AppColors.secondary,
     },
     {
@@ -56,15 +65,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
       'method': PaymentMethod.googlePay,
       'name': 'Google Pay',
       'icon': Icons.phone_android,
-      'color': AppColors.info,
-    },
-    {
-      'method': PaymentMethod.balance,
-      'name': 'Баланс счета',
-      'icon': Icons.account_balance_wallet,
-      'color': AppColors.success,
+      'color': AppColors.warning,
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _amount = widget.bookingData?['amount'] ?? 0;
+    final user = MockDataService.currentUser;
+    if (user.bankCards.isNotEmpty) {
+      _selectedCard = user.bankCards.firstWhere(
+        (card) => card.isDefault,
+        orElse: () => user.bankCards.first,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,10 +133,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
             _buildPaymentMethods(),
             const SizedBox(height: 24),
 
-            // Форма оплаты
-            if (_selectedMethod == PaymentMethod.creditCard ||
-                _selectedMethod == PaymentMethod.debitCard)
+            // Выбор привязанной карты (только для банковской карты)
+            if (_selectedMethod == PaymentMethod.bankCard && user.bankCards.isNotEmpty)
+              _buildCardSelection(),
+
+            // Форма новой карты (только для банковской карты)
+            if (_selectedMethod == PaymentMethod.bankCard && _useNewCard)
               _buildCardForm(),
+
+            // Информация о выбранном методе оплаты
+            if (_selectedMethod != PaymentMethod.bankCard)
+              _buildPaymentMethodInfo(),
 
             // Кнопка оплаты
             const SizedBox(height: 32),
@@ -253,10 +276,139 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  Widget _buildCardSelection() {
+    final user = MockDataService.currentUser;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Выберите карту:',
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...user.bankCards.map((card) {
+          final isSelected = _selectedCard?.id == card.id;
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
+              border: Border.all(
+                color: isSelected ? AppColors.primary : AppColors.border,
+                width: 1,
+              ),
+            ),
+            child: ListTile(
+              contentPadding: AppStyles.paddingMd,
+              leading: _buildCardIcon(card.type),
+              title: Text(
+                card.maskedNumber,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              subtitle: Text(
+                '${card.holderName} • ${card.formattedExpiry}',
+                style: AppTextStyles.caption,
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (card.isDefault)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'По умолчанию',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.primary,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  if (isSelected)
+                    Icon(Icons.check, color: AppColors.primary, size: 20),
+                ],
+              ),
+              onTap: () {
+                setState(() {
+                  _selectedCard = card;
+                  _useNewCard = false;
+                });
+              },
+            ),
+          );
+        }).toList(),
+        const SizedBox(height: 12),
+        OutlinedButton(
+          onPressed: () {
+            setState(() {
+              _useNewCard = true;
+              _selectedCard = null;
+            });
+          },
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primary,
+            side: BorderSide(color: AppColors.primary),
+            shape: RoundedRectangleBorder(
+              borderRadius: AppStyles.borderRadiusLg,
+            ),
+          ),
+          child: const Text('Добавить новую карту'),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildCardIcon(CardType type) {
+    IconData icon;
+    Color color;
+    
+    switch (type) {
+      case CardType.visa:
+        icon = Icons.credit_card;
+        color = Colors.blue;
+        break;
+      case CardType.mastercard:
+        icon = Icons.credit_card;
+        color = Colors.red;
+        break;
+      case CardType.mir:
+        icon = Icons.credit_card;
+        color = Colors.orange;
+        break;
+      case CardType.unionpay:
+        icon = Icons.credit_card;
+        color = Colors.green;
+        break;
+      case CardType.unknown:
+        icon = Icons.credit_card;
+        color = Colors.grey;
+        break;
+    }
+
+    return Icon(icon, color: color, size: 28);
+  }
+
   Widget _buildCardForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Данные новой карты:',
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 16),
         TextFormField(
           controller: _cardNumberController,
           decoration: InputDecoration(
@@ -329,25 +481,149 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ],
         ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Checkbox(
+              value: true,
+              onChanged: (value) {},
+              activeColor: AppColors.primary,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Сохранить карту для будущих платежей',
+                style: AppTextStyles.bodySmall,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
       ],
+    );
+  }
+
+  Widget _buildPaymentMethodInfo() {
+    String infoText;
+    IconData icon;
+    Color color;
+
+    switch (_selectedMethod) {
+      case PaymentMethod.balance:
+        infoText = 'Сумма будет списана с вашего баланса. Баланс: ${MockDataService.currentUser.balance} руб.';
+        icon = Icons.account_balance_wallet;
+        color = AppColors.success;
+        break;
+      case PaymentMethod.sbp:
+        infoText = 'Оплата через Систему быстрых платежей. Вам будет показан QR-код для сканирования.';
+        icon = Icons.qr_code;
+        color = AppColors.info;
+        break;
+      case PaymentMethod.sberPay:
+        infoText = 'Оплата через СберПэй. Потребуется подтверждение в приложении СберБанка.';
+        icon = Icons.phone_iphone;
+        color = AppColors.secondary;
+        break;
+      case PaymentMethod.applePay:
+        infoText = 'Оплата через Apple Pay. Подтвердите платеж с помощью Face ID или Touch ID.';
+        icon = Icons.phone_iphone;
+        color = AppColors.textPrimary;
+        break;
+      case PaymentMethod.googlePay:
+        infoText = 'Оплата через Google Pay. Подтвердите платеж в приложении Google Pay.';
+        icon = Icons.phone_android;
+        color = AppColors.warning;
+        break;
+      default:
+        infoText = '';
+        icon = Icons.info;
+        color = AppColors.info;
+    }
+
+    return Container(
+      padding: AppStyles.paddingMd,
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: AppStyles.borderRadiusLg,
+        border: Border.all(color: color),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              infoText,
+              style: AppTextStyles.bodySmall.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildPayButton() {
     final canPay = _amount > 0;
+    final user = MockDataService.currentUser;
+
+    // Проверка достаточности баланса для оплаты через баланс
+    if (_selectedMethod == PaymentMethod.balance && user.balance < _amount) {
+      return Column(
+        children: [
+          Text(
+            'Недостаточно средств на балансе',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.error,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          PrimaryButton(
+            text: 'Пополнить баланс',
+            onPressed: () {
+              setState(() {
+                _selectedMethod = PaymentMethod.bankCard;
+              });
+            },
+            width: double.infinity,
+          ),
+        ],
+      );
+    }
+
+    String buttonText;
+    switch (_selectedMethod) {
+      case PaymentMethod.bankCard:
+        buttonText = 'Оплатить картой';
+        break;
+      case PaymentMethod.balance:
+        buttonText = 'Оплатить с баланса';
+        break;
+      case PaymentMethod.sbp:
+        buttonText = 'Оплатить через СБП';
+        break;
+      case PaymentMethod.sberPay:
+        buttonText = 'Оплатить через СберПэй';
+        break;
+      case PaymentMethod.applePay:
+        buttonText = 'Оплатить через Apple Pay';
+        break;
+      case PaymentMethod.googlePay:
+        buttonText = 'Оплатить через Google Pay';
+        break;
+    }
 
     return PrimaryButton(
-      text: canPay ? 'Оплатить $_amount руб.' : 'Выберите сумму',
-      onPressed: _processPayment,
+      text: canPay ? '$buttonText $_amount руб.' : 'Выберите сумму',
+      onPressed: canPay ? _processPayment : () {},
       isEnabled: canPay,
       width: double.infinity,
     );
   }
 
   void _processPayment() {
-    if (_selectedMethod == PaymentMethod.creditCard ||
-        _selectedMethod == PaymentMethod.debitCard) {
-      // TODO: Валидация данных карты
+    if (_selectedMethod == PaymentMethod.bankCard && _useNewCard) {
+      // Валидация данных новой карты
       if (_cardNumberController.text.isEmpty ||
           _cardHolderController.text.isEmpty ||
           _expiryController.text.isEmpty ||
@@ -472,16 +748,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   String _getMethodName(PaymentMethod method) {
     switch (method) {
-      case PaymentMethod.creditCard:
-        return 'Кредитная карта';
-      case PaymentMethod.debitCard:
-        return 'Дебетовая карта';
+      case PaymentMethod.bankCard:
+        return 'Банковская карта';
       case PaymentMethod.applePay:
         return 'Apple Pay';
       case PaymentMethod.googlePay:
         return 'Google Pay';
       case PaymentMethod.balance:
         return 'Баланс счета';
+      case PaymentMethod.sberPay:
+        return 'СберПэй';
+      case PaymentMethod.sbp:
+        return 'СБП';
     }
   }
 

@@ -1,4 +1,5 @@
 import './booking_model.dart';
+import './payment_model.dart';
 
 class User {
   final String id;
@@ -13,6 +14,7 @@ class User {
   final List<Booking> bookings;
   final List<Locker> lockers;
   final double balance;
+  final List<BankCard> bankCards;
 
   User({
     required this.id,
@@ -27,6 +29,7 @@ class User {
     this.bookings = const [],
     this.lockers = const [],
     this.balance = 0,
+    this.bankCards = const [],
   });
 
   String get fullName => '$firstName $lastName';

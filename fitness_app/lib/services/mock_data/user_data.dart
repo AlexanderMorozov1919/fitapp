@@ -1,4 +1,5 @@
 import '../../models/user_model.dart';
+import '../../models/payment_model.dart';
 import './locker_data.dart';
 
 final User currentUser = User(
@@ -21,6 +22,32 @@ final User currentUser = User(
     autoRenew: true,
   ),
   balance: 1500,
+  bankCards: [
+    BankCard(
+      id: 'card_001',
+      lastFourDigits: '1234',
+      type: CardType.visa,
+      holderName: 'ALEXANDER MOROZOV',
+      expiryDate: DateTime(2026, 12, 31),
+      isDefault: true,
+    ),
+    BankCard(
+      id: 'card_002',
+      lastFourDigits: '5678',
+      type: CardType.mastercard,
+      holderName: 'ALEXANDER MOROZOV',
+      expiryDate: DateTime(2025, 6, 30),
+      isDefault: false,
+    ),
+    BankCard(
+      id: 'card_003',
+      lastFourDigits: '9012',
+      type: CardType.mir,
+      holderName: 'ALEXANDER MOROZOV',
+      expiryDate: DateTime(2024, 9, 30),
+      isDefault: false,
+    ),
+  ],
   lockers: [
     lockers[3], // Добавляем арендованный шкафчик для тестирования
   ],
