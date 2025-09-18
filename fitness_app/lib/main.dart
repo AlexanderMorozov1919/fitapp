@@ -26,11 +26,93 @@ import 'package:fitness_app/screens/cancel_booking_screen.dart';
 import 'package:fitness_app/screens/reschedule_booking_screen.dart';
 import 'package:fitness_app/screens/class_detail_screen.dart';
 import 'package:fitness_app/screens/membership_detail_screen.dart';
+import 'package:fitness_app/screens/user_type_selection_screen.dart';
+import 'package:fitness_app/theme/app_colors.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
 void main() {
-  runApp(const FitnessApp());
+  runApp(const UserTypeSelectionWrapper());
+}
+
+class UserTypeSelectionWrapper extends StatefulWidget {
+  const UserTypeSelectionWrapper({super.key});
+
+  @override
+  State<UserTypeSelectionWrapper> createState() => _UserTypeSelectionWrapperState();
+}
+
+class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
+  UserType? _selectedUserType;
+
+  void _handleUserTypeSelected(UserType userType) {
+    setState(() {
+      _selectedUserType = userType;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_selectedUserType == null) {
+      return MaterialApp(
+        title: 'Фитнес Трекер',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: SimplePhoneBorder(
+          child: UserTypeSelectionScreen(
+            onUserTypeSelected: _handleUserTypeSelected,
+          ),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    } else if (_selectedUserType == UserType.client) {
+      return const FitnessApp();
+    } else {
+      // Заглушка для сотрудника
+      return MaterialApp(
+        title: 'Фитнес Трекер - Сотрудник',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: SimplePhoneBorder(
+          child: Scaffold(
+            backgroundColor: AppColors.background,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.work, size: 64, color: AppColors.success),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Панель сотрудника',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Раздел в разработке',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+  }
 }
 
 // Расширенный InheritedWidget для передачи функций навигации
