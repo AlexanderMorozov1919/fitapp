@@ -196,9 +196,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
             // Кнопки действий
             if (booking.status == BookingStatus.confirmed && booking.canCancel) ...[
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
+                  SizedBox(
+                    width: double.infinity,
                     child: SecondaryButton(
                       text: 'Отменить бронирование',
                       onPressed: _showCancelDialog,
@@ -207,8 +209,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   ),
                   if (booking.type == BookingType.tennisCourt ||
                       booking.type == BookingType.personalTraining) ...[
-                    const SizedBox(width: 12),
-                    Expanded(
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
                       child: PrimaryButton(
                         text: 'Изменить время',
                         onPressed: _showRescheduleDialog,

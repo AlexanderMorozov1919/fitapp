@@ -173,7 +173,7 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
           children: _availableTimes.map((time) {
             final isSelected = time == _selectedStartTime;
             
-            return _TimeSlotChip(
+            return TimeSlotChip(
               time: time,
               isSelected: isSelected,
               isOccupied: false,
@@ -210,7 +210,7 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
                 time.hour > _selectedStartTime!.hour).map((time) {
               final isSelected = time == _selectedEndTime;
               
-              return _TimeSlotChip(
+              return TimeSlotChip(
                 time: time,
                 isSelected: isSelected,
                 isOccupied: false,
@@ -311,61 +311,5 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
     }
     
     return dates.toList()..sort();
-  }
-}
-
-/// Кастомный виджет для отображения временного слота с индикацией занятости
-class _TimeSlotChip extends StatelessWidget {
-  final TimeOfDay time;
-  final bool isSelected;
-  final bool isOccupied;
-  final VoidCallback? onTap;
-
-  const _TimeSlotChip({
-    required this.time,
-    required this.isSelected,
-    required this.isOccupied,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary
-              : isOccupied
-                  ? AppColors.background
-                  : Colors.white,
-          borderRadius: AppStyles.borderRadiusFull,
-          border: Border.all(
-            color: isSelected
-                ? AppColors.primary
-                : isOccupied
-                    ? AppColors.border
-                    : AppColors.primary.withOpacity(0.3),
-            width: 1,
-          ),
-          boxShadow: isOccupied ? null : AppColors.shadowSm,
-        ),
-        child: Center(
-          child: Text(
-            time.format(context),
-            style: AppTextStyles.caption.copyWith(
-              color: isSelected
-                  ? Colors.white
-                  : isOccupied
-                      ? AppColors.textTertiary
-                      : AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
   }
 }
