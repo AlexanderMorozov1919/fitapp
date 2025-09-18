@@ -151,7 +151,7 @@ class _RescheduleBookingModalState extends State<RescheduleBookingModal> {
               final isSelected = time == _selectedTime;
               
               return FilterChipWidget(
-                label: time.format(context),
+                label: _formatTime(time),
                 isSelected: isSelected,
                 onTap: () => setState(() => _selectedTime = isSelected ? null : time),
                 selectedColor: AppColors.primary,
@@ -220,5 +220,10 @@ class _RescheduleBookingModalState extends State<RescheduleBookingModal> {
     if (picked != null && picked != _selectedDate) {
       setState(() => _selectedDate = picked);
     }
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
+    return DateFormatters.formatTimeRussian(dateTime);
   }
 }

@@ -221,7 +221,7 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${DateFormatters.formatTime(widget.freeTimeSlot.startTime)} - ${DateFormatters.formatTime(widget.freeTimeSlot.endTime)}',
+            '${DateFormatters.formatTimeRangeRussian(widget.freeTimeSlot.startTime, widget.freeTimeSlot.endTime)}',
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.textSecondary,
             ),

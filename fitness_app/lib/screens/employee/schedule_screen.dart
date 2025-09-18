@@ -249,7 +249,7 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
                       borderRadius: AppStyles.borderRadiusLg,
                     ),
                     child: Text(
-                      '${DateFormatters.formatTime(training.startTime)}-${DateFormatters.formatTime(training.endTime)}',
+                      '${DateFormatters.formatTimeRangeRussian(training.startTime, training.endTime)}',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,

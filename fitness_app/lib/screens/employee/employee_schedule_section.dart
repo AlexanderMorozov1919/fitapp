@@ -150,7 +150,7 @@ class _EmployeeScheduleSectionState extends State<EmployeeScheduleSection> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                '${DateFormatters.formatDate(training.startTime)} • ${DateFormatters.formatTime(training.startTime)}',
+                                '${DateFormatters.formatDate(training.startTime)} • ${DateFormatters.formatTimeRussian(training.startTime)}',
                                 style: AppTextStyles.caption.copyWith(
                                   color: AppColors.textSecondary,
                                 ),

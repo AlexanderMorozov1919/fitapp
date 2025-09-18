@@ -7,6 +7,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
+import '../../utils/formatters.dart';
 import '../clietnt/calendar_filter.dart';
 
 class EmployeeTennisTimeSelectionScreen extends StatefulWidget {
@@ -358,5 +359,10 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
     }
     
     return dates.toList()..sort();
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
+    return DateFormatters.formatTimeRussian(dateTime);
   }
 }

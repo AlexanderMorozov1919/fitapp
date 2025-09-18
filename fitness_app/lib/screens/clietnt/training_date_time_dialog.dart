@@ -314,7 +314,8 @@ class _DateTimeSelectionDialogState extends State<DateTimeSelectionDialog> {
   }
 
   String _formatTime(TimeOfDay time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
+    return DateFormatters.formatTimeRussian(dateTime);
   }
 
   void _proceedToConfirmation() {

@@ -8,9 +8,47 @@ class DateFormatters {
     return '${date.day}.${date.month}.${date.year}';
   }
 
-  /// Форматирование времени в формате "часы:минуты"
+  /// Форматирование времени в формате "часы:минуты" (24-часовой формат)
   static String formatTime(DateTime time) {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  /// Форматирование времени в 24-часовом формате (российский стандарт)
+  static String formatTimeRussian(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  /// Форматирование времени с текстовым описанием (24-часовой формат)
+  static String formatTimeWithWords(DateTime time) {
+    final hour = time.hour;
+    final minute = time.minute;
+    
+    if (minute == 0) {
+      return '$hour:00';
+    } else {
+      return '$hour:${minute.toString().padLeft(2, '0')}';
+    }
+  }
+
+  /// Форматирование временного интервала в 24-часовом формате
+  static String formatTimeRangeRussian(DateTime start, DateTime end) {
+    return '${formatTimeRussian(start)} - ${formatTimeRussian(end)}';
+  }
+
+  /// Форматирование времени для человека (утро/день/вечер) в 24-часовом формате
+  static String formatTimeForHuman(DateTime time) {
+    final hour = time.hour;
+    final displayTime = formatTimeRussian(time);
+    
+    if (hour >= 5 && hour < 12) {
+      return '$displayTime (утро)';
+    } else if (hour >= 12 && hour < 18) {
+      return '$displayTime (день)';
+    } else if (hour >= 18 && hour < 23) {
+      return '$displayTime (вечер)';
+    } else {
+      return '$displayTime (ночь)';
+    }
   }
 
   /// Форматирование даты и времени

@@ -246,7 +246,7 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${DateFormatters.formatTime(training.startTime)} - ${DateFormatters.formatTime(training.endTime)}',
+                  '${DateFormatters.formatTimeRangeRussian(training.startTime, training.endTime)}',
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.textSecondary,
                   ),

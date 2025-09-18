@@ -96,8 +96,7 @@ class TrainingDetailScreen extends StatelessWidget {
                     icon: Icons.calendar_today,
                     title: 'Дата и время',
                     value: '${DateFormatters.formatDate(training.startTime)}, '
-                          '${DateFormatters.formatTime(training.startTime)} - '
-                          '${DateFormatters.formatTime(training.endTime)}',
+                          '${DateFormatters.formatTimeRangeRussian(training.startTime, training.endTime)}',
                   ),
                   
                   const SizedBox(height: 12),

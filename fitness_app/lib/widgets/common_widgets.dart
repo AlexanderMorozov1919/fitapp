@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import '../utils/formatters.dart';
 
 /// Общие виджеты для единого дизайна приложения
 
@@ -614,7 +615,7 @@ class TimeSlotChip extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              time.format(context),
+              _formatTime(time),
               style: AppTextStyles.caption.copyWith(
                 color: isSelected
                     ? Colors.white
@@ -642,5 +643,10 @@ class TimeSlotChip extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
+    return DateFormatters.formatTimeRussian(dateTime);
   }
 }

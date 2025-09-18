@@ -1,10 +1,12 @@
+import '../../utils/formatters.dart';
+
 class HomeUtils {
   static String formatDate(DateTime date) {
     return '${date.day}.${date.month}';
   }
 
   static String formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    return DateFormatters.formatTimeRussian(time);
   }
 
   static String formatDateFull(DateTime date) {

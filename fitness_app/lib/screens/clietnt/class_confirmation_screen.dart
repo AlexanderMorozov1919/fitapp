@@ -10,6 +10,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../main.dart';
+import '../../utils/formatters.dart';
 
 class ClassConfirmationScreen extends StatefulWidget {
   final GroupClass selectedClass;
@@ -295,7 +296,7 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
   }
 
   String _formatTime(DateTime time) {
-    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+    return DateFormatters.formatTimeRussian(time);
   }
 
   String _formatDate(DateTime date) {

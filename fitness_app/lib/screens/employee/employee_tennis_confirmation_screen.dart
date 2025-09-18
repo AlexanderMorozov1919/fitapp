@@ -148,7 +148,7 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
                   _buildDetailRow(
                     icon: Icons.access_time,
                     title: 'Время',
-                    value: '${startTime.format(context)} - ${endTime.format(context)}',
+                    value: '${_formatTime(startTime)} - ${_formatTime(endTime)}',
                   ),
                   const SizedBox(height: 8),
                   _buildDetailRow(
@@ -332,5 +332,10 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
     // Возвращаемся на главный экран
     final navigationService = NavigationService.of(context);
     navigationService?.navigateToHome();
+  }
+
+  String _formatTime(TimeOfDay time) {
+    final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
+    return DateFormatters.formatTimeRussian(dateTime);
   }
 }
