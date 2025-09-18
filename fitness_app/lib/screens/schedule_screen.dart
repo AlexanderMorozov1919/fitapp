@@ -261,25 +261,49 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       statusColor = AppColors.success;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: AppStyles.paddingLg,
-      decoration: AppStyles.elevatedCardDecoration,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _navigateToClassDetail(classItem),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: AppStyles.paddingLg,
+          decoration: AppStyles.elevatedCardDecoration.copyWith(
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Заголовок и время
+          // Заголовок и время с индикатором кликабельности
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  classItem.name,
-                  style: AppTextStyles.headline6.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        classItem.name,
+                        style: AppTextStyles.headline6.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                      color: AppColors.textTertiary,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 12),
@@ -413,6 +437,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
         ],
       ),
+      ),
+      ),
     );
   }
 
@@ -449,12 +475,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
     );
   }
-
   void _selectClass(GroupClass classItem) {
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('class_detail', classItem);
   }
 
+  void _navigateToClassDetail(GroupClass classItem) {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('class_detail', classItem);
+  }
 
   String _formatDate(DateTime date) {
     final today = DateTime.now();

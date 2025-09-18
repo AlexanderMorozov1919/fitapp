@@ -103,27 +103,49 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   Widget _buildBookingItem(Booking booking) {
-    return GestureDetector(
-      onTap: () => _navigateToBookingDetail(booking),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: AppStyles.paddingLg,
-        decoration: AppStyles.elevatedCardDecoration,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _navigateToBookingDetail(booking),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: AppStyles.paddingLg,
+          decoration: AppStyles.elevatedCardDecoration.copyWith(
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Заголовок и время
+            // Заголовок и время с индикатором кликабельности
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
-                    booking.title,
-                    style: AppTextStyles.headline6.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          booking.title,
+                          style: AppTextStyles.headline6.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: AppColors.textTertiary,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -275,6 +297,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }
