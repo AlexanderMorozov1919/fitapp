@@ -14,6 +14,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
+import '../../widgets/news_banner_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String, [dynamic]) onQuickAccessNavigate;
@@ -56,6 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
               onToggle: () => setState(() => _showQuickAccess = !_showQuickAccess),
               child: HomeQuickActions(onQuickAccessNavigate: widget.onQuickAccessNavigate),
             ),
+
+            // Новости фитнес-центра
+            const SizedBox(height: 12),
+            NewsBannerWidget(onBannerTap: widget.onQuickAccessNavigate),
 
             // Объединенная секция бронирований с фильтром
             if (allBookings.isNotEmpty) ...[
