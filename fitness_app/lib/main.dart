@@ -215,8 +215,20 @@ class _MainNavigationState extends State<MainNavigation> {
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {
-      // Показываем основной экран навигации
-      currentBody = _screens[_currentIndex];
+      // Показываем основной экран навигации с оберткой для навигации
+      currentBody = NavigationService(
+        onBack: () {
+          // Для основных экранов просто переключаем на главную вкладку
+          if (_currentIndex != 0) {
+            setState(() {
+              _currentIndex = 0;
+            });
+          }
+        },
+        navigateTo: _navigateToQuickAccess,
+        navigateToHome: _navigateToHome,
+        child: _screens[_currentIndex],
+      );
     }
 
     return Scaffold(
