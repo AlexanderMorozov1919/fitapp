@@ -415,12 +415,17 @@ Future<bool?> showPaymentConfirmDialog({
       shape: RoundedRectangleBorder(
         borderRadius: AppStyles.borderRadiusXl,
       ),
-      child: Padding(
-        padding: AppStyles.paddingXl,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: 200, // Ограничиваем ширину диалога
+          maxHeight: 600, // Ограничиваем высоту диалога
+        ),
+        child: Padding(
+          padding: AppStyles.paddingXl,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Заголовок
             Center(
               child: Text(
@@ -522,7 +527,8 @@ Future<bool?> showPaymentConfirmDialog({
           ],
         ),
       ),
-    ),
+    )
+    )
   );
 }
 
