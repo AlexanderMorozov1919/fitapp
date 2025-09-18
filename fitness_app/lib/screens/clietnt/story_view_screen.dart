@@ -10,11 +10,13 @@ import '../../main.dart';
 class StoryViewScreen extends StatefulWidget {
   final String initialStoryId;
   final List<Story> stories;
+  final VoidCallback? onClose;
 
   const StoryViewScreen({
     super.key,
     required this.initialStoryId,
     required this.stories,
+    this.onClose,
   });
 
   @override
@@ -107,9 +109,11 @@ class _StoryViewScreenState extends State<StoryViewScreen> with SingleTickerProv
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // При открытии экрана помечаем первый сториз как просмотренный
+    // При открытии экрана помечаем первый сториз как просмотренный после построения
     if (_currentIndex == 0) {
-      _markCurrentStoryAsViewed();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _markCurrentStoryAsViewed();
+      });
     }
   }
 
@@ -196,35 +200,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> with SingleTickerProv
               ),
             ),
 
-            // Кнопка закрытия
-            Positioned(
-              top: 32,
-              right: 16,
-              child: GestureDetector(
-                onTap: () {
-                  final navigationService = NavigationService.of(context);
-                  if (navigationService != null) {
-                    navigationService.onBack();
-                  } else {
-                    Navigator.pop(context);
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-              ),
-            ),
-
-            // Навигационные жесты
+            // Навигационные жесты (под кнопкой закрытия)
             Positioned(
               left: 0,
               top: 0,
@@ -241,6 +217,31 @@ class _StoryViewScreenState extends State<StoryViewScreen> with SingleTickerProv
               width: MediaQuery.of(context).size.width * 0.3,
               child: GestureDetector(
                 onTap: _goToNextStory,
+              ),
+            ),
+
+            // Кнопка закрытия - ДОЛЖНА БЫТЬ ПОСЛЕДНЕЙ в стеке для приоритета
+            Positioned(
+              top: 32,
+              right: 16,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _closeStoryView,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

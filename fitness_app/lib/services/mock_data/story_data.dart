@@ -35,7 +35,7 @@ class StoryData {
       id: 'story-4',
       title: 'Новые ракетки',
       description: 'Поступили новые профессиональные ракетки Wilson и Babolat. Тестируйте бесплатно!',
-      imageUrl: 'https://images.unsplash.com/photo-1622279457486-3a6c79c7c17f?w=400',
+      imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400',
       backgroundColor: const Color(0xFFE91E63),
       createdAt: DateTime.now().subtract(const Duration(days: 1)),
       type: StoryType.news,

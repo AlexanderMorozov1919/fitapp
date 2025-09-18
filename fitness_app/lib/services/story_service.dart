@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import '../models/story_model.dart';
 
 class StoryService with ChangeNotifier {
@@ -14,12 +15,18 @@ class StoryService with ChangeNotifier {
       isViewed: true,
       viewedAt: DateTime.now(),
     );
-    notifyListeners();
+    // Откладываем уведомление до завершения кадра
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void markStoryAsUnviewed(String storyId) {
     _viewedStories.remove(storyId);
-    notifyListeners();
+    // Откладываем уведомление до завершения кадра
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   int get viewedStoriesCount {
@@ -33,7 +40,10 @@ class StoryService with ChangeNotifier {
 
   void clearAllProgress() {
     _viewedStories.clear();
-    notifyListeners();
+    // Откладываем уведомление до завершения кадра
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   // Для сохранения и восстановления состояния
@@ -52,6 +62,9 @@ class StoryService with ChangeNotifier {
         _viewedStories[key] = StoryProgress.fromJson(value);
       });
     }
-    notifyListeners();
+    // Откладываем уведомление до завершения кадра
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 }

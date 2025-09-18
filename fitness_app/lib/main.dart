@@ -374,9 +374,19 @@ class _MainNavigationState extends State<MainNavigation> {
     'chat': (_) => const ChatScreen(),
     'story_view': (data) {
       if (data is Map<String, dynamic>) {
-        return StoryViewScreen(
-          initialStoryId: data['initialStoryId'],
-          stories: data['stories'],
+        return Builder(
+          builder: (context) {
+            return StoryViewScreen(
+              initialStoryId: data['initialStoryId'],
+              stories: data['stories'],
+              onClose: () {
+                // Простой вызов Navigator.pop - должен работать
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+              },
+            );
+          },
         );
       }
       return const StoryViewScreen(
