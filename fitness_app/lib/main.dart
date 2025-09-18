@@ -8,7 +8,8 @@ import 'package:fitness_app/screens/tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/class_selection_screen.dart';
 import 'package:fitness_app/screens/class_confirmation_screen.dart';
 import 'package:fitness_app/screens/membership_screen.dart';
-import 'package:fitness_app/screens/trainers_screen.dart';
+import 'package:fitness_app/screens/trainers_screen.dart' hide TrainerDetailScreen;
+import 'package:fitness_app/screens/trainer_detail_screen.dart';
 import 'package:fitness_app/screens/schedule_screen.dart';
 import 'package:fitness_app/screens/profile_screen.dart';
 import 'package:fitness_app/screens/bookings_screen.dart';
@@ -121,6 +122,7 @@ class _MainNavigationState extends State<MainNavigation> {
     'reschedule_booking': (data) => RescheduleBookingScreen(booking: data),
     'class_detail': (data) => ClassDetailScreen(groupClass: data),
     'membership_detail': (data) => MembershipDetailScreen(membershipData: data),
+    'trainer_detail': (data) => TrainerDetailScreen(trainer: data),
     'payment_success': (data) {
       if (data is Map<String, dynamic>) {
         return PaymentSuccessScreen(
