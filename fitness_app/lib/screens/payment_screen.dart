@@ -384,6 +384,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final booking = widget.bookingData!['booking'] as Booking;
       // TODO: Сохранить бронирование в системе
       _showBookingSuccess(booking);
+    } else if (widget.bookingData?['membership'] != null) {
+      // Обработка покупки абонемента
+      final membership = widget.bookingData!['membership'] as MembershipType;
+      _showMembershipPurchaseSuccess(membership);
     } else {
       // Обработка пополнения счета
       _showPaymentSuccess();
@@ -418,6 +422,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
     for (int i = 0; i < 4; i++) { // Очищаем 4 уровня: оплата -> подтверждение -> время -> выбор
       navigationService?.onBack();
     }
+  }
+
+  void _showMembershipPurchaseSuccess(MembershipType membership) {
+    showSuccessSnackBar(
+      context,
+      'Абонемент "${membership.name}" успешно приобретен!',
+    );
+
+    // TODO: Обновить данные пользователя с новым абонементом
+    final navigationService = NavigationService.of(context);
+    // Возвращаемся на экран абонементов
+    navigationService?.onBack();
   }
 
   String _getMethodName(PaymentMethod method) {
