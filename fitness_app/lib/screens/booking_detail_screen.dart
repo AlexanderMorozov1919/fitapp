@@ -6,8 +6,8 @@ import '../theme/app_styles.dart';
 import '../widgets/common_widgets.dart';
 import '../utils/formatters.dart';
 import '../main.dart';
-import 'cancel_booking_modal.dart';
-import 'reschedule_booking_modal.dart';
+import 'cancel_booking_modal.dart' as cancel_booking_modal;
+import 'reschedule_booking_modal.dart' as reschedule_booking_modal;
 
 class BookingDetailScreen extends StatefulWidget {
   final Booking booking;
@@ -37,7 +37,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             final navigationService = NavigationService.of(context);
-            navigationService?.onBack();
+            if (navigationService != null) {
+              navigationService.onBack();
+            } else {
+              Navigator.of(context).pop();
+            }
           },
         ),
       ),
@@ -301,11 +305,21 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
   void _showCancelDialog() {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('cancel_booking', widget.booking);
+    if (navigationService != null) {
+      navigationService.navigateTo('cancel_booking', widget.booking);
+    } else {
+      // Просто показываем сообщение, так как модальные окна требуют callback функции
+      showSuccessSnackBar(context, 'Функционал отмены бронирования доступен через быстрый доступ');
+    }
   }
 
   void _showRescheduleDialog() {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('reschedule_booking', widget.booking);
+    if (navigationService != null) {
+      navigationService.navigateTo('reschedule_booking', widget.booking);
+    } else {
+      // Просто показываем сообщение, так как модальные окна требуют callback функции
+      showSuccessSnackBar(context, 'Функционал изменения времени доступен через быстрый доступ');
+    }
   }
 }
