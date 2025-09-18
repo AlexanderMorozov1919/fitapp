@@ -42,9 +42,9 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
   @override
   Widget build(BuildContext context) {
     final actions = [
-      _buildActionData(Icons.calendar_today, 'Записать', AppColors.primary, 'record_screen'),
+      _buildActionData(Icons.calendar_today, 'Записать клиента', AppColors.primary, 'record_screen'),
       _buildActionData(Icons.person_add, 'Добавить клиента', AppColors.success, 'add_client'),
-      _buildActionData(Icons.sports_tennis, 'Теннис', AppColors.secondary, 'employee_tennis'),
+      _buildActionData(Icons.sports_tennis, 'Записать на теннис', AppColors.secondary, 'employee_tennis'),
     ];
 
     return SizedBox(
