@@ -1,0 +1,121 @@
+// Моковые данные для KPI сотрудника
+class KpiData {
+  static final Map<String, dynamic> employeeKpi = {
+    'overallStats': {
+      'totalKpi': 87,
+      'attendance': 92,
+      'satisfaction': 4.8,
+      'revenue': 156000,
+      'workload': 78,
+    },
+    'monthlyStats': [
+      {
+        'month': 'Сентябрь 2024',
+        'clients': 24,
+        'revenue': 156000,
+        'rating': 4.8,
+        'tennisTrainings': 12,
+        'gymTrainings': 8,
+        'groupTrainings': 4,
+      },
+      {
+        'month': 'Август 2024',
+        'clients': 22,
+        'revenue': 142000,
+        'rating': 4.7,
+        'tennisTrainings': 10,
+        'gymTrainings': 7,
+        'groupTrainings': 5,
+      },
+      {
+        'month': 'Июль 2024',
+        'clients': 20,
+        'revenue': 135000,
+        'rating': 4.6,
+        'tennisTrainings': 9,
+        'gymTrainings': 6,
+        'groupTrainings': 5,
+      },
+    ],
+    'tennisStats': {
+      'individualTrainings': 45,
+      'groupTrainings': 12,
+      'courtsRented': 18,
+      'avgTrainingDuration': 60,
+      'studentProgress': {
+        'beginnerToIntermediate': 8,
+        'intermediateToAdvanced': 3,
+        'studentRetention': 85,
+        'referralStudents': 5,
+      },
+    },
+    'gymStats': {
+      'individualPrograms': 32,
+      'regularClients': 75,
+      'avgClientTime': 45,
+      'nutritionConsultations': 15,
+      'clientProgress': {
+        'goalAchievement': 70,
+        'clientRetention': 80,
+        'measurementsProgress': 65,
+      },
+    },
+    'groupStats': {
+      'weeklyTrainings': 8,
+      'avgAttendance': 12,
+      'retentionRate': 75,
+      'newParticipants': 10,
+      'trainingFormats': 4,
+      'newPrograms': 2,
+    },
+    'financialStats': {
+      'membershipsSold': 15,
+      'totalSales': 156000,
+      'conversionRate': 65,
+      'averageCheck': 10400,
+      'newClients': 8,
+      'referralRate': 35,
+    },
+    'generalMetrics': {
+      'totalTrainings': 142,
+      'workloadPercentage': 78,
+      'satisfactionScore': 4.8,
+      'complaints': 2,
+      'certifications': 3,
+      'newMethods': 5,
+      'clubEvents': 4,
+    },
+    'bonusKpi': {
+      'tournaments': 2,
+      'juniorWork': 6,
+      'socialContent': 12,
+      'positiveReviews': 8,
+    },
+    'goals': {
+      'monthlyClients': {'current': 24, 'target': 30},
+      'monthlyRevenue': {'current': 156000, 'target': 200000},
+      'satisfactionRating': {'current': 4.8, 'target': 5.0},
+      'tennisTrainings': {'current': 12, 'target': 15},
+      'gymTrainings': {'current': 8, 'target': 10},
+      'groupTrainings': {'current': 4, 'target': 6},
+    },
+    'revenueBreakdown': {
+      'tennis': 72000,
+      'gym': 48000,
+      'group': 24000,
+      'memberships': 12000,
+    },
+  };
+
+  static List<Map<String, dynamic>> get revenueHistory => [
+    {'month': 'Янв', 'revenue': 120000},
+    {'month': 'Фев', 'revenue': 125000},
+    {'month': 'Мар', 'revenue': 130000},
+    {'month': 'Апр', 'revenue': 135000},
+    {'month': 'Май', 'revenue': 140000},
+    {'month': 'Июн', 'revenue': 145000},
+    {'month': 'Июл', 'revenue': 150000},
+    {'month': 'Авг', 'revenue': 155000},
+    {'month': 'Сен', 'revenue': 160000},
+  ];
+}
