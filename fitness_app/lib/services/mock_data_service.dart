@@ -16,6 +16,7 @@ import './mock_data/locker_data.dart' as locker_data;
 import './mock_data/chat_data.dart' as chat_data;
 import './mock_data/notification_data.dart' as notification_data;
 import './mock_data/employee_training_data.dart' as employee_training_data;
+import './mock_data/client_data.dart' as client_data;
 
 class MockDataService {
   static User currentUser = user_data.currentUser;
@@ -28,6 +29,7 @@ class MockDataService {
   static final List<Locker> lockers = locker_data.lockers;
   static Chat userChat = chat_data.mockChat;
   static List<AppNotification> notifications = notification_data.mockNotifications;
+  static final List<User> clients = client_data.clients;
 
   // Метод для обновления данных пользователя
   static void updateUserMembership(Membership newMembership) {

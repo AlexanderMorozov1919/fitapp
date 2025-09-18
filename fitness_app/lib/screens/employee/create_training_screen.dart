@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/mock_data_service.dart';
 import '../../models/booking_model.dart';
+import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
@@ -24,19 +25,31 @@ class CreateTrainingScreen extends StatefulWidget {
 
 class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _clientNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _clientSearchController = TextEditingController();
   
   BookingType _selectedType = BookingType.personalTraining;
   DateTime _selectedStartTime = DateTime.now();
   DateTime _selectedEndTime = DateTime.now().add(Duration(hours: 1));
+  int _selectedDuration = 60; // минут по умолчанию
+  User? _selectedClient;
+
+  final List<int> _availableDurations = [30, 45, 60, 90, 120];
+  List<User> _filteredClients = [];
+  bool _isClientDropdownOpen = false;
+  bool _isTypeDropdownOpen = false;
 
   @override
   void initState() {
     super.initState();
     // Устанавливаем время из свободного слота
     _selectedStartTime = widget.freeTimeSlot.startTime;
-    _selectedEndTime = widget.freeTimeSlot.endTime;
+    _selectedEndTime = _selectedStartTime.add(Duration(minutes: _selectedDuration));
+    _filteredClients = MockDataService.clients;
+    
+    _clientSearchController.addListener(() {
+      _filterClients(_clientSearchController.text);
+    });
   }
 
   @override
@@ -75,35 +88,28 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
               _buildTypeSelector(),
               const SizedBox(height: 24),
 
-              // Имя клиента
+              // Продолжительность
               Text(
-                'Имя клиента',
+                'Продолжительность',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _clientNameController,
-                decoration: InputDecoration(
-                  hintText: 'Введите имя клиента',
-                  border: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.primary),
-                  ),
+              _buildDurationSelector(),
+              const SizedBox(height: 24),
+
+              // Выбор клиента
+              Text(
+                'Клиент',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите имя клиента';
-                  }
-                  return null;
-                },
               ),
+              const SizedBox(height: 8),
+              _buildClientSelector(),
               const SizedBox(height: 24),
 
               // Описание (опционально)
@@ -133,9 +139,20 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
               const SizedBox(height: 32),
 
               // Кнопка создания
-              PrimaryButton(
-                text: 'Создать тренировку',
-                onPressed: _createTraining,
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _createTraining,
+                  style: AppStyles.primaryButtonStyle.copyWith(
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
+                  child: Text(
+                    'Создать тренировку',
+                    style: AppTextStyles.buttonMedium,
+                  ),
+                ),
               ),
             ],
           ),
@@ -152,33 +169,38 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
         borderRadius: AppStyles.borderRadiusLg,
         border: Border.all(color: AppColors.primary.withOpacity(0.3)),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.access_time,
-            color: AppColors.primary,
-            size: 24,
+          Row(
+            children: [
+              Icon(
+                Icons.access_time,
+                color: AppColors.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Доступное время',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Выбранное время',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  widget.freeTimeSlot.formattedTime,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 8),
+          Text(
+            '${DateFormatters.formatTime(widget.freeTimeSlot.startTime)} - ${DateFormatters.formatTime(widget.freeTimeSlot.endTime)}',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Максимальная продолжительность: ${widget.freeTimeSlot.duration.inMinutes} минут',
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textTertiary,
             ),
           ),
         ],
@@ -187,22 +209,129 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
   }
 
   Widget _buildTypeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => setState(() => _isTypeDropdownOpen = !_isTypeDropdownOpen),
+          child: Container(
+            padding: AppStyles.paddingMd,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: AppStyles.borderRadiusMd,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  _getTypeIcon(_selectedType),
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _getTypeName(_selectedType),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                Icon(
+                  _isTypeDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_isTypeDropdownOpen) ...[
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: AppStyles.borderRadiusMd,
+              color: Colors.white,
+            ),
+            child: Column(
+              children: BookingType.values.map((type) {
+                final isSelected = type == _selectedType;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedType = type;
+                      _isTypeDropdownOpen = false;
+                    });
+                  },
+                  child: Container(
+                    padding: AppStyles.paddingMd,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+                      border: Border(
+                        bottom: type != BookingType.values.last
+                            ? BorderSide(color: AppColors.border)
+                            : BorderSide.none,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _getTypeIcon(type),
+                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _getTypeName(type),
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildDurationSelector() {
+    final maxDuration = _getMaxAvailableDuration();
+    final availableDurations = _availableDurations.where((d) => d <= maxDuration).toList();
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.border),
         borderRadius: AppStyles.borderRadiusMd,
       ),
       child: Column(
-        children: BookingType.values.map((type) {
-          final isSelected = type == _selectedType;
+        children: availableDurations.map((duration) {
+          final isSelected = duration == _selectedDuration;
           return GestureDetector(
-            onTap: () => setState(() => _selectedType = type),
+            onTap: () {
+              setState(() {
+                _selectedDuration = duration;
+                _selectedEndTime = _selectedStartTime.add(Duration(minutes: duration));
+              });
+            },
             child: Container(
               padding: AppStyles.paddingMd,
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
                 border: Border(
-                  bottom: type != BookingType.values.last
+                  bottom: duration != availableDurations.last
                       ? BorderSide(color: AppColors.border)
                       : BorderSide.none,
                 ),
@@ -210,14 +339,14 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
               child: Row(
                 children: [
                   Icon(
-                    _getTypeIcon(type),
+                    Icons.timer,
                     color: isSelected ? AppColors.primary : AppColors.textSecondary,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      _getTypeName(type),
+                      '$duration минут',
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: isSelected ? AppColors.primary : AppColors.textPrimary,
                         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
@@ -236,6 +365,168 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
           );
         }).toList(),
       ),
+    );
+  }
+
+  Widget _buildClientSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => setState(() => _isClientDropdownOpen = !_isClientDropdownOpen),
+          child: Container(
+            padding: AppStyles.paddingMd,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: AppStyles.borderRadiusMd,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    Icons.person,
+                    color: AppColors.primary,
+                    size: 16,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _selectedClient != null
+                      ? Text(
+                          '${_selectedClient!.firstName} ${_selectedClient!.lastName}',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textPrimary,
+                          ),
+                        )
+                      : Text(
+                          'Выберите клиента...',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                ),
+                Icon(
+                  _isClientDropdownOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_isClientDropdownOpen) ...[
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: AppStyles.borderRadiusMd,
+              color: Colors.white,
+            ),
+            child: Column(
+              children: [
+                // Поле поиска
+                Padding(
+                  padding: AppStyles.paddingMd,
+                  child: TextFormField(
+                    controller: _clientSearchController,
+                    decoration: InputDecoration(
+                      hintText: 'Поиск клиента...',
+                      prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+                      border: OutlineInputBorder(
+                        borderRadius: AppStyles.borderRadiusSm,
+                        borderSide: BorderSide(color: AppColors.border),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+                // Список клиентов
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _filteredClients.length,
+                    itemBuilder: (context, index) {
+                      final client = _filteredClients[index];
+                      final isSelected = client == _selectedClient;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedClient = client;
+                            _isClientDropdownOpen = false;
+                            _clientSearchController.clear();
+                          });
+                        },
+                        child: Container(
+                          padding: AppStyles.paddingMd,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+                            border: Border(
+                              bottom: index != _filteredClients.length - 1
+                                  ? BorderSide(color: AppColors.border)
+                                  : BorderSide.none,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Icon(
+                                  Icons.person,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${client.firstName} ${client.lastName}',
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                      ),
+                                    ),
+                                    Text(
+                                      client.phone,
+                                      style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -267,9 +558,20 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
 
   void _createTraining() {
     if (_formKey.currentState!.validate()) {
+      if (_selectedClient == null) {
+        showErrorSnackBar(context, 'Пожалуйста, выберите клиента');
+        return;
+      }
+
+      // Проверка доступного времени
+      if (!_isTimeSlotAvailable()) {
+        showErrorSnackBar(context, 'Выбранное время недоступно. Пожалуйста, выберите другую продолжительность.');
+        return;
+      }
+
       final newTraining = Booking(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: MockDataService.currentUser.id,
+        userId: _selectedClient!.id,
         type: _selectedType,
         startTime: _selectedStartTime,
         endTime: _selectedEndTime,
@@ -278,7 +580,7 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
         status: BookingStatus.confirmed,
         price: 0,
         createdAt: DateTime.now(),
-        clientName: _clientNameController.text,
+        clientName: '${_selectedClient!.firstName} ${_selectedClient!.lastName}',
       );
 
       MockDataService.addEmployeeTraining(newTraining);
@@ -299,20 +601,69 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
   String _getTrainingTitle() {
     switch (_selectedType) {
       case BookingType.tennisCourt:
-        return 'Теннисный корт - ${_clientNameController.text}';
+        return 'Теннисный корт - ${_selectedClient!.firstName} ${_selectedClient!.lastName}';
       case BookingType.groupClass:
-        return 'Групповое занятие - ${_clientNameController.text}';
+        return 'Групповое занятие - ${_selectedClient!.firstName} ${_selectedClient!.lastName}';
       case BookingType.personalTraining:
-        return 'Персональная тренировка - ${_clientNameController.text}';
+        return 'Персональная тренировка - ${_selectedClient!.firstName} ${_selectedClient!.lastName}';
       case BookingType.locker:
-        return 'Аренда шкафчика - ${_clientNameController.text}';
+        return 'Аренда шкафчика - ${_selectedClient!.firstName} ${_selectedClient!.lastName}';
     }
+  }
+
+  void _filterClients(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredClients = MockDataService.clients;
+      } else {
+        _filteredClients = MockDataService.clients.where((client) {
+          final fullName = '${client.firstName} ${client.lastName}'.toLowerCase();
+          final phone = client.phone.toLowerCase();
+          return fullName.contains(query.toLowerCase()) || phone.contains(query.toLowerCase());
+        }).toList();
+      }
+    });
+  }
+
+  int _getMaxAvailableDuration() {
+    final nextTraining = _getNextTraining();
+    if (nextTraining == null) {
+      return widget.freeTimeSlot.duration.inMinutes;
+    }
+
+    final timeUntilNextTraining = nextTraining.startTime.difference(_selectedStartTime);
+    return timeUntilNextTraining.inMinutes;
+  }
+
+  Booking? _getNextTraining() {
+    final employeeTrainings = MockDataService.employeeTrainings.where((training) {
+      return training.startTime.isAfter(_selectedStartTime) &&
+             training.startTime.day == _selectedStartTime.day;
+    }).toList();
+
+    if (employeeTrainings.isEmpty) {
+      return null;
+    }
+
+    employeeTrainings.sort((a, b) => a.startTime.compareTo(b.startTime));
+    return employeeTrainings.first;
+  }
+
+  bool _isTimeSlotAvailable() {
+    final nextTraining = _getNextTraining();
+    if (nextTraining == null) {
+      return true;
+    }
+
+    final trainingEndTime = _selectedStartTime.add(Duration(minutes: _selectedDuration));
+    return trainingEndTime.isBefore(nextTraining.startTime) ||
+           trainingEndTime.isAtSameMomentAs(nextTraining.startTime);
   }
 
   @override
   void dispose() {
-    _clientNameController.dispose();
     _descriptionController.dispose();
+    _clientSearchController.dispose();
     super.dispose();
   }
 }
