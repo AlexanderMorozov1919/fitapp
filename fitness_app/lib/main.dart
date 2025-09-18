@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fitness_app/models/booking_model.dart';
 import 'package:fitness_app/models/trainer_model.dart';
+import 'package:fitness_app/models/user_model.dart';
 import 'package:fitness_app/screens/clietnt/home_screen.dart';
+import 'package:fitness_app/screens/employee/home_screen.dart';
+import 'package:fitness_app/screens/employee/schedule_screen.dart';
+import 'package:fitness_app/screens/employee/kpi_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -16,6 +20,7 @@ import 'package:fitness_app/screens/clietnt/trainer_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/schedule_screen.dart';
 import 'package:fitness_app/screens/clietnt/schedule_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/profile_screen.dart';
+import 'package:fitness_app/screens/employee/profile_screen.dart';
 import 'package:fitness_app/screens/clietnt/chat_screen.dart';
 import 'package:fitness_app/screens/clietnt/bookings_screen.dart';
 import 'package:fitness_app/screens/clietnt/payment_screen.dart';
@@ -29,6 +34,7 @@ import 'package:fitness_app/screens/clietnt/membership_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/user_type_selection_screen.dart';
 import 'package:fitness_app/theme/app_colors.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
+import 'package:fitness_app/widgets/employee_bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
 void main() {
@@ -71,46 +77,7 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
     } else if (_selectedUserType == UserType.client) {
       return const FitnessApp();
     } else {
-      // Заглушка для сотрудника
-      return MaterialApp(
-        title: 'Фитнес Трекер - Сотрудник',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-        ),
-        home: SimplePhoneBorder(
-          child: Scaffold(
-            backgroundColor: AppColors.background,
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.work, size: 64, color: AppColors.success),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Панель сотрудника',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Раздел в разработке',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        debugShowCheckedModeBanner: false,
-      );
+      return const EmployeeFitnessApp();
     }
   }
 }
@@ -157,6 +124,151 @@ class FitnessApp extends StatelessWidget {
         child: MainNavigation(),
       ),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class EmployeeFitnessApp extends StatelessWidget {
+  const EmployeeFitnessApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Фитнес Трекер - Сотрудник',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
+        fontFamily: 'Roboto',
+      ),
+      home: const SimplePhoneBorder(
+        child: EmployeeMainNavigation(),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class EmployeeMainNavigation extends StatefulWidget {
+  const EmployeeMainNavigation({super.key});
+
+  @override
+  State<EmployeeMainNavigation> createState() => _EmployeeMainNavigationState();
+}
+
+class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
+  int _currentIndex = 0;
+
+  late final List<Widget> _screens;
+
+  // Дополнительные экраны для быстрого доступа
+  final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
+    'employee_schedule': (_) => const EmployeeScheduleScreen(),
+    'employee_kpi': (_) => const EmployeeKpiScreen(),
+    'employee_clients': (_) => _buildPlaceholderScreen('Клиенты'),
+    'chat': (_) => const ChatScreen(),
+  };
+
+  List<Map<String, dynamic>> _navigationStack = [];
+  
+  String? get _currentQuickAccessScreen => _navigationStack.isNotEmpty
+      ? _navigationStack.last['screen']
+      : null;
+      
+  dynamic get _quickAccessData => _navigationStack.isNotEmpty
+      ? _navigationStack.last['data']
+      : null;
+
+  static Widget _buildPlaceholderScreen(String title) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Text(
+          '$title - Раздел в разработке',
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      EmployeeHomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
+      const EmployeeScheduleScreen(),
+      const EmployeeKpiScreen(),
+      const EmployeeProfileScreen(),
+    ];
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+      _navigationStack.clear(); // Сбрасываем стек при переключении табов
+    });
+  }
+
+  void _navigateToQuickAccess(String screenKey, [dynamic data]) {
+    setState(() {
+      _navigationStack.add({
+        'screen': screenKey,
+        'data': data,
+      });
+    });
+  }
+
+  void _navigateBack() {
+    setState(() {
+      if (_navigationStack.isNotEmpty) {
+        _navigationStack.removeLast();
+      }
+    });
+  }
+
+  void _navigateToHome() {
+    setState(() {
+      _navigationStack.clear(); // Полностью очищаем стек навигации
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget currentBody;
+
+    if (_currentQuickAccessScreen != null) {
+      // Показываем экран быстрого доступа с оберткой для навигации назад
+      currentBody = NavigationService(
+        onBack: _navigateBack,
+        navigateTo: _navigateToQuickAccess,
+        navigateToHome: _navigateToHome,
+        child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
+      );
+    } else {
+      // Показываем основной экран навигации с оберткой для навигации
+      currentBody = NavigationService(
+        onBack: () {
+          // Для основных экранов просто переключаем на главную вкладку
+          if (_currentIndex != 0) {
+            setState(() {
+              _currentIndex = 0;
+            });
+          }
+        },
+        navigateTo: _navigateToQuickAccess,
+        navigateToHome: _navigateToHome,
+        child: _screens[_currentIndex],
+      );
+    }
+
+    return Scaffold(
+      body: currentBody,
+      bottomNavigationBar: EmployeeBottomNavigation(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+      ),
     );
   }
 }

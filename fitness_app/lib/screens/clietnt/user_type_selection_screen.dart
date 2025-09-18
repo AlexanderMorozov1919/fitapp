@@ -4,10 +4,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 
-enum UserType {
-  client,
-  employee,
-}
+import '../../models/user_model.dart';
 
 class UserTypeSelectionScreen extends StatefulWidget {
   final Function(UserType) onUserTypeSelected;
