@@ -188,15 +188,6 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
             // Кнопки действий
             Row(
               children: [
-                Expanded(
-                  child: SecondaryButton(
-                    text: 'Назад',
-                    onPressed: () {
-                      final navigationService = NavigationService.of(context);
-                      navigationService?.onBack();
-                    },
-                  ),
-                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: PrimaryButton(

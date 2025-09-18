@@ -123,7 +123,7 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
           ),
           
           Expanded(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: AppStyles.paddingLg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,12 +143,30 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
                     const SizedBox(height: 24),
                     _buildTotalPrice(),
                     const SizedBox(height: 16),
-                    _buildContinueButton(),
                   ],
                 ],
               ),
             ),
           ),
+
+          // Кнопки внизу экрана (фиксированные)
+          if (_canProceed)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: _buildContinueButton(),
+            ),
         ],
       ),
     );
@@ -313,3 +331,4 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
     return dates.toList()..sort();
   }
 }
+
