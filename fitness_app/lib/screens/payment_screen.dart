@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
+import '../services/notification_service.dart';
 import '../models/payment_model.dart';
 import '../models/user_model.dart';
 import '../models/booking_model.dart';
@@ -386,8 +387,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       _showBookingSuccess(booking);
     } else if (widget.bookingData?['membership'] != null) {
       // Обработка покупки абонемента
-      final membership = widget.bookingData!['membership'] as MembershipType;
-      _showMembershipPurchaseSuccess(membership);
+      final membershipType = widget.bookingData!['membership'] as MembershipType;
+      _showMembershipPurchaseSuccess(membershipType);
     } else {
       // Обработка пополнения счета
       _showPaymentSuccess();
@@ -424,16 +425,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  void _showMembershipPurchaseSuccess(MembershipType membership) {
-    showSuccessSnackBar(
-      context,
-      'Абонемент "${membership.name}" успешно приобретен!',
+  void _showMembershipPurchaseSuccess(MembershipType membershipType) {
+    // Создаем новый абонемент
+    final newMembership = Membership(
+      id: 'mem_${DateTime.now().millisecondsSinceEpoch}',
+      type: membershipType.name,
+      startDate: DateTime.now(),
+      endDate: DateTime.now().add(Duration(days: membershipType.durationDays)),
+      remainingVisits: membershipType.maxVisits == 0 ? -1 : membershipType.maxVisits,
+      price: membershipType.price,
+      includedServices: _getIncludedServicesFromType(membershipType),
+      autoRenew: false,
     );
 
-    // TODO: Обновить данные пользователя с новым абонементом
+    // Обновляем данные пользователя
+    MockDataService.updateUserMembership(newMembership);
+
+    // Показываем уведомление об успехе через NotificationService
+    NotificationService.showSuccess(
+      context,
+      'Абонемент "${membershipType.name}" успешно приобретен!\n'
+      'Действует до ${_formatDate(newMembership.endDate)}',
+    );
+
+    // Очищаем весь стек навигации и возвращаемся на главный экран
+    // Используем тот же подход, что и в _showBookingSuccess
     final navigationService = NavigationService.of(context);
-    // Возвращаемся на экран абонементов
-    navigationService?.onBack();
+    // Очищаем все уровни навигации до главного экрана
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    
+    // Обновляем состояние для отображения изменений
+    setState(() {});
+  }
+
+  List<String> _getIncludedServicesFromType(MembershipType membershipType) {
+    final services = <String>[];
+    if (membershipType.includesGym) services.add('тренажерный зал');
+    if (membershipType.includesGroupClasses) services.add('групповые занятия');
+    if (membershipType.includesTennis) services.add('теннис');
+    return services;
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}';
   }
 
   String _getMethodName(PaymentMethod method) {

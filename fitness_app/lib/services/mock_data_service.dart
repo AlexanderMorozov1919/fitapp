@@ -13,11 +13,29 @@ import './mock_data/membership_type_data.dart' as membership_data;
 import './mock_data/locker_data.dart' as locker_data;
 
 class MockDataService {
-  static final User currentUser = user_data.currentUser;
+  static User currentUser = user_data.currentUser;
   static final List<Trainer> trainers = trainer_data.trainers;
   static final List<TennisCourt> tennisCourts = court_data.tennisCourts;
   static final List<GroupClass> groupClasses = class_data.groupClasses;
   static final List<Booking> userBookings = booking_data.userBookings;
   static final List<MembershipType> membershipTypes = membership_data.membershipTypes;
   static final List<Locker> lockers = locker_data.lockers;
+
+  // Метод для обновления данных пользователя
+  static void updateUserMembership(Membership newMembership) {
+    currentUser = User(
+      id: currentUser.id,
+      firstName: currentUser.firstName,
+      lastName: currentUser.lastName,
+      email: currentUser.email,
+      phone: currentUser.phone,
+      photoUrl: currentUser.photoUrl,
+      birthDate: currentUser.birthDate,
+      preferences: currentUser.preferences,
+      membership: newMembership,
+      bookings: currentUser.bookings,
+      lockers: currentUser.lockers,
+      balance: currentUser.balance,
+    );
+  }
 }

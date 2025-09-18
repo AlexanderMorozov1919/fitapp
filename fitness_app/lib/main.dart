@@ -115,7 +115,7 @@ class _MainNavigationState extends State<MainNavigation> {
     'cancel_booking': (data) => CancelBookingScreen(booking: data),
     'reschedule_booking': (data) => RescheduleBookingScreen(booking: data),
     'class_detail': (data) => ClassDetailScreen(groupClass: data),
-    'membership_detail': (data) => MembershipDetailScreen(membership: data),
+    'membership_detail': (data) => MembershipDetailScreen(membershipData: data),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

@@ -18,8 +18,6 @@ class MembershipScreen extends StatefulWidget {
 }
 
 class _MembershipScreenState extends State<MembershipScreen> {
-  MembershipType? _selectedMembership;
-
   @override
   Widget build(BuildContext context) {
     final currentMembership = MockDataService.currentUser.membership;
@@ -66,17 +64,14 @@ class _MembershipScreenState extends State<MembershipScreen> {
             // Список абонементов
             Column(
               children: MockDataService.membershipTypes.map((membership) {
-                final isSelected = membership == _selectedMembership;
                 final isCurrent = currentMembership?.type == membership.name;
                 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   child: AppCard(
-                    backgroundColor: isSelected 
-                        ? AppColors.primary.withOpacity(0.05) 
-                        : isCurrent
-                            ? AppColors.success.withOpacity(0.1)
-                            : Colors.white,
+                    backgroundColor: isCurrent
+                        ? AppColors.success.withOpacity(0.1)
+                        : Colors.white,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -170,17 +165,13 @@ class _MembershipScreenState extends State<MembershipScreen> {
                         
                         const SizedBox(height: 16),
                         
-                        // Кнопка выбора/покупки
+                        // Кнопка просмотра деталей
                         if (!isCurrent)
-                          PrimaryButton(
-                            text: isSelected ? 'Выбрано' : 'Выбрать',
+                          SecondaryButton(
+                            text: 'Подробнее',
                             onPressed: () {
-                              setState(() {
-                                _selectedMembership = isSelected ? null : membership;
-                              });
+                              _navigateToMembershipDetail(membership);
                             },
-                            isEnabled: !isSelected,
-                            width: double.infinity,
                           ),
                       ],
                     ),
@@ -188,17 +179,6 @@ class _MembershipScreenState extends State<MembershipScreen> {
                 );
               }).toList(),
             ),
-            
-            // Кнопка покупки
-            if (_selectedMembership != null) ...[
-              const SizedBox(height: 24),
-              PrimaryButton(
-                text: 'Купить за ${_selectedMembership?.price} руб.',
-                onPressed: _navigateToPayment,
-                isEnabled: _selectedMembership != null,
-                width: double.infinity,
-              ),
-            ],
             
             const SizedBox(height: 32),
           ],
@@ -419,15 +399,9 @@ class _MembershipScreenState extends State<MembershipScreen> {
     );
   }
 
-  void _navigateToPayment() {
-    if (_selectedMembership == null) return;
-
+  void _navigateToMembershipDetail(MembershipType membership) {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('payment', {
-      'amount': _selectedMembership!.price,
-      'description': 'Покупка абонемента: ${_selectedMembership!.name}',
-      'membership': _selectedMembership,
-    });
+    navigationService?.navigateTo('membership_detail', membership);
   }
 
   void _showMembershipInfo() {

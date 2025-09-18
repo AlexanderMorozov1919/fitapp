@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
+import '../models/payment_model.dart';
+import '../services/mock_data_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
@@ -8,9 +10,11 @@ import '../utils/formatters.dart';
 import '../main.dart';
 
 class MembershipDetailScreen extends StatefulWidget {
-  final Membership membership;
+  final dynamic membershipData; // Может быть Membership или MembershipType
+  final bool isMembershipType;
 
-  const MembershipDetailScreen({super.key, required this.membership});
+  const MembershipDetailScreen({super.key, required this.membershipData})
+      : isMembershipType = membershipData is MembershipType;
 
   @override
   State<MembershipDetailScreen> createState() => _MembershipDetailScreenState();
@@ -19,7 +23,14 @@ class MembershipDetailScreen extends StatefulWidget {
 class _MembershipDetailScreenState extends State<MembershipDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    final membership = widget.membership;
+    final currentMembership = MockDataService.currentUser.membership;
+    final isCurrentMembership = widget.isMembershipType
+        ? currentMembership?.type == (widget.membershipData as MembershipType).name
+        : true;
+    
+    final membership = widget.isMembershipType
+        ? _convertToMembership(widget.membershipData as MembershipType)
+        : widget.membershipData as Membership;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -206,7 +217,16 @@ class _MembershipDetailScreenState extends State<MembershipDetailScreen> {
             const SizedBox(height: 16),
 
             // Кнопки действий
-            if (membership.isActive) ...[
+            if (widget.isMembershipType && !isCurrentMembership) ...[
+              // Кнопка покупки для нового абонемента
+              PrimaryButton(
+                text: 'Купить за ${(widget.membershipData as MembershipType).price} руб.',
+                onPressed: _purchaseMembership,
+                width: double.infinity,
+              ),
+              const SizedBox(height: 16),
+            ] else if (membership.isActive) ...[
+              // Кнопки управления для активного абонемента
               Row(
                 children: [
                   Expanded(
@@ -342,7 +362,7 @@ class _MembershipDetailScreenState extends State<MembershipDetailScreen> {
     // TODO: Реализовать логику отключения автопродления
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Автопродление ${widget.membership.autoRenew ? 'отключено' : 'включено'}'),
+        content: Text('Автопродление ${widget.membershipData.autoRenew ? 'отключено' : 'включено'}'),
         backgroundColor: AppColors.success,
       ),
     );
@@ -351,6 +371,37 @@ class _MembershipDetailScreenState extends State<MembershipDetailScreen> {
   void _renewMembership() {
     // TODO: Реализовать логику продления абонемента
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('payment', widget.membership);
+    navigationService?.navigateTo('payment', widget.membershipData);
+  }
+
+  void _purchaseMembership() {
+    final membershipType = widget.membershipData as MembershipType;
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('payment', {
+      'amount': membershipType.price,
+      'description': 'Покупка абонемента: ${membershipType.name}',
+      'membership': membershipType,
+    });
+  }
+
+  Membership _convertToMembership(MembershipType membershipType) {
+    return Membership(
+      id: 'temp_membership',
+      type: membershipType.name,
+      startDate: DateTime.now(),
+      endDate: DateTime.now().add(Duration(days: membershipType.durationDays)),
+      remainingVisits: membershipType.maxVisits == 0 ? -1 : membershipType.maxVisits,
+      price: membershipType.price,
+      includedServices: _getIncludedServicesFromType(membershipType),
+      autoRenew: false,
+    );
+  }
+
+  List<String> _getIncludedServicesFromType(MembershipType membershipType) {
+    final services = <String>[];
+    if (membershipType.includesGym) services.add('тренажерный зал');
+    if (membershipType.includesGroupClasses) services.add('групповые занятия');
+    if (membershipType.includesTennis) services.add('теннис');
+    return services;
   }
 }
