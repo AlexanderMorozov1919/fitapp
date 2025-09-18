@@ -15,6 +15,7 @@ import './mock_data/membership_type_data.dart' as membership_data;
 import './mock_data/locker_data.dart' as locker_data;
 import './mock_data/chat_data.dart' as chat_data;
 import './mock_data/notification_data.dart' as notification_data;
+import './mock_data/employee_training_data.dart' as employee_training_data;
 
 class MockDataService {
   static User currentUser = user_data.currentUser;
@@ -22,6 +23,7 @@ class MockDataService {
   static final List<TennisCourt> tennisCourts = court_data.tennisCourts;
   static final List<GroupClass> groupClasses = class_data.groupClasses;
   static final List<Booking> userBookings = booking_data.userBookings;
+  static final List<Booking> employeeTrainings = employee_training_data.employeeTrainings;
   static final List<MembershipType> membershipTypes = membership_data.membershipTypes;
   static final List<Locker> lockers = locker_data.lockers;
   static Chat userChat = chat_data.mockChat;

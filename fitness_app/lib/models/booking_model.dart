@@ -29,6 +29,7 @@ class Booking {
   final String? className;
   final String? lockerNumber;
   final DateTime createdAt;
+  final String? clientName;
 
   Booking({
     required this.id,
@@ -45,6 +46,7 @@ class Booking {
     this.className,
     this.lockerNumber,
     required this.createdAt,
+    this.clientName,
   });
 
   bool get isUpcoming => status == BookingStatus.confirmed && 

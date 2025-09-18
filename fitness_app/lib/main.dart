@@ -6,6 +6,7 @@ import 'package:fitness_app/screens/clietnt/home_screen.dart';
 import 'package:fitness_app/screens/employee/home_screen.dart';
 import 'package:fitness_app/screens/employee/schedule_screen.dart';
 import 'package:fitness_app/screens/employee/kpi_screen.dart';
+import 'package:fitness_app/screens/employee/training_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -166,6 +167,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'employee_kpi': (_) => const EmployeeKpiScreen(),
     'employee_clients': (_) => _buildPlaceholderScreen('Клиенты'),
     'chat': (_) => const ChatScreen(),
+    'training_detail': (data) => TrainingDetailScreen(training: data),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
