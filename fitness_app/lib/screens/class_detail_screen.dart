@@ -283,6 +283,6 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
 
   void _bookClass() {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('class_selection', widget.groupClass);
+    navigationService?.navigateTo('schedule_confirmation', widget.groupClass);
   }
 }

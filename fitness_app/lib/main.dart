@@ -14,6 +14,7 @@ import 'package:fitness_app/screens/trainer_service_selection_screen.dart';
 import 'package:fitness_app/screens/trainer_time_selection_screen.dart';
 import 'package:fitness_app/screens/trainer_confirmation_screen.dart';
 import 'package:fitness_app/screens/schedule_screen.dart';
+import 'package:fitness_app/screens/schedule_confirmation_screen.dart';
 import 'package:fitness_app/screens/profile_screen.dart';
 import 'package:fitness_app/screens/bookings_screen.dart';
 import 'package:fitness_app/screens/payment_screen.dart';
@@ -129,6 +130,7 @@ class _MainNavigationState extends State<MainNavigation> {
     'trainer_service_selection': (data) => TrainerServiceSelectionScreen(trainer: data),
     'trainer_time_selection': (data) => TrainerTimeSelectionScreen(selectionData: data),
     'trainer_confirmation': (data) => TrainerConfirmationScreen(bookingData: data),
+    'schedule_confirmation': (data) => ScheduleConfirmationScreen(groupClass: data),
     'payment_success': (data) {
       if (data is Map<String, dynamic>) {
         return PaymentSuccessScreen(

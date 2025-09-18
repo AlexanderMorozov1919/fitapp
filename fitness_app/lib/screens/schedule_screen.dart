@@ -452,7 +452,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   void _selectClass(GroupClass classItem) {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('class_confirmation', classItem);
+    navigationService?.navigateTo('class_detail', classItem);
   }
 
 

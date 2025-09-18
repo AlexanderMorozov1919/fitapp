@@ -38,4 +38,30 @@ class MockDataService {
       balance: currentUser.balance,
     );
   }
+
+  // Метод для обновления количества участников в групповом занятии
+  static void updateGroupClassParticipants(String classId, int newParticipantsCount) {
+    final classIndex = groupClasses.indexWhere((c) => c.id == classId);
+    if (classIndex != -1) {
+      final groupClass = groupClasses[classIndex];
+      // Создаем новый объект с обновленным количеством участников
+      final updatedClass = GroupClass(
+        id: groupClass.id,
+        name: groupClass.name,
+        description: groupClass.description,
+        type: groupClass.type,
+        level: groupClass.level,
+        trainerId: groupClass.trainerId,
+        trainerName: groupClass.trainerName,
+        maxParticipants: groupClass.maxParticipants,
+        currentParticipants: newParticipantsCount,
+        startTime: groupClass.startTime,
+        endTime: groupClass.endTime,
+        location: groupClass.location,
+        price: groupClass.price,
+        requiresMembership: groupClass.requiresMembership,
+      );
+      groupClasses[classIndex] = updatedClass;
+    }
+  }
 }
