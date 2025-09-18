@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:fitness_app/models/booking_model.dart';
+import 'package:fitness_app/models/trainer_model.dart';
 import 'package:fitness_app/screens/home_screen.dart';
-import 'package:fitness_app/screens/tennis_booking_screen.dart';
+import 'package:fitness_app/screens/tennis_selection_screen.dart';
+import 'package:fitness_app/screens/tennis_time_selection_screen.dart';
+import 'package:fitness_app/screens/tennis_confirmation_screen.dart';
+import 'package:fitness_app/screens/class_selection_screen.dart';
+import 'package:fitness_app/screens/class_confirmation_screen.dart';
 import 'package:fitness_app/screens/membership_screen.dart';
 import 'package:fitness_app/screens/trainers_screen.dart';
 import 'package:fitness_app/screens/schedule_screen.dart';
@@ -76,10 +82,32 @@ class _MainNavigationState extends State<MainNavigation> {
 
   // Дополнительные экраны для быстрого доступа
   final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
-    'tennis': (_) => const TennisBookingScreen(),
+    'tennis': (_) => const TennisSelectionScreen(),
+    'tennis_time_selection': (data) => TennisTimeSelectionScreen(selectedCourt: data),
+    'tennis_confirmation': (data) => TennisConfirmationScreen(bookingData: data),
+    'class_selection': (data) {
+      if (data is GroupClass) {
+        return ClassSelectionScreen(preselectedClass: data);
+      } else {
+        return const ClassSelectionScreen();
+      }
+    },
+    'class_confirmation': (data) => ClassConfirmationScreen(selectedClass: data),
     'trainers': (_) => const TrainersScreen(),
     'membership': (_) => const MembershipScreen(),
-    'payment': (_) => const PaymentScreen(),
+    'payment': (data) {
+      if (data is Map<String, dynamic>) {
+        return PaymentScreen(bookingData: data);
+      } else if (data is Booking) {
+        // Конвертируем Booking в Map для обратной совместимости
+        return PaymentScreen(bookingData: {
+          'booking': data,
+          'amount': data.price,
+          'description': 'Оплата бронирования: ${data.title}',
+        });
+      }
+      return PaymentScreen(bookingData: null);
+    },
     'locker': (_) => const LockerScreen(),
     'bookings': (_) => const BookingsScreen(),
     'schedule': (_) => const ScheduleScreen(),

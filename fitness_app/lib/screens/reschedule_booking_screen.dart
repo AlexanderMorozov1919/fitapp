@@ -278,7 +278,7 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
                       Expanded(
                         child: PrimaryButton(
                           text: 'Подтвердить изменение',
-                          onPressed: _confirmReschedule,
+                          onPressed: _selectedTime != null ? _confirmReschedule : () {},
                           isEnabled: _selectedTime != null,
                         ),
                       ),

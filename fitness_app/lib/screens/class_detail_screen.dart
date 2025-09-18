@@ -282,14 +282,7 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
   }
 
   void _bookClass() {
-    // TODO: Реализовать логику записи на занятие
     final navigationService = NavigationService.of(context);
-    // TODO: Реализовать навигацию для записи на занятие
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Запись на занятие успешно оформлена!'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    navigationService?.navigateTo('class_selection', widget.groupClass);
   }
 }

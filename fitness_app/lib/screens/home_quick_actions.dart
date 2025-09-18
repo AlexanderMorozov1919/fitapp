@@ -43,11 +43,12 @@ class _HomeQuickActionsState extends State<HomeQuickActions>
   Widget build(BuildContext context) {
     final actions = [
       _buildActionData(Icons.sports_tennis, 'Теннис', AppColors.secondary, 'tennis'),
-      _buildActionData(Icons.calendar_today, 'Расписание', AppColors.info, 'schedule'),
-      _buildActionData(Icons.people, 'Тренеры', AppColors.accent, 'trainers'),
+      _buildActionData(Icons.fitness_center, 'Занятия', AppColors.info, 'class_selection'),
+      _buildActionData(Icons.calendar_today, 'Расписание', AppColors.accent, 'schedule'),
+      _buildActionData(Icons.people, 'Тренеры', AppColors.warning, 'trainers'),
       _buildActionData(Icons.credit_card, 'Абонемент', AppColors.primary, 'membership'),
       _buildActionData(Icons.account_balance_wallet, 'Пополнить', AppColors.success, 'payment'),
-      _buildActionData(Icons.lock, 'Шкафчик', AppColors.warning, 'locker'),
+      _buildActionData(Icons.lock, 'Шкафчик', AppColors.error, 'locker'),
       _buildActionData(Icons.book_online, 'Мои записи', AppColors.primaryLight, 'bookings'),
     ];
 

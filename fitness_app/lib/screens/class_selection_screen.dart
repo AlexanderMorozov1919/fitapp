@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
+import '../models/booking_model.dart';
 import '../models/trainer_model.dart';
 import '../main.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
+import '../widgets/common_widgets.dart';
 import 'calendar_filter.dart';
 
-class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({super.key});
+class ClassSelectionScreen extends StatefulWidget {
+  final GroupClass? preselectedClass;
+
+  const ClassSelectionScreen({super.key, this.preselectedClass});
 
   @override
-  State<ScheduleScreen> createState() => _ScheduleScreenState();
+  State<ClassSelectionScreen> createState() => _ClassSelectionScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> {
+class _ClassSelectionScreenState extends State<ClassSelectionScreen> {
   DateTime _selectedDate = DateTime.now();
   String _selectedType = 'Все';
   String _selectedLevel = 'Все';
@@ -23,45 +27,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   final List<String> _classTypes = ['Все', 'Йога', 'Кардио', 'Силовые', 'Теннис'];
   final List<String> _classLevels = ['Все', 'Начинающий', 'Средний', 'Продвинутый'];
 
-  @override
-  Widget build(BuildContext context) {
-    final filteredClasses = _filterClasses();
-
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          'Расписание занятий',
-          style: AppTextStyles.headline5,
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: AppColors.textPrimary,
-      ),
-      body: Column(
-        children: [
-          // Фильтры
-          _buildFilters(),
-          
-          
-          // Список занятий
-          Expanded(
-            child: filteredClasses.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: AppStyles.paddingLg,
-                    itemCount: filteredClasses.length,
-                    itemBuilder: (context, index) {
-                      return _buildClassCard(filteredClasses[index]);
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<GroupClass> _filterClasses() {
+  List<GroupClass> get _filteredClasses {
     return MockDataService.groupClasses.where((classItem) {
       final isDateMatch = classItem.startTime.year == _selectedDate.year &&
                          classItem.startTime.month == _selectedDate.month &&
@@ -74,21 +40,76 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }).toList();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // Если есть предварительно выбранное занятие, сразу переходим к подтверждению
+    if (widget.preselectedClass != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _selectClass(widget.preselectedClass!);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: Text(
+          widget.preselectedClass != null ? 'Подтверждение записи' : 'Запись на групповое занятие',
+          style: AppTextStyles.headline5,
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: AppColors.textPrimary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            final navigationService = NavigationService.of(context);
+            navigationService?.onBack();
+          },
+        ),
+      ),
+      body: widget.preselectedClass != null
+          ? _buildPreselectedClassView()
+          : Column(
+              children: [
+                // Календарный фильтр
+                CalendarFilter(
+                  selectedDate: _selectedDate,
+                  onDateSelected: (date) {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                  },
+                  datesWithBookings: _getDatesWithClasses(),
+                ),
+                
+                // Фильтры
+                _buildFilters(),
+                
+                // Список занятий
+                Expanded(
+                  child: _filteredClasses.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          padding: AppStyles.paddingLg,
+                          itemCount: _filteredClasses.length,
+                          itemBuilder: (context, index) {
+                            return _buildClassCard(_filteredClasses[index]);
+                          },
+                        ),
+                ),
+              ],
+            ),
+    );
+  }
+
   Widget _buildFilters() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Календарный фильтр как в "Мои записи"
-        CalendarFilter(
-          selectedDate: _selectedDate,
-          onDateSelected: (date) {
-            setState(() {
-              _selectedDate = date;
-            });
-          },
-          datesWithBookings: _getDatesWithClasses(),
-        ),
-        
         // Кнопка показа/скрытия фильтров
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -131,7 +152,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
         ),
         
-        // Фильтры по типу и уровню (скрыты по умолчанию)
+        // Фильтры по типу и уровню
         if (_showFilters) ...[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -142,7 +163,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Фильтр по типу - горизонтальный скролл
+                // Фильтр по типу
                 Text(
                   'Тип занятия:',
                   style: AppTextStyles.caption.copyWith(
@@ -191,7 +212,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 
                 const SizedBox(height: 16),
                 
-                // Фильтр по уровню - горизонтальный скролл
+                // Фильтр по уровню
                 Text(
                   'Уровень:',
                   style: AppTextStyles.caption.copyWith(
@@ -244,7 +265,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ],
     );
   }
-
 
   Widget _buildClassCard(GroupClass classItem) {
     final isFull = classItem.isFull;
@@ -398,17 +418,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
               
               ElevatedButton(
-               onPressed: canBook ? () => _selectClass(classItem) : null,
-               style: AppStyles.primaryButtonStyle.copyWith(
-                 backgroundColor: MaterialStateProperty.all(
-                   canBook ? AppColors.primary : AppColors.textTertiary,
-                 ),
-               ),
-               child: Text(
-                 isFull ? 'Мест нет' : 'Записаться',
-                 style: AppTextStyles.buttonSmall,
-               ),
-             ),
+                onPressed: canBook ? () => _selectClass(classItem) : null,
+                style: AppStyles.primaryButtonStyle.copyWith(
+                  backgroundColor: MaterialStateProperty.all(
+                    canBook ? AppColors.primary : AppColors.textTertiary,
+                  ),
+                ),
+                child: Text(
+                  isFull ? 'Мест нет' : 'Выбрать',
+                  style: AppTextStyles.buttonSmall,
+                ),
+              ),
             ],
           ),
         ],
@@ -450,27 +470,193 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
+  Widget _buildPreselectedClassView() {
+    final classItem = widget.preselectedClass!;
+    final isFull = classItem.isFull;
+    final canBook = classItem.isAvailable && !isFull;
+    final availableSpots = classItem.maxParticipants - classItem.currentParticipants;
+    final isAlmostFull = availableSpots <= 2;
+
+    Color statusColor;
+    if (isFull) {
+      statusColor = AppColors.error;
+    } else if (isAlmostFull) {
+      statusColor = AppColors.warning;
+    } else {
+      statusColor = AppColors.success;
+    }
+
+    return Padding(
+      padding: AppStyles.paddingLg,
+      child: Column(
+        children: [
+          // Карточка занятия
+          AppCard(
+            padding: AppStyles.paddingLg,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Заголовок и время
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        classItem.name,
+                        style: AppTextStyles.headline6.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: AppStyles.borderRadiusLg,
+                      ),
+                      child: Text(
+                        '${_formatTime(classItem.startTime)}-${_formatTime(classItem.endTime)}',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Информация о классе
+                Text(
+                  '${classItem.type} • ${classItem.level} • ${classItem.trainerName}',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                
+                const SizedBox(height: 8),
+                
+                Text(
+                  classItem.description,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Детали и статус
+                Row(
+                  children: [
+                    // Локация
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: AppColors.textTertiary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          classItem.location,
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const Spacer(),
+                    
+                    // Участники
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.people,
+                          size: 16,
+                          color: AppColors.textTertiary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${classItem.currentParticipants}/${classItem.maxParticipants}',
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const Spacer(),
+                    
+                    // Статус
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: AppStyles.borderRadiusSm,
+                      ),
+                      child: Text(
+                        isFull ? 'Нет мест' : '$availableSpots мест',
+                        style: AppTextStyles.overline.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Цена
+                Text(
+                  classItem.price > 0 ? '${classItem.price} ₽' : 'Бесплатно',
+                  style: AppTextStyles.price.copyWith(
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Кнопки действий
+          Row(
+            children: [
+              Expanded(
+                child: SecondaryButton(
+                  text: 'Назад',
+                  onPressed: () {
+                    final navigationService = NavigationService.of(context);
+                    navigationService?.onBack();
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: PrimaryButton(
+                  text: 'Подтвердить запись',
+                  onPressed: canBook ? () => _selectClass(classItem) : () {},
+                  isEnabled: canBook,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   void _selectClass(GroupClass classItem) {
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('class_confirmation', classItem);
-  }
-
-
-  String _formatDate(DateTime date) {
-    final today = DateTime.now();
-    final tomorrow = today.add(const Duration(days: 1));
-    
-    if (date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day) {
-      return 'Сегодня';
-    } else if (date.year == tomorrow.year &&
-               date.month == tomorrow.month &&
-               date.day == tomorrow.day) {
-      return 'Завтра';
-    } else {
-      return '${date.day}.${date.month}.${date.year}';
-    }
   }
 
   List<DateTime> _getDatesWithClasses() {

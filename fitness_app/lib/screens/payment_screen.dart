@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/mock_data_service.dart';
 import '../models/payment_model.dart';
 import '../models/user_model.dart';
+import '../models/booking_model.dart';
 import '../main.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -9,14 +10,22 @@ import '../theme/app_styles.dart';
 import '../widgets/common_widgets.dart';
 
 class PaymentScreen extends StatefulWidget {
-  const PaymentScreen({super.key});
+  final Map<String, dynamic>? bookingData;
+
+  const PaymentScreen({super.key, this.bookingData});
 
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  double _amount = 0;
+  late double _amount;
+
+  @override
+  void initState() {
+    super.initState();
+    _amount = widget.bookingData?['amount'] ?? 0;
+  }
   PaymentMethod _selectedMethod = PaymentMethod.creditCard;
   final TextEditingController _cardNumberController = TextEditingController();
   final TextEditingController _cardHolderController = TextEditingController();
@@ -62,7 +71,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Пополнение счета'),
+        title: Text(widget.bookingData != null ? 'Оплата бронирования' : 'Пополнение счета'),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -82,15 +91,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
             _buildBalanceCard(user),
             const SizedBox(height: 24),
 
-            // Сумма пополнения
+            // Сумма оплаты
             Text(
-              'Сумма пополнения:',
+              widget.bookingData != null ? 'Сумма к оплате:' : 'Сумма пополнения:',
               style: AppTextStyles.headline5.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 12),
-            _buildAmountSelector(),
+            if (widget.bookingData != null)
+              _buildFixedAmount()
+            else
+              _buildAmountSelector(),
             const SizedBox(height: 24),
 
             // Способ оплаты
@@ -173,6 +185,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
           selectedColor: AppColors.primary,
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildFixedAmount() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: AppStyles.borderRadiusLg,
+        border: Border.all(color: AppColors.primary),
+      ),
+      child: Center(
+        child: Text(
+          '${_amount.toStringAsFixed(0)} руб.',
+          style: AppTextStyles.headline5.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 
@@ -327,20 +359,35 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     }
 
+    final description = widget.bookingData?['description'] ?? 'Пополнение счета';
+    
     showConfirmDialog(
       context: context,
       title: 'Подтверждение оплаты',
       content: 'Сумма: $_amount руб.\n'
-          'Способ: ${_getMethodName(_selectedMethod)}\n\n'
+          'Способ: ${_getMethodName(_selectedMethod)}\n'
+          '${widget.bookingData != null ? 'Назначение: $description\n\n' : '\n'}'
           'Подтвердить оплату?',
       confirmText: 'Оплатить',
       cancelText: 'Отмена',
       confirmColor: AppColors.primary,
     ).then((confirmed) {
       if (confirmed == true) {
-        _showPaymentSuccess();
+        _processPaymentCompletion();
       }
     });
+  }
+
+  void _processPaymentCompletion() {
+    if (widget.bookingData != null) {
+      // Обработка оплаты бронирования
+      final booking = widget.bookingData!['booking'] as Booking;
+      // TODO: Сохранить бронирование в системе
+      _showBookingSuccess(booking);
+    } else {
+      // Обработка пополнения счета
+      _showPaymentSuccess();
+    }
   }
 
   void _showPaymentSuccess() {
@@ -357,6 +404,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
       _expiryController.clear();
       _cvvController.clear();
     });
+  }
+
+  void _showBookingSuccess(Booking booking) {
+    showSuccessSnackBar(
+      context,
+      'Бронирование успешно оплачено и подтверждено!',
+    );
+
+    // TODO: Навигация обратно к списку бронирований или главному экрану
+    final navigationService = NavigationService.of(context);
+    // Очищаем весь стек навигации и возвращаемся на главный экран
+    for (int i = 0; i < 4; i++) { // Очищаем 4 уровня: оплата -> подтверждение -> время -> выбор
+      navigationService?.onBack();
+    }
   }
 
   String _getMethodName(PaymentMethod method) {
