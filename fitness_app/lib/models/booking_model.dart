@@ -123,6 +123,25 @@ class Locker {
     this.rentalEndDate,
   });
 
-  bool get isRented => rentalEndDate != null && 
+  bool get isRented => rentalEndDate != null &&
                       rentalEndDate!.isAfter(DateTime.now());
+}
+
+class FreeTimeSlot {
+  final DateTime startTime;
+  final DateTime endTime;
+  final Duration duration;
+
+  FreeTimeSlot({
+    required this.startTime,
+    required this.endTime,
+  }) : duration = endTime.difference(startTime);
+
+  String get formattedTime {
+    final start = '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+    final end = '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
+    return '$start - $end';
+  }
+
+  bool get isLongEnoughForTraining => duration.inMinutes >= 30;
 }

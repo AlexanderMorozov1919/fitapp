@@ -245,4 +245,71 @@ class MockDataService {
   static void removeNotification(String notificationId) {
     notifications = notifications.where((n) => n.id != notificationId).toList();
   }
+
+  // Метод для получения свободного времени сотрудника на определенную дату
+  static List<FreeTimeSlot> getEmployeeFreeTimeSlots(DateTime date) {
+    final trainings = employeeTrainings.where((training) =>
+      training.startTime.year == date.year &&
+      training.startTime.month == date.month &&
+      training.startTime.day == date.day &&
+      training.status != BookingStatus.cancelled
+    ).toList();
+
+    // Сортируем тренировки по времени начала
+    trainings.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+    final freeSlots = <FreeTimeSlot>[];
+    final workStart = DateTime(date.year, date.month, date.day, 8, 0); // 8:00
+    final workEnd = DateTime(date.year, date.month, date.day, 22, 0); // 22:00
+
+    // Проверяем время до первой тренировки
+    if (trainings.isNotEmpty) {
+      final firstTraining = trainings.first;
+      if (firstTraining.startTime.difference(workStart).inMinutes >= 30) {
+        freeSlots.add(FreeTimeSlot(
+          startTime: workStart,
+          endTime: firstTraining.startTime,
+        ));
+      }
+    } else {
+      // Если нет тренировок, весь день свободен
+      freeSlots.add(FreeTimeSlot(
+        startTime: workStart,
+        endTime: workEnd,
+      ));
+      return freeSlots;
+    }
+
+    // Проверяем время между тренировками
+    for (int i = 0; i < trainings.length - 1; i++) {
+      final currentTraining = trainings[i];
+      final nextTraining = trainings[i + 1];
+      
+      final gap = nextTraining.startTime.difference(currentTraining.endTime);
+      if (gap.inMinutes >= 30) {
+        freeSlots.add(FreeTimeSlot(
+          startTime: currentTraining.endTime,
+          endTime: nextTraining.startTime,
+        ));
+      }
+    }
+
+    // Проверяем время после последней тренировки
+    final lastTraining = trainings.last;
+    if (workEnd.difference(lastTraining.endTime).inMinutes >= 30) {
+      freeSlots.add(FreeTimeSlot(
+        startTime: lastTraining.endTime,
+        endTime: workEnd,
+      ));
+    }
+
+    return freeSlots.where((slot) => slot.isLongEnoughForTraining).toList();
+  }
+
+  // Метод для добавления новой тренировки сотрудника
+  static void addEmployeeTraining(Booking training) {
+    employeeTrainings.add(training);
+    // Обновляем список, чтобы триггерить перерисовку
+    employeeTrainings.sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
 }

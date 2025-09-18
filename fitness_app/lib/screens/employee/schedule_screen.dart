@@ -5,10 +5,12 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
+import '../../widgets/free_time_card.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
 import 'training_detail_screen.dart';
 import '../clietnt/calendar_filter.dart';
+import 'create_training_screen.dart';
 
 class EmployeeScheduleScreen extends StatefulWidget {
   const EmployeeScheduleScreen({super.key});
@@ -81,20 +83,9 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
             ),
           ),
 
-          // Список тренировок
+          // Список тренировок и свободного времени
           Expanded(
-            child: filteredTrainings.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: AppStyles.paddingLg,
-                    itemCount: filteredTrainings.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildTrainingItem(filteredTrainings[index]),
-                      );
-                    },
-                  ),
+            child: _buildScheduleWithFreeTime(filteredTrainings),
           ),
         ],
       ),
@@ -137,6 +128,71 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
       }
     }
     return dates;
+  }
+
+  Widget _buildScheduleWithFreeTime(List<Booking> trainings) {
+    if (trainings.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    // Получаем свободное время
+    final freeTimeSlots = MockDataService.getEmployeeFreeTimeSlots(_selectedDate);
+    
+    // Создаем объединенный список тренировок и свободного времени
+    final allItems = <_ScheduleItem>[];
+    
+    // Добавляем тренировки
+    for (final training in trainings) {
+      allItems.add(_ScheduleItem(type: _ItemType.training, training: training));
+    }
+    
+    // Добавляем свободное время
+    for (final freeTime in freeTimeSlots) {
+      allItems.add(_ScheduleItem(type: _ItemType.freeTime, freeTime: freeTime));
+    }
+    
+    // Сортируем по времени начала
+    allItems.sort((a, b) {
+      final aTime = a.type == _ItemType.training ? a.training!.startTime : a.freeTime!.startTime;
+      final bTime = b.type == _ItemType.training ? b.training!.startTime : b.freeTime!.startTime;
+      return aTime.compareTo(bTime);
+    });
+
+    return ListView.builder(
+      padding: AppStyles.paddingLg,
+      itemCount: allItems.length,
+      itemBuilder: (context, index) {
+        final item = allItems[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: item.type == _ItemType.training
+              ? _buildTrainingItem(item.training!)
+              : FreeTimeCard(
+                  freeTimeSlot: item.freeTime!,
+                  onTap: () => _navigateToCreateTraining(item.freeTime!),
+                ),
+        );
+      },
+    );
+  }
+
+  void _navigateToCreateTraining(FreeTimeSlot freeTimeSlot) {
+    final navigationService = NavigationService.of(context);
+    if (navigationService != null) {
+      navigationService.navigateTo('create_training', freeTimeSlot);
+    } else {
+      // Альтернативная навигация для случаев, когда NavigationService недоступен
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => CreateTrainingScreen(
+            freeTimeSlot: freeTimeSlot,
+            onTrainingCreated: () {
+              setState(() {}); // Обновляем список после создания тренировки
+            },
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildTrainingItem(Booking training) {
@@ -473,4 +529,18 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
     }
     return 'Неизвестно';
   }
+}
+
+enum _ItemType { training, freeTime }
+
+class _ScheduleItem {
+  final _ItemType type;
+  final Booking? training;
+  final FreeTimeSlot? freeTime;
+
+  _ScheduleItem({
+    required this.type,
+    this.training,
+    this.freeTime,
+  });
 }
