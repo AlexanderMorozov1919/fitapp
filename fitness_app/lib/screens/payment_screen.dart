@@ -676,16 +676,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final paymentMethodName = _getMethodName(_selectedMethod);
     String? description;
 
-    if (widget.bookingData != null) {
-      // Обработка оплаты бронирования
-      final booking = widget.bookingData!['booking'] as Booking;
-      description = 'Бронирование: ${booking.className}';
-      // TODO: Сохранить бронирование в системе
-    } else if (widget.bookingData?['membership'] != null) {
+    if (widget.bookingData != null && widget.bookingData!['membership'] != null) {
       // Обработка покупки абонемента
       final membershipType = widget.bookingData!['membership'] as MembershipType;
       description = 'Абонемент: ${membershipType.name}';
       _processMembershipPurchase(membershipType);
+    } else if (widget.bookingData != null && widget.bookingData!['booking'] != null) {
+      // Обработка оплаты бронирования
+      final booking = widget.bookingData!['booking'] as Booking;
+      description = 'Бронирование: ${booking.className}';
+      // TODO: Сохранить бронирование в системе
     } else {
       // Обработка пополнения счета
       description = 'Пополнение баланса';
