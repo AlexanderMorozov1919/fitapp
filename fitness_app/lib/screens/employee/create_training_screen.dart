@@ -73,87 +73,117 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Информация о выбранном времени
-              _buildTimeInfo(),
-              const SizedBox(height: 24),
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: _buildTimeInfo(),
+              ),
+              const SizedBox(height: 20),
 
               // Тип тренировки
-              Text(
-                'Тип тренировки',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Тип тренировки',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildTypeSelector(),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              _buildTypeSelector(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Продолжительность
-              Text(
-                'Продолжительность',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Продолжительность',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDurationSelector(),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              _buildDurationSelector(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Выбор клиента
-              Text(
-                'Клиент',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Клиент',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildClientSelector(),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              _buildClientSelector(),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
               // Описание (опционально)
-              Text(
-                'Описание (необязательно)',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+              AppCard(
+                padding: AppStyles.paddingLg,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Описание (необязательно)',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _descriptionController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Дополнительная информация о тренировке...',
+                        border: OutlineInputBorder(
+                          borderRadius: AppStyles.borderRadiusMd,
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: AppStyles.borderRadiusMd,
+                          borderSide: BorderSide(color: AppColors.primary),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.background,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Дополнительная информация о тренировке...',
-                  border: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: AppStyles.borderRadiusMd,
-                    borderSide: BorderSide(color: AppColors.primary),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Кнопка создания
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: PrimaryButton(
+                  text: 'Создать тренировку',
                   onPressed: _createTraining,
-                  style: AppStyles.primaryButtonStyle.copyWith(
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                  child: Text(
-                    'Создать тренировку',
-                    style: AppTextStyles.buttonMedium,
-                  ),
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -212,20 +242,31 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Красивое поле выбора типа тренировки
         GestureDetector(
           onTap: () => setState(() => _isTypeDropdownOpen = !_isTypeDropdownOpen),
           child: Container(
             padding: AppStyles.paddingMd,
             decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
               border: Border.all(color: AppColors.border),
-              borderRadius: AppStyles.borderRadiusMd,
+              boxShadow: AppColors.shadowSm,
             ),
             child: Row(
               children: [
-                Icon(
-                  _getTypeIcon(_selectedType),
-                  color: AppColors.primary,
-                  size: 20,
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    _getTypeIcon(_selectedType),
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -233,6 +274,7 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
                     _getTypeName(_selectedType),
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -244,60 +286,53 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
             ),
           ),
         ),
+
+        // Выпадающий список типов тренировок
         if (_isTypeDropdownOpen) ...[
           const SizedBox(height: 8),
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
-              borderRadius: AppStyles.borderRadiusMd,
               color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
+              boxShadow: AppColors.shadowLg,
             ),
             child: Column(
               children: BookingType.values.map((type) {
                 final isSelected = type == _selectedType;
-                return GestureDetector(
+                return ListTile(
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Icon(
+                      _getTypeIcon(type),
+                      size: 18,
+                      color: isSelected ? Colors.white : AppColors.primary,
+                    ),
+                  ),
+                  title: Text(
+                    _getTypeName(type),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                  trailing: isSelected
+                      ? Icon(
+                          Icons.check_circle,
+                          color: AppColors.primary,
+                          size: 20,
+                        )
+                      : null,
                   onTap: () {
                     setState(() {
                       _selectedType = type;
                       _isTypeDropdownOpen = false;
                     });
                   },
-                  child: Container(
-                    padding: AppStyles.paddingMd,
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-                      border: Border(
-                        bottom: type != BookingType.values.last
-                            ? BorderSide(color: AppColors.border)
-                            : BorderSide.none,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _getTypeIcon(type),
-                          color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            _getTypeName(type),
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                        if (isSelected)
-                          Icon(
-                            Icons.check,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
-                      ],
-                    ),
-                  ),
                 );
               }).toList(),
             ),
@@ -313,55 +348,47 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border),
-        borderRadius: AppStyles.borderRadiusMd,
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
       ),
       child: Column(
         children: availableDurations.map((duration) {
           final isSelected = duration == _selectedDuration;
-          return GestureDetector(
+          return ListTile(
+            leading: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Icon(
+                Icons.timer,
+                size: 18,
+                color: isSelected ? Colors.white : AppColors.primary,
+              ),
+            ),
+            title: Text(
+              '$duration минут',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+            trailing: isSelected
+                ? Icon(
+                    Icons.check_circle,
+                    color: AppColors.primary,
+                    size: 20,
+                  )
+                : null,
             onTap: () {
               setState(() {
                 _selectedDuration = duration;
                 _selectedEndTime = _selectedStartTime.add(Duration(minutes: duration));
               });
             },
-            child: Container(
-              padding: AppStyles.paddingMd,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-                border: Border(
-                  bottom: duration != availableDurations.last
-                      ? BorderSide(color: AppColors.border)
-                      : BorderSide.none,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.timer,
-                    color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      '$duration минут',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  if (isSelected)
-                    Icon(
-                      Icons.check,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                ],
-              ),
-            ),
           );
         }).toList(),
       ),
@@ -372,37 +399,52 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Красивое поле выбора клиента
         GestureDetector(
           onTap: () => setState(() => _isClientDropdownOpen = !_isClientDropdownOpen),
           child: Container(
             padding: AppStyles.paddingMd,
             decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
               border: Border.all(color: AppColors.border),
-              borderRadius: AppStyles.borderRadiusMd,
+              boxShadow: AppColors.shadowSm,
             ),
             child: Row(
               children: [
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Icon(
                     Icons.person,
                     color: AppColors.primary,
-                    size: 16,
+                    size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _selectedClient != null
-                      ? Text(
-                          '${_selectedClient!.firstName} ${_selectedClient!.lastName}',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textPrimary,
-                          ),
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${_selectedClient!.firstName} ${_selectedClient!.lastName}',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              _selectedClient!.phone,
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         )
                       : Text(
                           'Выберите клиента...',
@@ -419,13 +461,15 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
             ),
           ),
         ),
+
+        // Выпадающий список клиентов
         if (_isClientDropdownOpen) ...[
           const SizedBox(height: 8),
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
-              borderRadius: AppStyles.borderRadiusMd,
               color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
+              boxShadow: AppColors.shadowLg,
             ),
             child: Column(
               children: [
@@ -435,17 +479,19 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
                   child: TextFormField(
                     controller: _clientSearchController,
                     decoration: InputDecoration(
-                      hintText: 'Поиск клиента...',
+                      hintText: 'Поиск по имени или телефону...',
                       prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+                      filled: true,
+                      fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: AppStyles.borderRadiusSm,
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderRadius: AppStyles.borderRadiusMd,
+                        borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     ),
                   ),
                 ),
-                const Divider(height: 1),
+                
                 // Список клиентов
                 Container(
                   constraints: const BoxConstraints(maxHeight: 200),
@@ -455,7 +501,40 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
                     itemBuilder: (context, index) {
                       final client = _filteredClients[index];
                       final isSelected = client == _selectedClient;
-                      return GestureDetector(
+                      return ListTile(
+                        leading: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.primary : AppColors.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Icon(
+                            Icons.person,
+                            size: 18,
+                            color: isSelected ? Colors.white : AppColors.primary,
+                          ),
+                        ),
+                        title: Text(
+                          '${client.firstName} ${client.lastName}',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
+                        subtitle: Text(
+                          client.phone,
+                          style: AppTextStyles.caption.copyWith(
+                            color: isSelected ? AppColors.primary.withOpacity(0.8) : AppColors.textSecondary,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? Icon(
+                                Icons.check_circle,
+                                color: AppColors.primary,
+                                size: 20,
+                              )
+                            : null,
                         onTap: () {
                           setState(() {
                             _selectedClient = client;
@@ -463,61 +542,6 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
                             _clientSearchController.clear();
                           });
                         },
-                        child: Container(
-                          padding: AppStyles.paddingMd,
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-                            border: Border(
-                              bottom: index != _filteredClients.length - 1
-                                  ? BorderSide(color: AppColors.border)
-                                  : BorderSide.none,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Icon(
-                                  Icons.person,
-                                  color: AppColors.primary,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${client.firstName} ${client.lastName}',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                      ),
-                                    ),
-                                    Text(
-                                      client.phone,
-                                      style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (isSelected)
-                                Icon(
-                                  Icons.check,
-                                  color: AppColors.primary,
-                                  size: 20,
-                                ),
-                            ],
-                          ),
-                        ),
                       );
                     },
                   ),
