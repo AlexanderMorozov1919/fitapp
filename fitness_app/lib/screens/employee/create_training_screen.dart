@@ -11,12 +11,10 @@ import '../../main.dart';
 
 class CreateTrainingScreen extends StatefulWidget {
   final FreeTimeSlot freeTimeSlot;
-  final VoidCallback onTrainingCreated;
 
   const CreateTrainingScreen({
     super.key,
     required this.freeTimeSlot,
-    required this.onTrainingCreated,
   });
 
   @override
@@ -608,7 +606,6 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
       );
 
       MockDataService.addEmployeeTraining(newTraining);
-      widget.onTrainingCreated();
       
       showSuccessSnackBar(context, 'Тренировка успешно создана!');
       

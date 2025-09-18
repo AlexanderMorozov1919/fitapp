@@ -21,6 +21,7 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
   late DateTime _selectedDate;
   late List<Booking> _filteredTrainings;
   late List<FreeTimeSlot> _freeTimeSlots;
+  bool _showOnlyFreeTime = false;
 
   @override
   void initState() {
@@ -121,9 +122,16 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
     });
   }
 
+  void _toggleFreeTimeFilter() {
+    setState(() {
+      _showOnlyFreeTime = !_showOnlyFreeTime;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final datesWithTrainings = _getDatesWithTrainings();
+    final filteredTrainings = _showOnlyFreeTime ? [] : _filteredTrainings;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -155,6 +163,28 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
             onDateSelected: _onDateSelected,
             datesWithBookings: datesWithTrainings,
           ),
+
+          // Фильтр свободного времени
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Colors.white,
+            child: Row(
+              children: [
+                Text(
+                  'Только свободное время:',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Switch(
+                  value: _showOnlyFreeTime,
+                  onChanged: (value) => _toggleFreeTimeFilter(),
+                  activeColor: AppColors.primary,
+                ),
+              ],
+            ),
+          ),
           
           Expanded(
             child: SingleChildScrollView(
@@ -162,8 +192,8 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Запланированные тренировки
-                  if (_filteredTrainings.isNotEmpty) ...[
+                  // Запланированные тренировки (только если не включен фильтр свободного времени)
+                  if (!_showOnlyFreeTime && filteredTrainings.isNotEmpty) ...[
                     Text(
                       'Запланированные тренировки',
                       style: AppTextStyles.headline6.copyWith(
@@ -172,7 +202,7 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    ..._filteredTrainings.map((training) => Padding(
+                    ...filteredTrainings.map((training) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _buildTrainingItem(training),
                         )).toList(),
@@ -180,16 +210,29 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
                   ],
 
                   // Свободное время
-                  Text(
-                    'Свободное время',
-                    style: AppTextStyles.headline6.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
+                  if (!_showOnlyFreeTime) ...[
+                    Text(
+                      'Свободное время',
+                      style: AppTextStyles.headline6.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  
-                  if (_freeTimeSlots.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    
+                    if (_freeTimeSlots.isNotEmpty) ...[
+                      ..._freeTimeSlots.map((slot) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: FreeTimeCard(
+                              freeTimeSlot: slot,
+                              onTap: () => _onFreeTimeTap(slot),
+                            ),
+                          )).toList(),
+                    ] else ...[
+                      _buildEmptyState(),
+                    ],
+                  ] else if (_freeTimeSlots.isNotEmpty) ...[
+                    // Когда фильтр включен, показываем только свободное время без заголовка
                     ..._freeTimeSlots.map((slot) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: FreeTimeCard(
@@ -198,6 +241,7 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
                           ),
                         )).toList(),
                   ] else ...[
+                    // Когда фильтр включен, но нет свободного времени
                     _buildEmptyState(),
                   ],
                 ],

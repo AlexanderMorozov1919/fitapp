@@ -186,9 +186,6 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
         MaterialPageRoute(
           builder: (context) => CreateTrainingScreen(
             freeTimeSlot: freeTimeSlot,
-            onTrainingCreated: () {
-              setState(() {}); // Обновляем список после создания тренировки
-            },
           ),
         ),
       );

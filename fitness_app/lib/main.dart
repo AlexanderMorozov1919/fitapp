@@ -13,6 +13,7 @@ import 'package:fitness_app/screens/employee/add_client_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_confirmation_screen.dart';
+import 'package:fitness_app/screens/employee/record_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -176,13 +177,11 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'training_detail': (data) => TrainingDetailScreen(training: data),
     'create_training': (data) => CreateTrainingScreen(
           freeTimeSlot: data,
-          onTrainingCreated: () {
-            // Обновление будет происходить автоматически при возврате на экран расписания
-          },
         ),
     'employee_schedule_calendar': (_) => EmployeeScheduleScreen(),
     'add_client': (_) => const AddClientScreen(),
     'employee_tennis': (_) => EmployeeTennisScreen(),
+    'record_screen': (_) => const RecordScreen(),
     'employee_tennis_time_selection': (data) => EmployeeTennisTimeSelectionScreen(
           selectedCourt: data['court'],
           selectedClient: data['client'],
