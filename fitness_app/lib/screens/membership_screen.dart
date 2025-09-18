@@ -66,114 +66,132 @@ class _MembershipScreenState extends State<MembershipScreen> {
               children: MockDataService.membershipTypes.map((membership) {
                 final isCurrent = currentMembership?.type == membership.name;
                 
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  child: AppCard(
-                    backgroundColor: isCurrent
-                        ? AppColors.success.withOpacity(0.1)
-                        : Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Заголовок и статус
-                        Row(
+                return MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      _navigateToMembershipDetail(membership);
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: AppStyles.borderRadiusLg,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: AppCard(
+                        backgroundColor: isCurrent
+                            ? AppColors.success.withOpacity(0.1)
+                            : Colors.white,
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isCurrent ? AppColors.success : AppColors.primary,
-                                borderRadius: AppStyles.borderRadiusFull,
-                              ),
-                              child: Icon(
-                                isCurrent ? Icons.check_circle : Icons.credit_card,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                            // Заголовок и статус
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: isCurrent ? AppColors.success : AppColors.primary,
+                                    borderRadius: AppStyles.borderRadiusFull,
+                                  ),
+                                  child: Icon(
+                                    isCurrent ? Icons.check_circle : Icons.credit_card,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                        child: Text(
-                                          membership.name,
-                                          style: AppTextStyles.headline6.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: isCurrent ? AppColors.success : AppColors.textPrimary,
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              membership.name,
+                                              style: AppTextStyles.headline6.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: isCurrent ? AppColors.success : AppColors.textPrimary,
+                                              ),
+                                            ),
                                           ),
+                                          if (isCurrent)
+                                            StatusBadge(
+                                              text: 'Активен',
+                                              color: AppColors.success,
+                                            ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        membership.description,
+                                        style: AppTextStyles.caption.copyWith(
+                                          color: AppColors.textSecondary,
                                         ),
                                       ),
-                                      if (isCurrent)
-                                        StatusBadge(
-                                          text: 'Активен',
-                                          color: AppColors.success,
-                                        ),
                                     ],
                                   ),
-                                  const SizedBox(height: 4),
+                                ),
+                              ],
+                            ),
+                            
+                            const SizedBox(height: 16),
+                            
+                            // Цена и длительность
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.05),
+                                borderRadius: AppStyles.borderRadiusMd,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
                                   Text(
-                                    membership.description,
-                                    style: AppTextStyles.caption.copyWith(
+                                    '${membership.price} руб.',
+                                    style: AppTextStyles.price.copyWith(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${membership.durationDays} дней',
+                                    style: AppTextStyles.bodyMedium.copyWith(
                                       color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                            
+                            const SizedBox(height: 16),
+                            
+                            // Включенные услуги
+                            _buildMembershipFeatures(membership),
+                            
+                            const SizedBox(height: 16),
+                            
+                            // Кнопка просмотра деталей
+                            if (!isCurrent)
+                              SecondaryButton(
+                                text: 'Подробнее',
+                                onPressed: () {
+                                  _navigateToMembershipDetail(membership);
+                                },
+                              ),
                           ],
                         ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Цена и длительность
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.05),
-                            borderRadius: AppStyles.borderRadiusMd,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${membership.price} руб.',
-                                style: AppTextStyles.price.copyWith(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Text(
-                                '${membership.durationDays} дней',
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Включенные услуги
-                        _buildMembershipFeatures(membership),
-                        
-                        const SizedBox(height: 16),
-                        
-                        // Кнопка просмотра деталей
-                        if (!isCurrent)
-                          SecondaryButton(
-                            text: 'Подробнее',
-                            onPressed: () {
-                              _navigateToMembershipDetail(membership);
-                            },
-                          ),
-                      ],
+                      ),
                     ),
                   ),
                 );
