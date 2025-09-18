@@ -3,6 +3,7 @@ import '../../services/mock_data_service.dart';
 import '../../models/booking_model.dart';
 import 'employee_welcome_section.dart';
 import 'employee_schedule_section.dart';
+import 'employee_quick_actions.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
@@ -35,6 +36,17 @@ class _EmployeeHomeScreenState extends State<EmployeeHomeScreen> {
             EmployeeWelcomeSection(
               user: MockDataService.currentUser,
               onQuickAccessNavigate: widget.onQuickAccessNavigate,
+            ),
+            const SizedBox(height: 16),
+
+            // Быстрые команды
+            HomeSectionWidget(
+              title: 'Быстрые команды',
+              isExpanded: _showSchedule,
+              onToggle: () => setState(() => _showSchedule = !_showSchedule),
+              child: EmployeeQuickActions(
+                onQuickAccessNavigate: widget.onQuickAccessNavigate,
+              ),
             ),
             const SizedBox(height: 16),
 

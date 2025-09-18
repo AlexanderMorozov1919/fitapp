@@ -4,10 +4,15 @@ import 'package:fitness_app/models/trainer_model.dart';
 import 'package:fitness_app/models/user_model.dart';
 import 'package:fitness_app/screens/clietnt/home_screen.dart';
 import 'package:fitness_app/screens/employee/home_screen.dart';
-import 'package:fitness_app/screens/employee/schedule_screen.dart';
+import 'package:fitness_app/screens/employee/schedule_screen.dart' as employee_schedule;
 import 'package:fitness_app/screens/employee/kpi_screen.dart';
 import 'package:fitness_app/screens/employee/training_detail_screen.dart';
 import 'package:fitness_app/screens/employee/create_training_screen.dart';
+import 'package:fitness_app/screens/employee/employee_schedule_screen.dart';
+import 'package:fitness_app/screens/employee/add_client_screen.dart';
+import 'package:fitness_app/screens/employee/employee_tennis_screen.dart';
+import 'package:fitness_app/screens/employee/employee_tennis_time_selection_screen.dart';
+import 'package:fitness_app/screens/employee/employee_tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -164,7 +169,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
 
   // Дополнительные экраны для быстрого доступа
   final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
-    'employee_schedule': (_) => const EmployeeScheduleScreen(),
+    'employee_schedule': (_) => const employee_schedule.EmployeeScheduleScreen(),
     'employee_kpi': (_) => const EmployeeKpiScreen(),
     'employee_clients': (_) => _buildPlaceholderScreen('Клиенты'),
     'chat': (_) => const ChatScreen(),
@@ -174,6 +179,16 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
           onTrainingCreated: () {
             // Обновление будет происходить автоматически при возврате на экран расписания
           },
+        ),
+    'employee_schedule_calendar': (_) => EmployeeScheduleScreen(onNavigate: (String screen, [dynamic data]) {}),
+    'add_client': (_) => AddClientScreen(onNavigate: (String screen, [dynamic data]) {}),
+    'employee_tennis': (_) => EmployeeTennisScreen(),
+    'employee_tennis_time_selection': (data) => EmployeeTennisTimeSelectionScreen(
+          selectedCourt: data['court'],
+          selectedClient: data['client'],
+        ),
+    'employee_tennis_confirmation': (data) => EmployeeTennisConfirmationScreen(
+          bookingData: data,
         ),
   };
 
@@ -207,7 +222,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     super.initState();
     _screens = [
       EmployeeHomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
-      const EmployeeScheduleScreen(),
+      const employee_schedule.EmployeeScheduleScreen(),
       const EmployeeKpiScreen(),
       const EmployeeProfileScreen(),
     ];
