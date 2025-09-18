@@ -58,10 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: HomeQuickActions(onQuickAccessNavigate: widget.onQuickAccessNavigate),
             ),
 
-            // Новости фитнес-центра
-            const SizedBox(height: 12),
-            NewsBannerWidget(onBannerTap: widget.onQuickAccessNavigate),
-
             // Объединенная секция бронирований с фильтром
             if (allBookings.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -77,6 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
+
+            // Новости фитнес-центра
+            const SizedBox(height: 12),
+            NewsBannerWidget(onBannerTap: widget.onQuickAccessNavigate),
 
             // Групповые занятия сегодня
             const SizedBox(height: 12),
