@@ -22,7 +22,7 @@ class MockDataService {
   static final List<Booking> userBookings = booking_data.userBookings;
   static final List<MembershipType> membershipTypes = membership_data.membershipTypes;
   static final List<Locker> lockers = locker_data.lockers;
-  static final Chat userChat = chat_data.mockChat;
+  static Chat userChat = chat_data.mockChat;
 
   // Метод для обновления данных пользователя
   static void updateUserMembership(Membership newMembership) {
@@ -66,5 +66,39 @@ class MockDataService {
       );
       groupClasses[classIndex] = updatedClass;
     }
+  
+  }
+
+  // Метод для добавления сообщения в чат
+  static void addMessageToChat(ChatMessage message) {
+    final currentMessages = userChat.messages;
+    userChat = Chat(
+      id: userChat.id,
+      userId: userChat.userId,
+      adminId: userChat.adminId,
+      adminName: userChat.adminName,
+      adminAvatar: userChat.adminAvatar,
+      createdAt: userChat.createdAt,
+      updatedAt: DateTime.now(),
+      messages: [...currentMessages, message],
+      isActive: userChat.isActive,
+      unreadCount: message.isAdminMessage ? userChat.unreadCount + 1 : userChat.unreadCount,
+    );
+  }
+
+  // Метод для обновления состояния прочтения сообщений
+  static void markMessagesAsRead() {
+    userChat = Chat(
+      id: userChat.id,
+      userId: userChat.userId,
+      adminId: userChat.adminId,
+      adminName: userChat.adminName,
+      adminAvatar: userChat.adminAvatar,
+      createdAt: userChat.createdAt,
+      updatedAt: DateTime.now(),
+      messages: userChat.messages,
+      isActive: userChat.isActive,
+      unreadCount: 0,
+    );
   }
 }

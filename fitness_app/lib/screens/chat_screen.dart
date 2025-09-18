@@ -36,17 +36,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom({bool animated = true}) {
-    if (_scrollController.hasClients) {
-      if (animated) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      } else {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        if (animated) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        } else {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        }
       }
-    }
+    });
   }
 
   void _sendMessage() {
@@ -63,20 +65,15 @@ class _ChatScreenState extends State<ChatScreen> {
       isRead: true,
     );
 
+    // Сохраняем сообщение в сервисе
+    MockDataService.addMessageToChat(newMessage);
+    
     setState(() {
-      _chat = Chat(
-        id: _chat.id,
-        userId: _chat.userId,
-        adminId: _chat.adminId,
-        adminName: _chat.adminName,
-        adminAvatar: _chat.adminAvatar,
-        createdAt: _chat.createdAt,
-        updatedAt: DateTime.now(),
-        messages: [..._chat.messages, newMessage],
-        isActive: _chat.isActive,
-        unreadCount: _chat.unreadCount,
-      );
+      _chat = MockDataService.userChat;
     });
+    
+    // Прокручиваем после обновления UI
+    _scrollToBottom();
 
     _messageController.clear();
     _scrollToBottom();
@@ -96,20 +93,15 @@ class _ChatScreenState extends State<ChatScreen> {
           senderAvatar: _chat.adminAvatar,
         );
 
+        // Сохраняем ответ администратора в сервисе
+        MockDataService.addMessageToChat(adminReply);
+        
         setState(() {
-          _chat = Chat(
-            id: _chat.id,
-            userId: _chat.userId,
-            adminId: _chat.adminId,
-            adminName: _chat.adminName,
-            adminAvatar: _chat.adminAvatar,
-            createdAt: _chat.createdAt,
-            updatedAt: DateTime.now(),
-            messages: [..._chat.messages, adminReply],
-            isActive: _chat.isActive,
-            unreadCount: _chat.unreadCount + 1,
-          );
+          _chat = MockDataService.userChat;
         });
+        
+        // Прокручиваем после обновления UI
+        _scrollToBottom();
         _scrollToBottom();
       }
     });
@@ -357,7 +349,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: AppColors.background,
                 child: ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120), // Увеличиваем отступ снизу для поля ввода
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16), // Минимальный отступ снизу
                   itemCount: _chat.messages.length,
                   itemBuilder: (context, index) {
                     return _buildMessageBubble(_chat.messages[index]);
