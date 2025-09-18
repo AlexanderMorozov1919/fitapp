@@ -1,39 +1,9 @@
 import '../../models/booking_model.dart';
 
 final List<Booking> userBookings = [
-  // Бронирования на сегодня (17 сентября)
+  // Бронирования на сегодня (18 сентября)
   Booking(
     id: 'booking_001',
-    userId: 'user_001',
-    type: BookingType.groupClass,
-    startTime: DateTime(2025, 9, 17, 18, 0),
-    endTime: DateTime(2025, 9, 17, 19, 0),
-    title: 'HIIT тренировка',
-    description: 'С Марией Ивановой',
-    status: BookingStatus.confirmed,
-    price: 600,
-    trainerId: 'trainer_001',
-    className: 'HIIT тренировка',
-    createdAt: DateTime(2025, 9, 12),
-  ),
-  Booking(
-    id: 'booking_002',
-    userId: 'user_001',
-    type: BookingType.groupClass,
-    startTime: DateTime(2025, 9, 17, 19, 30),
-    endTime: DateTime(2025, 9, 17, 20, 30),
-    title: 'Массаж расслабляющий',
-    description: 'С Анной Ковалевой',
-    status: BookingStatus.confirmed,
-    price: 2500,
-    trainerId: 'trainer_massage',
-    className: 'Массаж расслабляющий',
-    createdAt: DateTime(2025, 9, 13),
-  ),
-
-  // Бронирования на завтра (18 сентября)
-  Booking(
-    id: 'booking_003',
     userId: 'user_001',
     type: BookingType.tennisCourt,
     startTime: DateTime(2025, 9, 18, 9, 0),
@@ -46,7 +16,7 @@ final List<Booking> userBookings = [
     createdAt: DateTime(2025, 9, 10),
   ),
   Booking(
-    id: 'booking_004',
+    id: 'booking_002',
     userId: 'user_001',
     type: BookingType.groupClass,
     startTime: DateTime(2025, 9, 18, 17, 0),
@@ -60,9 +30,9 @@ final List<Booking> userBookings = [
     createdAt: DateTime(2025, 9, 14),
   ),
 
-  // Бронирования на послезавтра (19 сентября)
+  // Бронирования на завтра (19 сентября)
   Booking(
-    id: 'booking_005',
+    id: 'booking_003',
     userId: 'user_001',
     type: BookingType.personalTraining,
     startTime: DateTime(2025, 9, 19, 16, 0),
@@ -76,7 +46,7 @@ final List<Booking> userBookings = [
     createdAt: DateTime(2025, 9, 14),
   ),
   Booking(
-    id: 'booking_006',
+    id: 'booking_004',
     userId: 'user_001',
     type: BookingType.groupClass,
     startTime: DateTime(2025, 9, 19, 19, 0),
@@ -92,7 +62,7 @@ final List<Booking> userBookings = [
 
   // Бронирования на 20 сентября
   Booking(
-    id: 'booking_007',
+    id: 'booking_005',
     userId: 'user_001',
     type: BookingType.groupClass,
     startTime: DateTime(2025, 9, 20, 12, 0),
@@ -105,10 +75,23 @@ final List<Booking> userBookings = [
     className: 'Стретчинг',
     createdAt: DateTime(2025, 9, 16),
   ),
+  Booking(
+    id: 'booking_006',
+    userId: 'user_001',
+    type: BookingType.locker,
+    startTime: DateTime(2025, 9, 20, 8, 0),
+    endTime: DateTime(2025, 9, 20, 22, 0),
+    title: 'Аренда шкафчика',
+    description: 'Шкафчик A-103',
+    status: BookingStatus.pending,
+    price: 150,
+    lockerNumber: 'A-103',
+    createdAt: DateTime(2025, 9, 19),
+  ),
 
   // Бронирования на 21 сентября
   Booking(
-    id: 'booking_008',
+    id: 'booking_007',
     userId: 'user_001',
     type: BookingType.groupClass,
     startTime: DateTime(2025, 9, 21, 17, 0),
@@ -122,7 +105,7 @@ final List<Booking> userBookings = [
     createdAt: DateTime(2025, 9, 16),
   ),
   Booking(
-    id: 'booking_009',
+    id: 'booking_008',
     userId: 'user_001',
     type: BookingType.tennisCourt,
     startTime: DateTime(2025, 9, 21, 19, 0),
@@ -137,7 +120,7 @@ final List<Booking> userBookings = [
 
   // Бронирования на 22 сентября
   Booking(
-    id: 'booking_010',
+    id: 'booking_009',
     userId: 'user_001',
     type: BookingType.personalTraining,
     startTime: DateTime(2025, 9, 22, 10, 0),
@@ -149,5 +132,107 @@ final List<Booking> userBookings = [
     trainerId: 'trainer_002',
     className: 'Силовая тренировка',
     createdAt: DateTime(2025, 9, 17),
+  ),
+  Booking(
+    id: 'booking_010',
+    userId: 'user_001',
+    type: BookingType.groupClass,
+    startTime: DateTime(2025, 9, 22, 18, 30),
+    endTime: DateTime(2025, 9, 22, 19, 30),
+    title: 'Йога для начинающих',
+    description: 'С Еленой Сидоровой',
+    status: BookingStatus.pending,
+    price: 450,
+    trainerId: 'trainer_003',
+    className: 'Йога для начинающих',
+    createdAt: DateTime(2025, 9, 18),
+  ),
+
+  // Бронирования на 23 сентября
+  Booking(
+    id: 'booking_011',
+    userId: 'user_001',
+    type: BookingType.tennisCourt,
+    startTime: DateTime(2025, 9, 15, 14, 0), // Прошедшая дата
+    endTime: DateTime(2025, 9, 15, 15, 30),
+    title: 'Теннисный корт',
+    description: 'Корт 3 - Хард',
+    status: BookingStatus.completed,
+    price: 2250,
+    courtNumber: 'Корт 3',
+    createdAt: DateTime(2025, 9, 12),
+  ),
+  Booking(
+    id: 'booking_012',
+    userId: 'user_001',
+    type: BookingType.personalTraining,
+    startTime: DateTime(2025, 9, 16, 16, 0), // Прошедшая дата
+    endTime: DateTime(2025, 9, 16, 17, 0),
+    title: 'Персональная тренировка',
+    description: 'С Марией Ивановой',
+    status: BookingStatus.completed,
+    price: 1500,
+    trainerId: 'trainer_001',
+    className: 'Персональная тренировка',
+    createdAt: DateTime(2025, 9, 10),
+  ),
+
+  // Бронирования на 24 сентября
+  Booking(
+    id: 'booking_013',
+    userId: 'user_001',
+    type: BookingType.groupClass,
+    startTime: DateTime(2025, 9, 17, 9, 0), // Прошедшая дата
+    endTime: DateTime(2025, 9, 17, 10, 0),
+    title: 'Утренняя йога',
+    description: 'С Еленой Сидоровой',
+    status: BookingStatus.completed,
+    price: 500,
+    trainerId: 'trainer_003',
+    className: 'Утренняя йога',
+    createdAt: DateTime(2025, 9, 12),
+  ),
+  Booking(
+    id: 'booking_014',
+    userId: 'user_001',
+    type: BookingType.personalTraining,
+    startTime: DateTime(2025, 9, 24, 19, 0),
+    endTime: DateTime(2025, 9, 24, 20, 0),
+    title: 'Спортивный массаж',
+    description: 'С Анной Ковалевой',
+    status: BookingStatus.pending,
+    price: 3000,
+    trainerId: 'trainer_massage',
+    className: 'Спортивный массаж',
+    createdAt: DateTime(2025, 9, 20),
+  ),
+
+  // Бронирования на 25 сентября
+  Booking(
+    id: 'booking_015',
+    userId: 'user_001',
+    type: BookingType.tennisCourt,
+    startTime: DateTime(2025, 9, 25, 10, 0),
+    endTime: DateTime(2025, 9, 25, 11, 30),
+    title: 'Теннисный корт',
+    description: 'Корт 2 - Грунт',
+    status: BookingStatus.confirmed,
+    price: 1800,
+    courtNumber: 'Корт 2',
+    createdAt: DateTime(2025, 9, 21),
+  ),
+  Booking(
+    id: 'booking_016',
+    userId: 'user_001',
+    type: BookingType.groupClass,
+    startTime: DateTime(2025, 9, 25, 18, 0),
+    endTime: DateTime(2025, 9, 25, 19, 0),
+    title: 'HIIT тренировка',
+    description: 'С Дмитрием Петровым',
+    status: BookingStatus.confirmed,
+    price: 600,
+    trainerId: 'trainer_002',
+    className: 'HIIT тренировка',
+    createdAt: DateTime(2025, 9, 22),
   ),
 ];

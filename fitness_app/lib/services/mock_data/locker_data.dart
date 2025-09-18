@@ -1,6 +1,7 @@
 import '../../models/booking_model.dart';
 
 final List<Locker> lockers = [
+  // Секция A - 1 этаж
   Locker(
     id: 'locker_001',
     number: 'A-101',
@@ -12,8 +13,9 @@ final List<Locker> lockers = [
     id: 'locker_002',
     number: 'A-102',
     size: 'Стандартный',
-    isAvailable: true,
+    isAvailable: false,
     pricePerDay: 100,
+    rentalEndDate: DateTime(2025, 9, 25),
   ),
   Locker(
     id: 'locker_003',
@@ -32,9 +34,156 @@ final List<Locker> lockers = [
   ),
   Locker(
     id: 'locker_005',
+    number: 'A-105',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+  Locker(
+    id: 'locker_006',
+    number: 'A-106',
+    size: 'Большой',
+    isAvailable: false,
+    pricePerDay: 150,
+    rentalEndDate: DateTime(2025, 10, 1),
+  ),
+
+  // Секция B - 2 этаж
+  Locker(
+    id: 'locker_007',
     number: 'B-201',
     size: 'Большой',
     isAvailable: true,
     pricePerDay: 150,
+  ),
+  Locker(
+    id: 'locker_008',
+    number: 'B-202',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+  Locker(
+    id: 'locker_009',
+    number: 'B-203',
+    size: 'Стандартный',
+    isAvailable: false,
+    pricePerDay: 100,
+    rentalEndDate: DateTime(2025, 9, 22),
+  ),
+  Locker(
+    id: 'locker_010',
+    number: 'B-204',
+    size: 'Большой',
+    isAvailable: true,
+    pricePerDay: 150,
+  ),
+  Locker(
+    id: 'locker_011',
+    number: 'B-205',
+    size: 'Стандартный',
+    isAvailable: false,
+    pricePerDay: 100,
+    rentalEndDate: DateTime(2025, 9, 19),
+  ),
+  Locker(
+    id: 'locker_012',
+    number: 'B-206',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+
+  // Секция C - 3 этаж
+  Locker(
+    id: 'locker_013',
+    number: 'C-301',
+    size: 'Премиум',
+    isAvailable: true,
+    pricePerDay: 200,
+  ),
+  Locker(
+    id: 'locker_014',
+    number: 'C-302',
+    size: 'Премиум',
+    isAvailable: false,
+    pricePerDay: 200,
+    rentalEndDate: DateTime(2025, 9, 30),
+  ),
+  Locker(
+    id: 'locker_015',
+    number: 'C-303',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+  Locker(
+    id: 'locker_016',
+    number: 'C-304',
+    size: 'Большой',
+    isAvailable: false,
+    pricePerDay: 150,
+    rentalEndDate: DateTime(2025, 9, 23),
+  ),
+  Locker(
+    id: 'locker_017',
+    number: 'C-305',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+  Locker(
+    id: 'locker_018',
+    number: 'C-306',
+    size: 'Премиум',
+    isAvailable: true,
+    pricePerDay: 200,
+  ),
+
+  // Секция D - раздевалки
+  Locker(
+    id: 'locker_019',
+    number: 'D-401',
+    size: 'Стандартный',
+    isAvailable: false,
+    pricePerDay: 100,
+    rentalEndDate: DateTime(2025, 9, 21),
+  ),
+  Locker(
+    id: 'locker_020',
+    number: 'D-402',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+  Locker(
+    id: 'locker_021',
+    number: 'D-403',
+    size: 'Большой',
+    isAvailable: false,
+    pricePerDay: 150,
+    rentalEndDate: DateTime(2025, 10, 5),
+  ),
+  Locker(
+    id: 'locker_022',
+    number: 'D-404',
+    size: 'Стандартный',
+    isAvailable: true,
+    pricePerDay: 100,
+  ),
+  Locker(
+    id: 'locker_023',
+    number: 'D-405',
+    size: 'Премиум',
+    isAvailable: true,
+    pricePerDay: 200,
+  ),
+  Locker(
+    id: 'locker_024',
+    number: 'D-406',
+    size: 'Стандартный',
+    isAvailable: false,
+    pricePerDay: 100,
+    rentalEndDate: DateTime(2025, 9, 26),
   ),
 ];
