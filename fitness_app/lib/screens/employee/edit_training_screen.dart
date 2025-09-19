@@ -623,10 +623,10 @@ class _EditTrainingScreenState extends State<EditTrainingScreen> {
       
       showSuccessSnackBar(context, 'Тренировка успешно обновлена!');
       
-      // Используем NavigationService для возврата назад
+      // Используем NavigationService для перехода на главный экран
       final navigationService = NavigationService.of(context);
       if (navigationService != null) {
-        navigationService.onBack();
+        navigationService.navigateToHome();
       } else {
         Navigator.of(context).pop();
       }

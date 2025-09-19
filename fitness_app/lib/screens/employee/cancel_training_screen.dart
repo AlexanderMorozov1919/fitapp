@@ -39,7 +39,7 @@ class _CancelTrainingScreenState extends State<CancelTrainingScreen> {
       
       showSuccessSnackBar(context, 'Тренировка отменена. Причина: $_selectedReason');
       final navigationService = NavigationService.of(context);
-      navigationService?.onBack();
+      navigationService?.navigateToHome();
     }
   }
 

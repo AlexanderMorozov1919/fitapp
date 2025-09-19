@@ -52,7 +52,7 @@ class _RescheduleTrainingScreenState extends State<RescheduleTrainingScreen> {
       
       showSuccessSnackBar(context, 'Тренировка перенесена на ${DateFormatters.formatDate(newStartTime)} ${_selectedTime!.format(context)}');
       final navigationService = NavigationService.of(context);
-      navigationService?.onBack();
+      navigationService?.navigateToHome();
     }
   }
 
