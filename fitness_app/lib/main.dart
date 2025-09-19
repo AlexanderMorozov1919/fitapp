@@ -57,6 +57,7 @@ import 'package:fitness_app/screens/clietnt/story_view_screen.dart';
 import 'package:fitness_app/services/story_service.dart';
 import 'package:fitness_app/theme/app_colors.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
+import 'package:fitness_app/widgets/demo_disclaimer.dart';
 import 'package:fitness_app/widgets/employee_bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
 
@@ -90,9 +91,11 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
           useMaterial3: true,
           fontFamily: 'Roboto',
         ),
-        home: SimplePhoneBorder(
-          child: UserTypeSelectionScreen(
-            onUserTypeSelected: _handleUserTypeSelected,
+        home: _buildDemoLayout(
+          SimplePhoneBorder(
+            child: UserTypeSelectionScreen(
+              onUserTypeSelected: _handleUserTypeSelected,
+            ),
           ),
         ),
         debugShowCheckedModeBanner: false,
@@ -102,6 +105,33 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
     } else {
       return const EmployeeFitnessApp();
     }
+  }
+
+  Widget _buildDemoLayout(Widget phoneFrame) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: Stack(
+        children: [
+          // Центрируем телефон по центру экрана
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.center,
+              child: phoneFrame,
+            ),
+          ),
+          // Размещаем дисклеймер слева от центра с равными отступами
+          Positioned(
+            left: 40,
+            top: 0,
+            bottom: 0,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const DemoDisclaimer(),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -148,10 +178,39 @@ class FitnessApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'Roboto',
         ),
-        home: const SimplePhoneBorder(
-          child: MainNavigation(),
+        home: _buildDemoLayout(
+          const SimplePhoneBorder(
+            child: MainNavigation(),
+          ),
         ),
         debugShowCheckedModeBanner: false,
+      ),
+    );
+  }
+
+  Widget _buildDemoLayout(Widget phoneFrame) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: Stack(
+        children: [
+          // Центрируем телефон по центру экрана
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.center,
+              child: phoneFrame,
+            ),
+          ),
+          // Размещаем дисклеймер слева от центра с равными отступами
+          Positioned(
+            left: 40,
+            top: 0,
+            bottom: 0,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const DemoDisclaimer(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -171,10 +230,39 @@ class EmployeeFitnessApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'Roboto',
         ),
-        home: const SimplePhoneBorder(
-          child: EmployeeMainNavigation(),
+        home: _buildDemoLayout(
+          const SimplePhoneBorder(
+            child: EmployeeMainNavigation(),
+          ),
         ),
         debugShowCheckedModeBanner: false,
+      ),
+    );
+  }
+
+  Widget _buildDemoLayout(Widget phoneFrame) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: Stack(
+        children: [
+          // Центрируем телефон по центру экрана
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.center,
+              child: phoneFrame,
+            ),
+          ),
+          // Размещаем дисклеймер слева от центра с равными отступами
+          Positioned(
+            left: 40,
+            top: 0,
+            bottom: 0,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: const DemoDisclaimer(),
+            ),
+          ),
+        ],
       ),
     );
   }
