@@ -833,11 +833,12 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
     // Перезагружаем контакты
     _loadContacts();
 
-    // Показываем уведомление об успешном создании
+    // Показываем уведомление о начале чата
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Чат с ${newContact['name']} создан'),
+        content: Text('Чат с ${newContact['name']} начат'),
         backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 2),
       ),
     );
   }

@@ -418,4 +418,77 @@ class MockDataService {
       ChatNotificationService.notifyUnreadCountChanged();
     }
   }
+
+  // Метод для обновления статуса тренировки сотрудника
+  static void updateEmployeeTrainingStatus(String trainingId, BookingStatus newStatus, {String? cancellationReason}) {
+    final index = employeeTrainings.indexWhere((training) => training.id == trainingId);
+    if (index != -1) {
+      final training = employeeTrainings[index];
+      
+      // Создаем новую тренировку с обновленным статусом
+      final updatedTraining = Booking(
+        id: training.id,
+        userId: training.userId,
+        type: training.type,
+        startTime: training.startTime,
+        endTime: training.endTime,
+        title: training.title,
+        description: training.description,
+        status: newStatus,
+        price: training.price,
+        courtNumber: training.courtNumber,
+        trainerId: training.trainerId,
+        className: training.className,
+        lockerNumber: training.lockerNumber,
+        createdAt: training.createdAt,
+        clientName: training.clientName,
+      );
+      
+      employeeTrainings[index] = updatedTraining;
+      
+      // Добавляем уведомление об отмене тренировки
+      if (newStatus == BookingStatus.cancelled) {
+        final notification = AppNotification(
+          id: 'notif_${DateTime.now().millisecondsSinceEpoch}',
+          type: NotificationType.booking,
+          title: 'Тренировка отменена',
+          message: 'Тренировка "${training.title}" отменена. ${cancellationReason != null ? "Причина: $cancellationReason" : ""}',
+          timestamp: DateTime.now(),
+          isRead: false,
+          relatedId: training.id,
+        );
+        addNotification(notification);
+      }
+    }
+  }
+  // Метод для поиска клиента по ID и создания чата с ним
+  static Chat findClientAndCreateChat(String clientId) {
+    final client = clients.firstWhere(
+      (c) => c.id == clientId,
+      orElse: () => User(
+        id: clientId,
+        firstName: 'Клиент',
+        lastName: '',
+        email: '',
+        phone: '',
+        photoUrl: null,
+        birthDate: DateTime.now(),
+        preferences: const [],
+        membership: null,
+        bookings: [],
+        lockers: [],
+        balance: 0.0,
+        bankCards: [],
+        userType: UserType.client,
+        employeeInfo: null,
+      ),
+    );
+    
+    final clientName = '${client.firstName} ${client.lastName}'.trim();
+    return getOrCreateEmployeeChat(
+      clientId,
+      clientName,
+      client.photoUrl,
+    );
+  }
 }

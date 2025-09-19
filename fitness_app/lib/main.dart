@@ -17,6 +17,8 @@ import 'package:fitness_app/screens/employee/employee_tennis_confirmation_screen
 import 'package:fitness_app/screens/employee/record_screen.dart';
 import 'package:fitness_app/screens/employee/employee_combined_chat_screen.dart';
 import 'package:fitness_app/screens/employee/select_client_screen.dart';
+import 'package:fitness_app/screens/employee/cancel_training_screen.dart';
+import 'package:fitness_app/screens/employee/edit_training_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -188,7 +190,15 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'employee_kpi': (_) => const EmployeeKpiScreen(),
     'employee_clients': (_) => _buildPlaceholderScreen('Клиенты'),
     'chat': (_) => const EmployeeCombinedChatScreen(),
-    'training_detail': (data) => TrainingDetailScreen(training: data),
+    'training_detail': (data) {
+      if (data is Map<String, dynamic>) {
+        return TrainingDetailScreen(
+          training: data['training'],
+          onTrainingUpdated: data['onTrainingUpdated'],
+        );
+      }
+      return TrainingDetailScreen(training: data);
+    },
     'create_training': (data) => CreateTrainingScreen(
           freeTimeSlot: data,
         ),
@@ -207,6 +217,13 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'select_client': (data) => SelectClientScreen(
           onClientSelected: data?['onClientSelected'],
         ),
+    'cancel_training': (data) => CancelTrainingScreen(
+          training: data['training'],
+        ),
+    'edit_training': (data) => EditTrainingScreen(
+          training: data['training'],
+        ),
+    'employee_chat': (data) => EmployeeCombinedChatScreen(),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

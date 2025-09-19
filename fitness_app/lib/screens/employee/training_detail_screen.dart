@@ -5,11 +5,24 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
+import '../../main.dart';
+import '../../services/mock_data_service.dart';
 
-class TrainingDetailScreen extends StatelessWidget {
+class TrainingDetailScreen extends StatefulWidget {
   final Booking training;
+  final VoidCallback? onTrainingUpdated;
 
-  const TrainingDetailScreen({super.key, required this.training});
+  const TrainingDetailScreen({
+    super.key,
+    required this.training,
+    this.onTrainingUpdated,
+  });
+
+  @override
+  State<TrainingDetailScreen> createState() => _TrainingDetailScreenState();
+}
+
+class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +52,13 @@ class TrainingDetailScreen extends StatelessWidget {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: _getStatusColor(training.status).withOpacity(0.1),
+                          color: _getStatusColor(widget.training.status).withOpacity(0.1),
                           borderRadius: AppStyles.borderRadiusLg,
                         ),
                         child: Icon(
-                          _getTrainingIcon(training),
+                          _getTrainingIcon(widget.training),
                           size: 24,
-                          color: _getStatusColor(training.status),
+                          color: _getStatusColor(widget.training.status),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -56,7 +69,7 @@ class TrainingDetailScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              training.title,
+                              widget.training.title,
                               style: AppTextStyles.headline6.copyWith(
                                 color: AppColors.textPrimary,
                                 fontWeight: FontWeight.w600,
@@ -64,7 +77,7 @@ class TrainingDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _getTrainingTypeText(training.type),
+                              _getTrainingTypeText(widget.training.type),
                               style: AppTextStyles.caption.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -75,8 +88,8 @@ class TrainingDetailScreen extends StatelessWidget {
                       
                       // Статус
                       StatusBadge(
-                        text: _getStatusText(training.status),
-                        color: _getStatusColor(training.status),
+                        text: _getStatusText(widget.training.status),
+                        color: _getStatusColor(widget.training.status),
                       ),
                     ],
                   ),
@@ -95,8 +108,8 @@ class TrainingDetailScreen extends StatelessWidget {
                   _buildInfoItem(
                     icon: Icons.calendar_today,
                     title: 'Дата и время',
-                    value: '${DateFormatters.formatDate(training.startTime)}, '
-                          '${DateFormatters.formatTimeRangeRussian(training.startTime, training.endTime)}',
+                    value: '${DateFormatters.formatDate(widget.training.startTime)}, '
+                          '${DateFormatters.formatTimeRangeRussian(widget.training.startTime, widget.training.endTime)}',
                   ),
                   
                   const SizedBox(height: 12),
@@ -104,15 +117,15 @@ class TrainingDetailScreen extends StatelessWidget {
                   _buildInfoItem(
                     icon: Icons.person,
                     title: 'Клиент',
-                    value: training.clientName ?? 'Не указан',
+                    value: widget.training.clientName ?? 'Не указан',
                   ),
                   
-                  if (training.description != null) ...[
+                  if (widget.training.description != null) ...[
                     const SizedBox(height: 12),
                     _buildInfoItem(
                       icon: Icons.description,
                       title: 'Описание',
-                      value: training.description!,
+                      value: widget.training.description!,
                     ),
                   ],
                   
@@ -121,7 +134,7 @@ class TrainingDetailScreen extends StatelessWidget {
                   _buildInfoItem(
                     icon: Icons.attach_money,
                     title: 'Стоимость',
-                    value: '${training.price} ₽',
+                    value: '${widget.training.price} ₽',
                   ),
                 ],
               ),
@@ -138,34 +151,34 @@ class TrainingDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             
-            if (training.status == BookingStatus.confirmed) ...[
+            if (widget.training.status == BookingStatus.confirmed) ...[
               _buildActionButton(
                 icon: Icons.edit,
                 text: 'Редактировать тренировку',
                 onPressed: () {
-                  // TODO: Реализовать редактирование
+                  _navigateToEditTraining();
                 },
               ),
               const SizedBox(height: 8),
             ],
             
-            if (training.status == BookingStatus.pending) ...[
+            if (widget.training.status == BookingStatus.pending) ...[
               _buildActionButton(
                 icon: Icons.check,
                 text: 'Подтвердить тренировку',
                 onPressed: () {
-                  // TODO: Реализовать подтверждение
+                  _confirmTraining();
                 },
               ),
               const SizedBox(height: 8),
             ],
             
-            if (training.status == BookingStatus.confirmed) ...[
+            if (widget.training.status == BookingStatus.confirmed) ...[
               _buildActionButton(
                 icon: Icons.cancel,
                 text: 'Отменить тренировку',
                 onPressed: () {
-                  // TODO: Реализовать отмену
+                  _navigateToCancelTraining();
                 },
                 isDestructive: true,
               ),
@@ -176,7 +189,7 @@ class TrainingDetailScreen extends StatelessWidget {
               icon: Icons.chat,
               text: 'Написать клиенту',
               onPressed: () {
-                // TODO: Реализовать переход в чат
+                _navigateToChat();
               },
             ),
             
@@ -198,17 +211,17 @@ class TrainingDetailScreen extends StatelessWidget {
                 children: [
                   _buildAdditionalInfoItem(
                     title: 'ID тренировки',
-                    value: training.id,
+                    value: widget.training.id,
                   ),
                   const SizedBox(height: 8),
                   _buildAdditionalInfoItem(
                     title: 'Создано',
-                    value: DateFormatters.formatDateTime(training.createdAt),
+                    value: DateFormatters.formatDateTime(widget.training.createdAt),
                   ),
                   const SizedBox(height: 8),
                   _buildAdditionalInfoItem(
                     title: 'Продолжительность',
-                    value: '${training.endTime.difference(training.startTime).inMinutes} минут',
+                    value: '${widget.training.endTime.difference(widget.training.startTime).inMinutes} минут',
                   ),
                 ],
               ),
@@ -219,6 +232,55 @@ class TrainingDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _navigateToEditTraining() {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('edit_training', {
+      'training': widget.training,
+    });
+  }
+
+  void _navigateToCancelTraining() {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('cancel_training', {
+      'training': widget.training,
+    });
+  }
+
+  void _navigateToChat() {
+    if (widget.training.userId != null) {
+      final chat = MockDataService.findClientAndCreateChat(widget.training.userId!);
+      final navigationService = NavigationService.of(context);
+      navigationService?.navigateTo('employee_chat', {
+        'chat': chat,
+        'contactId': widget.training.userId,
+        'contactName': widget.training.clientName ?? 'Клиент',
+      });
+    }
+  }
+
+  void _confirmTraining() {
+    MockDataService.updateEmployeeTrainingStatus(
+      widget.training.id,
+      BookingStatus.confirmed,
+    );
+    
+    // Показываем уведомление об успехе
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Тренировка "${widget.training.title}" подтверждена'),
+        backgroundColor: AppColors.success,
+      ),
+    );
+    
+    // Обновляем экран
+    if (widget.onTrainingUpdated != null) {
+      widget.onTrainingUpdated!();
+    }
+    
+    // Закрываем экран или обновляем состояние
+    setState(() {});
   }
 
   Widget _buildInfoItem({
