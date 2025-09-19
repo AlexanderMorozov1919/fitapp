@@ -183,6 +183,14 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
                 isDestructive: true,
               ),
               const SizedBox(height: 8),
+              _buildActionButton(
+                icon: Icons.schedule,
+                text: 'Перенести занятие',
+                onPressed: () {
+                  _navigateToRescheduleTraining();
+                },
+              ),
+              const SizedBox(height: 8),
             ],
             
             _buildActionButton(
@@ -244,6 +252,13 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
   void _navigateToCancelTraining() {
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('cancel_training', {
+      'training': widget.training,
+    });
+  }
+
+  void _navigateToRescheduleTraining() {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('reschedule_training', {
       'training': widget.training,
     });
   }

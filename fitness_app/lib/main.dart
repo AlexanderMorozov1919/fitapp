@@ -19,6 +19,7 @@ import 'package:fitness_app/screens/employee/employee_combined_chat_screen.dart'
 import 'package:fitness_app/screens/employee/select_client_screen.dart';
 import 'package:fitness_app/screens/employee/cancel_training_screen.dart';
 import 'package:fitness_app/screens/employee/edit_training_screen.dart';
+import 'package:fitness_app/screens/employee/reschedule_training_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -216,6 +217,9 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         ),
     'select_client': (data) => SelectClientScreen(
           onClientSelected: data?['onClientSelected'],
+        ),
+    'reschedule_training': (data) => RescheduleTrainingScreen(
+          training: data['training'],
         ),
     'cancel_training': (data) => CancelTrainingScreen(
           training: data['training'],

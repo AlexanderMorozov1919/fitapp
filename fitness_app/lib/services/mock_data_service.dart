@@ -5,6 +5,7 @@ import '../models/payment_model.dart';
 import '../models/chat_model.dart';
 import '../models/notification_model.dart';
 import './chat_notification_service.dart';
+import '../utils/formatters.dart';
 
 // Импорт данных из отдельных файлов
 import './mock_data/user_data.dart' as user_data;
@@ -490,5 +491,46 @@ class MockDataService {
       clientName,
       client.photoUrl,
     );
+  }
+
+  // Метод для обновления времени тренировки сотрудника
+  static void updateEmployeeTrainingTime(String trainingId, DateTime newStartTime, DateTime newEndTime) {
+    final index = employeeTrainings.indexWhere((training) => training.id == trainingId);
+    if (index != -1) {
+      final training = employeeTrainings[index];
+      
+      // Создаем новую тренировку с обновленным временем
+      final updatedTraining = Booking(
+        id: training.id,
+        userId: training.userId,
+        type: training.type,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        title: training.title,
+        description: training.description,
+        status: training.status,
+        price: training.price,
+        courtNumber: training.courtNumber,
+        trainerId: training.trainerId,
+        className: training.className,
+        lockerNumber: training.lockerNumber,
+        createdAt: training.createdAt,
+        clientName: training.clientName,
+      );
+      
+      employeeTrainings[index] = updatedTraining;
+      
+      // Добавляем уведомление о переносе тренировки
+      final notification = AppNotification(
+        id: 'notif_${DateTime.now().millisecondsSinceEpoch}',
+        type: NotificationType.booking,
+        title: 'Тренировка перенесена',
+        message: 'Тренировка "${training.title}" перенесена на ${DateFormatters.formatDate(newStartTime)} ${DateFormatters.formatTime(newStartTime)}',
+        timestamp: DateTime.now(),
+        isRead: false,
+        relatedId: training.id,
+      );
+      addNotification(notification);
+    }
   }
 }
