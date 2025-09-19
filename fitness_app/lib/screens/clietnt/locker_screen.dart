@@ -350,17 +350,16 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   void _rentLocker(Locker locker) {
-    showConfirmDialog(
+    showPaymentConfirmDialog(
       context: context,
       title: 'Аренда шкафчика',
       content: 'Шкафчик: ${locker.number}\n'
           'Размер: ${locker.size}\n'
-          'Период: $_rentalDays ${_getDaysText(_rentalDays)}\n'
-          'Стоимость: ${_calculatePrice()} руб.\n\n'
-          'Подтвердить аренду?',
+          'Период: $_rentalDays ${_getDaysText(_rentalDays)}',
+      amount: _calculatePrice(),
+      paymentMethod: 'Банковская карта',
       confirmText: 'Арендовать',
       cancelText: 'Отмена',
-      confirmColor: AppColors.primary,
     ).then((confirmed) {
       if (confirmed == true) {
         _showRentalSuccess(locker);
