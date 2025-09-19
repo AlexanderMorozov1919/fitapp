@@ -247,33 +247,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   )
                 else
                   const SizedBox.shrink(),
-                
-                // Действия
-                if (booking.status == BookingStatus.confirmed && booking.canCancel) ...[
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 120,
-                        child: SecondaryButton(
-                          text: 'Отменить',
-                          onPressed: () => _cancelBooking(booking),
-                          color: AppColors.error,
-                        ),
-                      ),
-                      if (booking.type == BookingType.tennisCourt ||
-                          booking.type == BookingType.personalTraining) ...[
-                        const SizedBox(width: 8),
-                        SizedBox(
-                          width: 120,
-                          child: PrimaryButton(
-                            text: 'Изменить',
-                            onPressed: () => _modifyBooking(booking),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
               ],
             ),
             
