@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/mock_data_service.dart';
 import '../../services/mock_data/client_data.dart';
+import '../../services/chat_notification_service.dart';
 import '../../models/chat_model.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
@@ -30,10 +31,10 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
       'avatar': 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
       'lastMessage': 'Спасибо за тренировку!',
       'time': DateTime.now().subtract(const Duration(minutes: 30)),
-      'unread': 2,
+      'unread': 3,
     },
     {
-      'id': 'client_2', 
+      'id': 'client_2',
       'name': 'Михаил Смирнов',
       'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
       'lastMessage': 'Когда будет следующее занятие?',
@@ -77,6 +78,18 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
         contact['name'] as String,
         contact['avatar'] as String?,
       );
+      
+      // Помечаем сообщения как прочитанные при выборе чата
+      MockDataService.markEmployeeChatAsRead(contactId);
+      
+      // Обновляем счетчик непрочитанных в списке контактов
+      final contactIndex = _contacts.indexWhere((c) => c['id'] == contactId);
+      if (contactIndex != -1) {
+        _contacts[contactIndex]['unread'] = 0;
+      }
+      
+      // Уведомляем об изменении количества непрочитанных сообщений
+      ChatNotificationService.notifyUnreadCountChanged();
     });
     _scrollToBottom(animated: false);
   }
@@ -164,6 +177,9 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
             _contacts[contactIndex]['unread'] = (_contacts[contactIndex]['unread'] as int) + 1;
           }
         });
+        
+        // Уведомляем об изменении количества непрочитанных сообщений
+        ChatNotificationService.notifyUnreadCountChanged();
         
         _scrollToBottom();
       }
@@ -733,13 +749,10 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
         MaterialPageRoute(
           builder: (context) => const SelectClientScreen(),
         ),
-      ).then((selectedClient) {
-        if (selectedClient != null && selectedClient is User) {
-          _createNewChat(selectedClient);
-        }
-      });
+      );
     }
   }
+
 
   void _createNewChat(User client) {
     final newContactId = 'client_${client.id}';

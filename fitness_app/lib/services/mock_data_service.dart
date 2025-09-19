@@ -4,6 +4,7 @@ import '../models/user_model.dart';
 import '../models/payment_model.dart';
 import '../models/chat_model.dart';
 import '../models/notification_model.dart';
+import './chat_notification_service.dart';
 
 // Импорт данных из отдельных файлов
 import './mock_data/user_data.dart' as user_data;
@@ -324,7 +325,11 @@ class MockDataService {
       return _employeeChats[contactId]!;
     }
     
-    // Создаем новый чат
+    // Создаем новый чат с начальными непрочитанными сообщениями для демонстрации
+    final initialMessages = _getInitialEmployeeChatMessages(contactName);
+    final initialUnreadCount = contactId == 'client_1' ? 3 :
+                              contactId == 'client_2' ? 1 : 0;
+    
     final newChat = Chat(
       id: 'employee_chat_$contactId',
       userId: contactId,
@@ -333,9 +338,9 @@ class MockDataService {
       adminAvatar: null,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      messages: _getInitialEmployeeChatMessages(contactName),
+      messages: initialMessages,
       isActive: true,
-      unreadCount: 0,
+      unreadCount: initialUnreadCount,
     );
     
     _employeeChats[contactId] = newChat;
@@ -366,7 +371,7 @@ class MockDataService {
     );
   }
 
-  // Начальные сообщения для чата сотрудника
+  // Начальные сообщения для чата сотрудника (пустой чат)
   static List<ChatMessage> _getInitialEmployeeChatMessages(String contactName) {
     return [
       ChatMessage(
@@ -375,18 +380,8 @@ class MockDataService {
         type: MessageType.system,
         sender: MessageSender.system,
         content: 'Чат с $contactName начат',
-        timestamp: DateTime.now().subtract(const Duration(days: 1)),
+        timestamp: DateTime.now(),
         isRead: true,
-      ),
-      ChatMessage(
-        id: 'msg_initial_2',
-        chatId: 'employee_chat',
-        type: MessageType.text,
-        sender: MessageSender.admin,
-        content: 'Здравствуйте! Чем могу помочь?',
-        timestamp: DateTime.now().subtract(const Duration(hours: 12)),
-        isRead: true,
-        senderName: 'Игорь Виноградов',
       ),
     ];
   }
@@ -398,6 +393,29 @@ class MockDataService {
 
   // Метод для получения непрочитанных сообщений в чатах сотрудника
   static int getEmployeeUnreadMessagesCount() {
+    // Считаем непрочитанные сообщения из всех чатов сотрудника
     return _employeeChats.values.fold(0, (sum, chat) => sum + chat.unreadCount);
+  }
+
+  // Метод для пометки всех сообщений в чате как прочитанных
+  static void markEmployeeChatAsRead(String contactId) {
+    if (_employeeChats.containsKey(contactId)) {
+      final chat = _employeeChats[contactId]!;
+      _employeeChats[contactId] = Chat(
+        id: chat.id,
+        userId: chat.userId,
+        adminId: chat.adminId,
+        adminName: chat.adminName,
+        adminAvatar: chat.adminAvatar,
+        createdAt: chat.createdAt,
+        updatedAt: DateTime.now(),
+        messages: chat.messages,
+        isActive: chat.isActive,
+        unreadCount: 0,
+      );
+      
+      // Уведомляем об изменении количества непрочитанных сообщений
+      ChatNotificationService.notifyUnreadCountChanged();
+    }
   }
 }

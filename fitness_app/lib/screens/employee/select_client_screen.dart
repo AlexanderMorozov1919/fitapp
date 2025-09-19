@@ -7,8 +7,29 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../main.dart';
 
+// Глобальное состояние для передачи данных между экранами
+class ChatSelectionState {
+  static Function(Map<String, dynamic>)? onClientSelectedCallback;
+  
+  static void setCallback(Function(Map<String, dynamic>) callback) {
+    onClientSelectedCallback = callback;
+  }
+  
+  static void clearCallback() {
+    onClientSelectedCallback = null;
+  }
+  
+  static void notifyClientSelected(Map<String, dynamic> newContact) {
+    if (onClientSelectedCallback != null) {
+      onClientSelectedCallback!(newContact);
+    }
+  }
+}
+
 class SelectClientScreen extends StatefulWidget {
-  const SelectClientScreen({super.key});
+  final Function(Map<String, dynamic>)? onClientSelected;
+
+  const SelectClientScreen({super.key, this.onClientSelected});
 
   @override
   State<SelectClientScreen> createState() => _SelectClientScreenState();
@@ -43,20 +64,26 @@ class _SelectClientScreenState extends State<SelectClientScreen> {
   }
 
   void _selectClient(User client) {
-    // Используем NavigationService для возврата с выбранным клиентом
+    // Создаем новый контакт для чата
+    final newContactId = 'client_${client.id}';
+    final newContact = {
+      'id': newContactId,
+      'name': '${client.firstName} ${client.lastName}',
+      'avatar': null,
+      'lastMessage': 'Новый чат',
+      'time': DateTime.now(),
+      'unread': 0,
+    };
+
+    // Используем глобальное состояние для уведомления
+    ChatSelectionState.notifyClientSelected(newContact);
+    
+    // Возвращаемся назад
     final navigationService = NavigationService.of(context);
     if (navigationService != null) {
       navigationService.onBack();
-      // Передаем данные через глобальное состояние или callback
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Здесь можно использовать глобальное состояние или другой механизм
-        // для передачи выбранного клиента обратно в чат
-        // Временно используем простой подход с Navigator
-        Navigator.of(context).pop(client);
-      });
     } else {
-      // Fallback навигация
-      Navigator.pop(context, client);
+      Navigator.pop(context, newContact);
     }
   }
 

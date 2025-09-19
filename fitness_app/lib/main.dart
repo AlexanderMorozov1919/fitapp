@@ -100,12 +100,14 @@ class NavigationService extends InheritedWidget {
   final VoidCallback onBack;
   final Function(String, [dynamic]) navigateTo;
   final VoidCallback navigateToHome;
+  final Function(String, [dynamic]) navigateToWithResult;
 
   const NavigationService({
     super.key,
     required this.onBack,
     required this.navigateTo,
     required this.navigateToHome,
+    required this.navigateToWithResult,
     required super.child,
   });
 
@@ -117,7 +119,8 @@ class NavigationService extends InheritedWidget {
   bool updateShouldNotify(NavigationService oldWidget) {
     return oldWidget.onBack != onBack ||
            oldWidget.navigateTo != navigateTo ||
-           oldWidget.navigateToHome != navigateToHome;
+           oldWidget.navigateToHome != navigateToHome ||
+           oldWidget.navigateToWithResult != navigateToWithResult;
   }
 }
 
@@ -201,7 +204,9 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'employee_tennis_confirmation': (data) => EmployeeTennisConfirmationScreen(
           bookingData: data,
         ),
-    'select_client': (_) => const SelectClientScreen(),
+    'select_client': (data) => SelectClientScreen(
+          onClientSelected: data?['onClientSelected'],
+        ),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
@@ -256,6 +261,15 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     });
   }
 
+  void _navigateToWithResult(String screenKey, [dynamic data]) {
+    setState(() {
+      _navigationStack.add({
+        'screen': screenKey,
+        'data': data,
+      });
+    });
+  }
+
   void _navigateBack() {
     setState(() {
       if (_navigationStack.isNotEmpty) {
@@ -280,6 +294,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         onBack: _navigateBack,
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
+        navigateToWithResult: _navigateToWithResult,
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {
@@ -295,6 +310,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         },
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
+        navigateToWithResult: _navigateToWithResult,
         child: _screens[_currentIndex],
       );
     }
@@ -452,6 +468,15 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
+  void _navigateToWithResult(String screenKey, [dynamic data]) {
+    setState(() {
+      _navigationStack.add({
+        'screen': screenKey,
+        'data': data,
+      });
+    });
+  }
+
   void _navigateBack() {
     setState(() {
       if (_navigationStack.isNotEmpty) {
@@ -476,6 +501,7 @@ class _MainNavigationState extends State<MainNavigation> {
         onBack: _navigateBack,
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
+        navigateToWithResult: _navigateToWithResult,
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {
@@ -491,6 +517,7 @@ class _MainNavigationState extends State<MainNavigation> {
         },
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
+        navigateToWithResult: _navigateToWithResult,
         child: _screens[_currentIndex],
       );
     }

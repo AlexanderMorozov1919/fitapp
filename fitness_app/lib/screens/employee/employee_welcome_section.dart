@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../models/user_model.dart';
+import '../../services/mock_data_service.dart';
+import '../../services/chat_notification_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../main.dart';
 
-class EmployeeWelcomeSection extends StatelessWidget {
+class EmployeeWelcomeSection extends StatefulWidget {
   final User user;
   final Function(String, [dynamic]) onQuickAccessNavigate;
 
@@ -14,6 +16,34 @@ class EmployeeWelcomeSection extends StatelessWidget {
     required this.user,
     required this.onQuickAccessNavigate,
   });
+
+  @override
+  State<EmployeeWelcomeSection> createState() => _EmployeeWelcomeSectionState();
+}
+
+class _EmployeeWelcomeSectionState extends State<EmployeeWelcomeSection> {
+  int _unreadCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateUnreadCount();
+    // Регистрируем callback для обновления счетчика
+    ChatNotificationService.registerCallback(_updateUnreadCount);
+  }
+
+  @override
+  void dispose() {
+    // Отменяем регистрацию callback при уничтожении виджета
+    ChatNotificationService.unregisterCallback();
+    super.dispose();
+  }
+
+  void _updateUnreadCount() {
+    setState(() {
+      _unreadCount = ChatNotificationService.getUnreadCount();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +108,11 @@ class EmployeeWelcomeSection extends StatelessWidget {
         borderRadius: AppStyles.borderRadiusFull,
         boxShadow: AppColors.shadowLg,
       ),
-      child: user.photoUrl != null
+      child: widget.user.photoUrl != null
           ? ClipRRect(
               borderRadius: AppStyles.borderRadiusFull,
               child: Image.network(
-                user.photoUrl!,
+                widget.user.photoUrl!,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(),
               ),
@@ -105,7 +135,11 @@ class EmployeeWelcomeSection extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () => onQuickAccessNavigate('chat'),
+        onTap: () {
+          widget.onQuickAccessNavigate('chat');
+          // Обновляем счетчик после перехода в чат
+          Future.delayed(const Duration(milliseconds: 100), _updateUnreadCount);
+        },
         child: TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 1000),
           tween: Tween(begin: 1.0, end: 1.1),
@@ -119,43 +153,72 @@ class EmployeeWelcomeSection extends StatelessWidget {
                   end: const Color(0xFF4FC3F7).withOpacity(0.15),
                 ),
                 builder: (context, color, child) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: AppStyles.borderRadiusLg,
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1,
+                  return Stack(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: AppStyles.borderRadiusLg,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.15),
+                              blurRadius: 6,
+                              spreadRadius: 0.5,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.chat,
+                              size: 16,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Чат',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.15),
-                          blurRadius: 6,
-                          spreadRadius: 0.5,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.chat,
-                          size: 16,
-                          color: Colors.white.withOpacity(0.9),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Чат',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                      // Бейдж с количеством непрочитанных сообщений
+                      if (_unreadCount > 0)
+                        Positioned(
+                          top: -4,
+                          right: -4,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: AppStyles.borderRadiusFull,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Text(
+                              _unreadCount > 99 ? '99+' : _unreadCount.toString(),
+                              style: AppTextStyles.caption.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 10,
+                              ),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                    ],
                   );
                 },
               ),
