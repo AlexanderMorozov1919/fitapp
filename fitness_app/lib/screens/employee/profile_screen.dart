@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import '../../services/mock_data_service.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -222,13 +221,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                 colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
               ),
               borderRadius: BorderRadius.circular(50),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              boxShadow: AppColors.shadowLg,
             ),
             child: _user.photoUrl != null
                 ? ClipRRect(
@@ -260,92 +253,138 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
   Widget _buildPersonalInfo() {
     return Column(
       children: [
-        TextFormField(
-          controller: _firstNameController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Имя',
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
-          enabled: _isEditing,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите имя';
-            }
-            return null;
-          },
+          child: TextFormField(
+            controller: _firstNameController,
+            decoration: AppStyles.inputDecoration.copyWith(
+              labelText: 'Имя',
+              border: InputBorder.none,
+            ),
+            enabled: _isEditing,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Пожалуйста, введите имя';
+              }
+              return null;
+            },
+          ),
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _lastNameController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Фамилия',
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
-          enabled: _isEditing,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите фамилию';
-            }
-            return null;
-          },
+          child: TextFormField(
+            controller: _lastNameController,
+            decoration: AppStyles.inputDecoration.copyWith(
+              labelText: 'Фамилия',
+              border: InputBorder.none,
+            ),
+            enabled: _isEditing,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Пожалуйста, введите фамилию';
+              }
+              return null;
+            },
+          ),
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _middleNameController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Отчество',
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
-          enabled: _isEditing,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите отчество';
-            }
-            return null;
-          },
+          child: TextFormField(
+            controller: _middleNameController,
+            decoration: AppStyles.inputDecoration.copyWith(
+              labelText: 'Отчество',
+              border: InputBorder.none,
+            ),
+            enabled: _isEditing,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Пожалуйста, введите отчество';
+              }
+              return null;
+            },
+          ),
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _emailController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Email',
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
-          enabled: _isEditing,
-          keyboardType: TextInputType.emailAddress,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите email';
-            }
-            if (!value.contains('@')) {
-              return 'Пожалуйста, введите корректный email';
-            }
-            return null;
-          },
+          child: TextFormField(
+            controller: _emailController,
+            decoration: AppStyles.inputDecoration.copyWith(
+              labelText: 'Email',
+              border: InputBorder.none,
+            ),
+            enabled: _isEditing,
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Пожалуйста, введите email';
+              }
+              if (!value.contains('@')) {
+                return 'Пожалуйста, введите корректный email';
+              }
+              return null;
+            },
+          ),
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _phoneController,
-          decoration: AppStyles.inputDecoration.copyWith(
-            labelText: 'Телефон',
+        const SizedBox(height: 12),
+        Container(
+          padding: AppStyles.paddingLg,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
-          enabled: _isEditing,
-          keyboardType: TextInputType.phone,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Пожалуйста, введите телефон';
-            }
-            return null;
-          },
+          child: TextFormField(
+            controller: _phoneController,
+            decoration: AppStyles.inputDecoration.copyWith(
+              labelText: 'Телефон',
+              border: InputBorder.none,
+            ),
+            enabled: _isEditing,
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Пожалуйста, введите телефон';
+              }
+              return null;
+            },
+          ),
         ),
         const SizedBox(height: 16),
         Container(
           padding: AppStyles.paddingLg,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: Colors.white,
             borderRadius: AppStyles.borderRadiusLg,
+            boxShadow: AppColors.shadowSm,
           ),
           child: Row(
             children: [
               Icon(
                 Icons.cake,
-                color: AppColors.textSecondary,
+                color: AppColors.primary,
               ),
               const SizedBox(width: 16),
               Expanded(
