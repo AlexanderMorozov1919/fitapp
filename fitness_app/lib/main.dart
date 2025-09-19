@@ -20,6 +20,9 @@ import 'package:fitness_app/screens/employee/select_client_screen.dart';
 import 'package:fitness_app/screens/employee/cancel_training_screen.dart';
 import 'package:fitness_app/screens/employee/edit_training_screen.dart';
 import 'package:fitness_app/screens/employee/reschedule_training_screen.dart';
+import 'package:fitness_app/screens/employee/kpi_detail_screen.dart';
+import 'package:fitness_app/screens/employee/security_settings_screen.dart';
+import 'package:fitness_app/screens/employee/help_support_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -228,6 +231,9 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
           training: data['training'],
         ),
     'employee_chat': (data) => EmployeeCombinedChatScreen(),
+    'kpi_detail': (_) => const KpiDetailScreen(),
+    'security_settings': (_) => const SecuritySettingsScreen(),
+    'help_support': (_) => const HelpSupportScreen(),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

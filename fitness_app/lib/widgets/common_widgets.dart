@@ -571,6 +571,25 @@ void showErrorSnackBar(BuildContext context, String message) {
   );
 }
 
+/// Информационное уведомление
+void showInfoSnackBar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: AppColors.info,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: AppStyles.borderRadiusLg,
+      ),
+    ),
+  );
+}
+
 /// Виджет для отображения временного слота с индикацией занятости и выбора
 class TimeSlotChip extends StatelessWidget {
   final TimeOfDay time;

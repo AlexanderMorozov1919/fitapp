@@ -5,6 +5,8 @@ import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
+import '../../widgets/common_widgets.dart';
+import '../../main.dart';
 
 class EmployeeProfileScreen extends StatefulWidget {
   const EmployeeProfileScreen({super.key});
@@ -628,7 +630,8 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Переход к детальной статистике KPI
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('kpi_detail');
             },
           ),
         ),
@@ -649,7 +652,8 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Переход к расписанию
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('employee_schedule');
             },
           ),
         ),
@@ -676,7 +680,8 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Реализовать экран настроек безопасности
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('security_settings');
             },
           ),
         ),
@@ -697,7 +702,8 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Реализовать экран поддержки
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('help_support');
             },
           ),
         ),
@@ -738,12 +744,13 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Реализовать выход из системы
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Вы успешно вышли из системы'),
-                  backgroundColor: Colors.green,
-                ),
+              // Выход из системы
+              showSuccessSnackBar(context, 'Вы успешно вышли из системы');
+              // Возврат на экран выбора типа пользователя
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/user-type',
+                (route) => false
               );
             },
             child: const Text('Выйти', style: TextStyle(color: Colors.red)),
