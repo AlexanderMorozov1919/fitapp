@@ -166,6 +166,18 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
 
               const SizedBox(height: 32),
 
+              // Основные показатели KPI
+              Text(
+                'Мои показатели KPI',
+                style: AppTextStyles.headline5.copyWith(
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildKpiOverview(),
+
+              const SizedBox(height: 32),
+
               // Настройки уведомлений
               Text(
                 'Настройки уведомлений',
@@ -610,6 +622,68 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
     );
   }
 
+  Widget _buildKpiOverview() {
+    return Container(
+      padding: AppStyles.paddingLg,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildKpiStatCard('Выручка', '85.6K ₽', AppColors.success, Icons.attach_money),
+              _buildKpiStatCard('KPI', '92%', AppColors.primary, Icons.bar_chart),
+              _buildKpiStatCard('Клиенты', '42', AppColors.accent, Icons.people),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildKpiStatCard('Занятия', '156', AppColors.secondary, Icons.fitness_center),
+              _buildKpiStatCard('Оценка', '4.8', AppColors.warning, Icons.star),
+              _buildKpiStatCard('Загрузка', '87%', AppColors.info, Icons.work),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKpiStatCard(String title, String value, Color color, IconData icon) {
+    return Column(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, size: 20, color: color),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          title,
+          style: AppTextStyles.caption.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildActions() {
     return Column(
       children: [
@@ -623,7 +697,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
           child: ListTile(
             leading: Icon(Icons.analytics, color: AppColors.primary),
             title: Text(
-              'Мои показатели KPI',
+              'Детальная статистика KPI',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textPrimary,
               ),
@@ -631,7 +705,7 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
               final navigationService = NavigationService.of(context);
-              navigationService?.navigateTo('kpi_detail');
+              navigationService?.navigateTo('employee_kpi');
             },
           ),
         ),
