@@ -15,6 +15,7 @@ import 'package:fitness_app/screens/employee/employee_tennis_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/employee/record_screen.dart';
+import 'package:fitness_app/screens/employee/employee_combined_chat_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -182,7 +183,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'employee_schedule': (_) => const employee_schedule.EmployeeScheduleScreen(),
     'employee_kpi': (_) => const EmployeeKpiScreen(),
     'employee_clients': (_) => _buildPlaceholderScreen('Клиенты'),
-    'chat': (_) => const ChatScreen(),
+    'chat': (_) => const EmployeeCombinedChatScreen(),
     'training_detail': (data) => TrainingDetailScreen(training: data),
     'create_training': (data) => CreateTrainingScreen(
           freeTimeSlot: data,
@@ -191,6 +192,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'add_client': (_) => const AddClientScreen(),
     'employee_tennis': (_) => EmployeeTennisScreen(),
     'record_screen': (_) => const RecordScreen(),
+    'employee_combined_chat': (_) => const EmployeeCombinedChatScreen(),
     'employee_tennis_time_selection': (data) => EmployeeTennisTimeSelectionScreen(
           selectedCourt: data['court'],
           selectedClient: data['client'],

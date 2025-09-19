@@ -26,10 +26,7 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
       duration: AppStyles.animationDurationMedium,
     );
     _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
   }
 
@@ -42,9 +39,24 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
   @override
   Widget build(BuildContext context) {
     final actions = [
-      _buildActionData(Icons.calendar_today, 'Записать клиента', AppColors.primary, 'record_screen'),
-      _buildActionData(Icons.person_add, 'Добавить клиента', AppColors.success, 'add_client'),
-      _buildActionData(Icons.sports_tennis, 'Записать на теннис', AppColors.secondary, 'employee_tennis'),
+      _buildActionData(
+        Icons.calendar_today,
+        'Запись',
+        AppColors.primary,
+        'record_screen',
+      ),
+      _buildActionData(
+        Icons.sports_tennis,
+        'Теннис',
+        AppColors.secondary,
+        'employee_tennis',
+      ),
+      _buildActionData(
+        Icons.person_add,
+        'Клиенты',
+        AppColors.success,
+        'add_client',
+      ),
     ];
 
     return SizedBox(
@@ -52,23 +64,30 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        children: actions
-            .map((action) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: _buildQuickAction(
-                    action['icon'] as IconData,
-                    action['label'] as String,
-                    action['color'] as Color,
-                    action['onTap'] as VoidCallback,
+        children:
+            actions
+                .map(
+                  (action) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: _buildQuickAction(
+                      action['icon'] as IconData,
+                      action['label'] as String,
+                      action['color'] as Color,
+                      action['onTap'] as VoidCallback,
+                    ),
                   ),
-                ))
-            .toList(),
+                )
+                .toList(),
       ),
     );
   }
 
   Map<String, dynamic> _buildActionData(
-      IconData icon, String label, Color color, String screenKey) {
+    IconData icon,
+    String label,
+    Color color,
+    String screenKey,
+  ) {
     return {
       'icon': icon,
       'label': label,
@@ -77,7 +96,12 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
     };
   }
 
-  Widget _buildQuickAction(IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _buildQuickAction(
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return ScaleTransition(
       scale: _scaleAnimation,
       child: GestureDetector(
@@ -93,10 +117,7 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
             color: Colors.white,
             borderRadius: AppStyles.borderRadiusLg,
             boxShadow: AppColors.shadowMd,
-            border: Border.all(
-              color: AppColors.border,
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.border, width: 1),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -109,14 +130,10 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
                   color: color.withOpacity(0.1),
                   borderRadius: AppStyles.borderRadiusFull,
                 ),
-                child: Icon(
-                  icon,
-                  size: 22,
-                  color: color,
-                ),
+                child: Icon(icon, size: 22, color: color),
               ),
               const SizedBox(height: 6),
-              
+
               // Текст под иконкой
               SizedBox(
                 width: 70,

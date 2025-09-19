@@ -30,6 +30,9 @@ class MockDataService {
   static Chat userChat = chat_data.mockChat;
   static List<AppNotification> notifications = notification_data.mockNotifications;
   static final List<User> clients = client_data.clients;
+  
+  // Чаты сотрудника с разными контактами
+  static final Map<String, Chat> _employeeChats = {};
 
   // Метод для обновления данных пользователя
   static void updateUserMembership(Membership newMembership) {
@@ -313,5 +316,88 @@ class MockDataService {
     employeeTrainings.add(training);
     // Обновляем список, чтобы триггерить перерисовку
     employeeTrainings.sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
+
+  // Метод для получения или создания чата сотрудника
+  static Chat getOrCreateEmployeeChat(String contactId, String contactName, String? contactAvatar) {
+    if (_employeeChats.containsKey(contactId)) {
+      return _employeeChats[contactId]!;
+    }
+    
+    // Создаем новый чат
+    final newChat = Chat(
+      id: 'employee_chat_$contactId',
+      userId: contactId,
+      adminId: 'employee_igor',
+      adminName: 'Игорь Виноградов',
+      adminAvatar: null,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      messages: _getInitialEmployeeChatMessages(contactName),
+      isActive: true,
+      unreadCount: 0,
+    );
+    
+    _employeeChats[contactId] = newChat;
+    return newChat;
+  }
+
+  // Метод для получения чата сотрудника
+  static Chat getEmployeeChat(String contactId) {
+    return _employeeChats[contactId] ?? getOrCreateEmployeeChat(contactId, 'Контакт', null);
+  }
+
+  // Метод для добавления сообщения в чат сотрудника
+  static void addMessageToEmployeeChat(String contactId, ChatMessage message) {
+    final chat = getEmployeeChat(contactId);
+    final currentMessages = chat.messages;
+    
+    _employeeChats[contactId] = Chat(
+      id: chat.id,
+      userId: chat.userId,
+      adminId: chat.adminId,
+      adminName: chat.adminName,
+      adminAvatar: chat.adminAvatar,
+      createdAt: chat.createdAt,
+      updatedAt: DateTime.now(),
+      messages: [...currentMessages, message],
+      isActive: chat.isActive,
+      unreadCount: message.isUserMessage ? chat.unreadCount + 1 : chat.unreadCount,
+    );
+  }
+
+  // Начальные сообщения для чата сотрудника
+  static List<ChatMessage> _getInitialEmployeeChatMessages(String contactName) {
+    return [
+      ChatMessage(
+        id: 'msg_initial_1',
+        chatId: 'employee_chat',
+        type: MessageType.system,
+        sender: MessageSender.system,
+        content: 'Чат с $contactName начат',
+        timestamp: DateTime.now().subtract(const Duration(days: 1)),
+        isRead: true,
+      ),
+      ChatMessage(
+        id: 'msg_initial_2',
+        chatId: 'employee_chat',
+        type: MessageType.text,
+        sender: MessageSender.admin,
+        content: 'Здравствуйте! Чем могу помочь?',
+        timestamp: DateTime.now().subtract(const Duration(hours: 12)),
+        isRead: true,
+        senderName: 'Игорь Виноградов',
+      ),
+    ];
+  }
+
+  // Метод для получения всех чатов сотрудника
+  static List<Chat> getEmployeeChats() {
+    return _employeeChats.values.toList();
+  }
+
+  // Метод для получения непрочитанных сообщений в чатах сотрудника
+  static int getEmployeeUnreadMessagesCount() {
+    return _employeeChats.values.fold(0, (sum, chat) => sum + chat.unreadCount);
   }
 }

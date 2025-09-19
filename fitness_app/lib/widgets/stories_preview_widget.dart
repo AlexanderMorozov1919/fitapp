@@ -94,13 +94,14 @@ class _StoryPreviewItem extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(12), // Закругленные углы
                     border: Border.all(
                       color: isViewed ? Colors.grey : AppColors.primary,
                       width: isViewed ? 1 : 2,
                     ),
                   ),
-                  child: ClipOval(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12), // Закругленные углы для изображения
                     child: Image.network(
                       story.imageUrl,
                       fit: BoxFit.cover,
@@ -108,7 +109,7 @@ class _StoryPreviewItem extends StatelessWidget {
                         return Container(
                           decoration: BoxDecoration(
                             color: story.backgroundColor,
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
                             _getStoryIcon(story.type),
