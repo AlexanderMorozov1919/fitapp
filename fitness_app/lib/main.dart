@@ -16,6 +16,7 @@ import 'package:fitness_app/screens/employee/employee_tennis_time_selection_scre
 import 'package:fitness_app/screens/employee/employee_tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/employee/record_screen.dart';
 import 'package:fitness_app/screens/employee/employee_combined_chat_screen.dart';
+import 'package:fitness_app/screens/employee/select_client_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
@@ -200,6 +201,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'employee_tennis_confirmation': (data) => EmployeeTennisConfirmationScreen(
           bookingData: data,
         ),
+    'select_client': (_) => const SelectClientScreen(),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

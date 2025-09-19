@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../services/mock_data_service.dart';
+import '../../services/mock_data/client_data.dart';
 import '../../models/chat_model.dart';
+import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../utils/formatters.dart';
+import '../../widgets/common_widgets.dart';
+import 'select_client_screen.dart';
+import '../../main.dart';
 
 class EmployeeCombinedChatScreen extends StatefulWidget {
   const EmployeeCombinedChatScreen({super.key});
@@ -167,7 +172,7 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
 
   Widget _buildContactList() {
     return Container(
-      width: 300,
+      width: 280, // Уменьшил ширину для лучшего размещения
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(right: BorderSide(color: AppColors.border, width: 1)),
@@ -187,18 +192,18 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
                   : null,
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Уменьшил отступы
               leading: contact['avatar'] != null
                   ? CircleAvatar(
-                      radius: 20,
+                      radius: 18, // Уменьшил размер аватара
                       backgroundImage: NetworkImage(contact['avatar'] as String),
                     )
                   : CircleAvatar(
-                      radius: 20,
+                      radius: 18,
                       backgroundColor: AppColors.secondary,
                       child: Text(
                         contact['name'].toString().substring(0, 1),
-                        style: AppTextStyles.bodyLarge.copyWith(
+                        style: AppTextStyles.bodyMedium.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
@@ -209,7 +214,7 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
                   Expanded(
                     child: Text(
                       contact['name'] as String,
-                      style: AppTextStyles.bodyLarge.copyWith(
+                      style: AppTextStyles.bodyMedium.copyWith( // Уменьшил размер шрифта
                         fontWeight: FontWeight.w600,
                         color: isSelected ? AppColors.primary : AppColors.textPrimary,
                       ),
@@ -219,17 +224,17 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
                   ),
                   if (hasUnread)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1), // Уменьшил отступы
                       decoration: BoxDecoration(
                         color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         contact['unread'].toString(),
                         style: AppTextStyles.caption.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
-                          fontSize: 10,
+                          fontSize: 9, // Уменьшил размер шрифта
                         ),
                       ),
                     ),
@@ -238,21 +243,22 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   Text(
                     contact['lastMessage'] as String,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                      fontSize: 11, // Уменьшил размер шрифта
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   Text(
                     DateFormatters.formatTime(contact['time'] as DateTime),
                     style: AppTextStyles.caption.copyWith(
                       color: isSelected ? AppColors.primary : AppColors.textTertiary,
-                      fontSize: 10,
+                      fontSize: 9, // Уменьшил размер шрифта
                     ),
                   ),
                 ],
@@ -482,6 +488,13 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
         elevation: 1,
         foregroundColor: AppColors.textPrimary,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_comment),
+            onPressed: () => _navigateToSelectClient(context),
+            tooltip: 'Новый чат',
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -506,6 +519,13 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
           }
         },
       ),
+      floatingActionButton: MediaQuery.of(context).size.width < 600
+          ? FloatingActionButton(
+              onPressed: () => _navigateToSelectClient(context),
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add_comment, color: Colors.white),
+            )
+          : null,
     );
   }
 
@@ -697,6 +717,58 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _navigateToSelectClient(BuildContext context) {
+    final navigationService = NavigationService.of(context);
+    if (navigationService != null) {
+      // Используем навигацию через NavigationService
+      navigationService.navigateTo('select_client');
+    } else {
+      // Fallback навигация
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SelectClientScreen(),
+        ),
+      ).then((selectedClient) {
+        if (selectedClient != null && selectedClient is User) {
+          _createNewChat(selectedClient);
+        }
+      });
+    }
+  }
+
+  void _createNewChat(User client) {
+    final newContactId = 'client_${client.id}';
+    final newContact = {
+      'id': newContactId,
+      'name': '${client.firstName} ${client.lastName}',
+      'avatar': null,
+      'lastMessage': 'Новый чат',
+      'time': DateTime.now(),
+      'unread': 0,
+    };
+
+    // Создаем новый чат
+    MockDataService.getOrCreateEmployeeChat(
+      newContactId,
+      newContact['name'] as String,
+      null,
+    );
+
+    setState(() {
+      _contacts.insert(0, newContact);
+      _selectContact(newContactId);
+    });
+
+    // Показываем уведомление об успешном создании
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Чат с ${client.firstName} ${client.lastName} создан'),
+        backgroundColor: AppColors.success,
       ),
     );
   }
