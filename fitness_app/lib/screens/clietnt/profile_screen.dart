@@ -4,6 +4,8 @@ import '../../models/user_model.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
+import '../../main.dart';
+import '../../widgets/common_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -459,7 +461,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Реализовать экран управления платежными методами
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('payment_methods');
             },
           ),
         ),
@@ -486,7 +489,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Реализовать экран настроек безопасности
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('security_settings');
             },
           ),
         ),
@@ -507,7 +511,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             trailing: Icon(Icons.chevron_right, color: AppColors.textTertiary),
             onTap: () {
-              // TODO: Реализовать экран поддержки
+              final navigationService = NavigationService.of(context);
+              navigationService?.navigateTo('help_support');
             },
           ),
         ),
@@ -548,13 +553,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Реализовать выход из системы
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Вы успешно вышли из системы'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              // Выход из системы
+              showSuccessSnackBar(context, 'Вы успешно вышли из системы');
+              // Возврат на экран выбора типа пользователя
+              final navigationService = NavigationService.of(context);
+              if (navigationService != null) {
+                // Используем navigateToHome для возврата к основному экрану
+                navigationService.navigateToHome();
+                // Дополнительно сбрасываем состояние приложения
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/user-type',
+                  (route) => false
+                );
+              }
             },
             child: const Text('Выйти', style: TextStyle(color: Colors.red)),
           ),

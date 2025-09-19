@@ -23,13 +23,17 @@ import 'package:fitness_app/screens/employee/reschedule_training_screen.dart';
 import 'package:fitness_app/screens/employee/kpi_detail_screen.dart';
 import 'package:fitness_app/screens/employee/security_settings_screen.dart';
 import 'package:fitness_app/screens/employee/help_support_screen.dart';
+import 'package:fitness_app/screens/clietnt/payment_methods_screen.dart';
+import 'package:fitness_app/screens/clietnt/security_settings_screen.dart';
+import 'package:fitness_app/screens/clietnt/help_support_screen.dart';
+import 'package:fitness_app/screens/clietnt/locker_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/class_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/class_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/membership_screen.dart';
-import 'package:fitness_app/screens/clietnt/trainers_screen.dart' hide TrainerDetailScreen;
+import 'package:fitness_app/screens/clietnt/trainers_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainer_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainer_service_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainer_time_selection_screen.dart';
@@ -439,6 +443,26 @@ class _MainNavigationState extends State<MainNavigation> {
       return const StoryViewScreen(
         initialStoryId: '',
         stories: [],
+      );
+    },
+    'payment_methods': (_) => const PaymentMethodsScreen(),
+    'security_settings': (_) => const ClientSecuritySettingsScreen(),
+    'help_support': (_) => const ClientHelpSupportScreen(),
+    'locker_detail': (data) {
+      if (data is Map<String, dynamic>) {
+        return LockerDetailScreen(
+          locker: data['locker'],
+          rentalDays: data['rentalDays'] ?? 1,
+        );
+      }
+      return LockerDetailScreen(
+        locker: Locker(
+          id: 'default',
+          number: '0',
+          size: 'Small',
+          isAvailable: true,
+          pricePerDay: 100,
+        ),
       );
     },
   };

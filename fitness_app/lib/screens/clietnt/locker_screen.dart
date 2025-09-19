@@ -31,21 +31,17 @@ class _LockerScreenState extends State<LockerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Управление шкафчиками'),
-        backgroundColor: Colors.white,
+        title: const Text('Шкафчики'),
+        backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            final navigationService = NavigationService.of(context);
-            navigationService?.onBack();
-          },
-        ),
+        foregroundColor: AppColors.textPrimary,
       ),
+      backgroundColor: AppColors.background,
       body: DefaultTabController(
         length: 2,
         child: Column(
           children: [
+            // Заголовок с табами
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -60,6 +56,8 @@ class _LockerScreenState extends State<LockerScreen> {
                 indicatorColor: AppColors.primary,
                 labelColor: AppColors.primary,
                 unselectedLabelColor: AppColors.textSecondary,
+                labelStyle: AppTextStyles.buttonMedium,
+                unselectedLabelStyle: AppTextStyles.buttonMedium,
                 tabs: const [
                   Tab(text: 'Доступные'),
                   Tab(text: 'Мои шкафчики'),
@@ -84,13 +82,13 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   Widget _buildAvailableLockers(List<Locker> availableLockers) {
-    return Padding(
+    return SingleChildScrollView(
       padding: AppStyles.paddingLg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Доступные шкафчики:',
+            'Доступные шкафчики',
             style: AppTextStyles.headline5.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -98,49 +96,84 @@ class _LockerScreenState extends State<LockerScreen> {
           const SizedBox(height: 16),
           
           // Выбор количества дней
-          Text(
-            'Количество дней аренды:',
-            style: AppTextStyles.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          Slider(
-            value: _rentalDays.toDouble(),
-            min: 1,
-            max: 30,
-            divisions: 29,
-            label: _rentalDays.toString(),
-            activeColor: AppColors.primary,
-            inactiveColor: AppColors.border,
-            onChanged: (value) {
-              setState(() {
-                _rentalDays = value.toInt();
-              });
-            },
-          ),
-          Text(
-            '$_rentalDays дней • ${_calculatePrice()} руб.',
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
+          Container(
+            padding: AppStyles.paddingLg,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: AppStyles.borderRadiusLg,
+              boxShadow: AppColors.shadowSm,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Количество дней аренды:',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Slider(
+                  value: _rentalDays.toDouble(),
+                  min: 1,
+                  max: 30,
+                  divisions: 29,
+                  label: _rentalDays.toString(),
+                  activeColor: AppColors.primary,
+                  inactiveColor: AppColors.border,
+                  onChanged: (value) {
+                    setState(() {
+                      _rentalDays = value.toInt();
+                    });
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '$_rentalDays ${_getDaysText(_rentalDays)}',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      '${_calculatePrice()} руб.',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
           
           const SizedBox(height: 20),
           
           // Список шкафчиков
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.8,
-              ),
-              itemCount: availableLockers.length,
-              itemBuilder: (context, index) {
-                final locker = availableLockers[index];
-                return _buildLockerCard(locker);
-              },
+          Text(
+            'Выберите шкафчик:',
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w500,
             ),
+          ),
+          const SizedBox(height: 12),
+          
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 0.9,
+            ),
+            itemCount: availableLockers.length,
+            itemBuilder: (context, index) {
+              final locker = availableLockers[index];
+              return _buildLockerCard(locker);
+            },
           ),
         ],
       ),
@@ -152,12 +185,17 @@ class _LockerScreenState extends State<LockerScreen> {
       padding: AppStyles.paddingLg,
       child: userLockers.isEmpty
           ? _buildEmptyLockersState()
-          : ListView.builder(
-              itemCount: userLockers.length,
-              itemBuilder: (context, index) {
-                final locker = userLockers[index];
-                return _buildUserLockerCard(locker);
-              },
+          : ListView(
+              children: [
+                Text(
+                  'Мои арендованные шкафчики',
+                  style: AppTextStyles.headline5.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...userLockers.map((locker) => _buildUserLockerCard(locker)),
+              ],
             ),
     );
   }
@@ -165,29 +203,37 @@ class _LockerScreenState extends State<LockerScreen> {
   Widget _buildLockerCard(Locker locker) {
     final isSelected = locker == _selectedLocker;
     
-    return AppCard(
-      backgroundColor: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
+      ),
       child: InkWell(
         onTap: () {
-          setState(() {
-            _selectedLocker = locker;
+          // Переходим на детальный экран шкафчика
+          final navigationService = NavigationService.of(context);
+          navigationService?.navigateTo('locker_detail', {
+            'locker': locker,
+            'rentalDays': _rentalDays,
           });
         },
+        borderRadius: AppStyles.borderRadiusLg,
         child: Padding(
-          padding: AppStyles.paddingMd,
+          padding: AppStyles.paddingLg,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.lock,
                 size: 40,
-                color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                color: AppColors.primary,
               ),
               const SizedBox(height: 8),
               Text(
                 locker.number,
                 style: AppTextStyles.headline6.copyWith(
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -206,13 +252,6 @@ class _LockerScreenState extends State<LockerScreen> {
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 8),
-              if (isSelected)
-                PrimaryButton(
-                  text: 'Арендовать',
-                  onPressed: () => _rentLocker(locker),
-                  width: double.infinity,
-                ),
             ],
           ),
         ),
@@ -221,7 +260,13 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   Widget _buildUserLockerCard(Locker locker) {
-    return AppCard(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusLg,
+        boxShadow: AppColors.shadowSm,
+      ),
       child: Padding(
         padding: AppStyles.paddingLg,
         child: Column(
@@ -245,11 +290,16 @@ class _LockerScreenState extends State<LockerScreen> {
             const SizedBox(height: 12),
             Text(
               'Размер: ${locker.size}',
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
+            const SizedBox(height: 4),
             Text(
               'Действует до: ${_formatDate(locker.rentalEndDate!)}',
-              style: AppTextStyles.bodyMedium,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 16),
             Row(
@@ -276,12 +326,22 @@ class _LockerScreenState extends State<LockerScreen> {
   }
 
   Widget _buildEmptyLockersState() {
-    return EmptyState(
-      icon: Icons.lock_open,
-      title: 'У вас нет арендованных шкафчиков',
-      subtitle: 'Арендуйте шкафчик для удобного хранения вещей',
-      iconColor: AppColors.textTertiary,
+    return Center(
+      child: EmptyState(
+        icon: Icons.lock_open,
+        title: 'У вас нет арендованных шкафчиков',
+        subtitle: 'Арендуйте шкафчик для удобного хранения вещей',
+        iconColor: AppColors.textTertiary,
+      ),
     );
+  }
+
+  String _getDaysText(int days) {
+    if (days % 10 == 1 && days % 100 != 11) return 'день';
+    if (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20)) {
+      return 'дня';
+    }
+    return 'дней';
   }
 
   double _calculatePrice() {
@@ -295,7 +355,7 @@ class _LockerScreenState extends State<LockerScreen> {
       title: 'Аренда шкафчика',
       content: 'Шкафчик: ${locker.number}\n'
           'Размер: ${locker.size}\n'
-          'Период: $_rentalDays дней\n'
+          'Период: $_rentalDays ${_getDaysText(_rentalDays)}\n'
           'Стоимость: ${_calculatePrice()} руб.\n\n'
           'Подтвердить аренду?',
       confirmText: 'Арендовать',
@@ -339,7 +399,7 @@ class _LockerScreenState extends State<LockerScreen> {
               },
             ),
             Text(
-              '$_rentalDays дней • ${locker.pricePerDay * _rentalDays} руб.',
+              '$_rentalDays ${_getDaysText(_rentalDays)} • ${locker.pricePerDay * _rentalDays} руб.',
               style: AppTextStyles.bodyMedium.copyWith(
                 fontWeight: FontWeight.w600,
               ),
