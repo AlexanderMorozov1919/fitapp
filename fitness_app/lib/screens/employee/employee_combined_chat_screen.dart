@@ -24,32 +24,7 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   
-  final List<Map<String, dynamic>> _contacts = [
-    {
-      'id': 'client_1',
-      'name': 'Анна Петрова',
-      'avatar': 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-      'lastMessage': 'Спасибо за тренировку!',
-      'time': DateTime.now().subtract(const Duration(minutes: 30)),
-      'unread': 3,
-    },
-    {
-      'id': 'client_2',
-      'name': 'Михаил Смирнов',
-      'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      'lastMessage': 'Когда будет следующее занятие?',
-      'time': DateTime.now().subtract(const Duration(hours: 2)),
-      'unread': 1,
-    },
-    {
-      'id': 'colleague_1',
-      'name': 'Мария Администратор',
-      'avatar': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      'lastMessage': 'Есть новый клиент на теннис',
-      'time': DateTime.now().subtract(const Duration(hours: 5)),
-      'unread': 0,
-    },
-  ];
+  List<Map<String, dynamic>> _contacts = [];
 
   String? _selectedContactId;
   Chat? _currentChat;
@@ -57,14 +32,98 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
   @override
   void initState() {
     super.initState();
-    // Выбираем первый контакт по умолчанию
-    if (_contacts.isNotEmpty) {
-      _selectContact(_contacts.first['id'] as String);
-    }
+    _loadContacts();
     
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         _scrollToBottom();
+      }
+    });
+  }
+
+  void _loadContacts() {
+    final chats = MockDataService.getEmployeeChats();
+    final demoContacts = [
+      {
+        'id': 'client_1',
+        'name': 'Анна Петрова',
+        'avatar': 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
+        'lastMessage': 'Спасибо за тренировку!',
+        'time': DateTime.now().subtract(const Duration(minutes: 30)),
+        'unread': 3,
+      },
+      {
+        'id': 'client_2',
+        'name': 'Михаил Смирнов',
+        'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        'lastMessage': 'Когда будет следующее занятие?',
+        'time': DateTime.now().subtract(const Duration(hours: 2)),
+        'unread': 1,
+      },
+      {
+        'id': 'colleague_1',
+        'name': 'Мария Администратор',
+        'avatar': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+        'lastMessage': 'Есть новый клиент на теннис',
+        'time': DateTime.now().subtract(const Duration(hours: 5)),
+        'unread': 0,
+      },
+    ];
+
+    setState(() {
+      // Создаем контакты из реальных чатов
+      final realContacts = chats.map((chat) {
+        final contactId = chat.userId;
+        
+        // Ищем имя контакта в демо-контактах или используем ID
+        String contactName = 'Клиент';
+        String? avatar;
+        String lastMessage = 'Нет сообщений';
+        DateTime lastTime = DateTime.now();
+        int unread = chat.unreadCount;
+        
+        // Пытаемся найти контакт в демо-данных
+        final demoContact = demoContacts.firstWhere(
+          (demo) => demo['id'] == contactId,
+          orElse: () => {},
+        );
+        
+        if (demoContact.isNotEmpty) {
+          contactName = demoContact['name'] as String;
+          avatar = demoContact['avatar'] as String?;
+          lastMessage = demoContact['lastMessage'] as String;
+          lastTime = demoContact['time'] as DateTime;
+        } else if (chat.messages.isNotEmpty) {
+          // Используем данные из реального чата
+          final lastMsg = chat.messages.last;
+          contactName = lastMsg.senderName ?? 'Клиент';
+          lastMessage = lastMsg.content;
+          lastTime = lastMsg.timestamp;
+        }
+        
+        return {
+          'id': contactId,
+          'name': contactName,
+          'avatar': avatar,
+          'lastMessage': lastMessage,
+          'time': lastTime,
+          'unread': unread,
+        };
+      }).toList();
+
+      // Добавляем демо контакты, которые еще не созданы как реальные чаты
+      final demoContactsToAdd = demoContacts.where((demo) =>
+        !realContacts.any((real) => real['id'] == demo['id'])
+      ).toList();
+
+      _contacts = [...realContacts, ...demoContactsToAdd];
+
+      // Сортируем по времени последнего сообщения (новые сверху)
+      _contacts.sort((a, b) => (b['time'] as DateTime).compareTo(a['time'] as DateTime));
+
+      // Выбираем первый контакт по умолчанию
+      if (_contacts.isNotEmpty && _selectedContactId == null) {
+        _selectContact(_contacts.first['id'] as String);
       }
     });
   }
@@ -738,6 +797,9 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
   }
 
   void _navigateToSelectClient(BuildContext context) {
+    // Устанавливаем callback в глобальном состоянии
+    ChatSelectionState.setCallback(_handleNewContact);
+    
     final navigationService = NavigationService.of(context);
     if (navigationService != null) {
       // Используем навигацию через NavigationService
@@ -749,10 +811,36 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
         MaterialPageRoute(
           builder: (context) => const SelectClientScreen(),
         ),
-      );
+      ).then((newContact) {
+        if (newContact != null && newContact is Map<String, dynamic>) {
+          _handleNewContact(newContact);
+        }
+        // Очищаем callback после использования
+        ChatSelectionState.clearCallback();
+      });
     }
   }
 
+
+  void _handleNewContact(Map<String, dynamic> newContact) {
+    // Создаем новый чат
+    MockDataService.getOrCreateEmployeeChat(
+      newContact['id'] as String,
+      newContact['name'] as String,
+      newContact['avatar'] as String?,
+    );
+
+    // Перезагружаем контакты
+    _loadContacts();
+
+    // Показываем уведомление об успешном создании
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Чат с ${newContact['name']} создан'),
+        backgroundColor: AppColors.success,
+      ),
+    );
+  }
 
   void _createNewChat(User client) {
     final newContactId = 'client_${client.id}';
@@ -765,25 +853,7 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
       'unread': 0,
     };
 
-    // Создаем новый чат
-    MockDataService.getOrCreateEmployeeChat(
-      newContactId,
-      newContact['name'] as String,
-      null,
-    );
-
-    setState(() {
-      _contacts.insert(0, newContact);
-      _selectContact(newContactId);
-    });
-
-    // Показываем уведомление об успешном создании
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Чат с ${client.firstName} ${client.lastName} создан'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    _handleNewContact(newContact);
   }
 
   @override
