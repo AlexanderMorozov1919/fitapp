@@ -1,29 +1,14 @@
-# Используем официальный образ Flutter для веб-сборки
-FROM ghcr.io/cirruslabs/flutter:3.35.4 AS build
+# Use a lightweight Python image for serving static files
+FROM python:3.11-alpine
 
-# Устанавливаем рабочую директорию
+# Set working directory
 WORKDIR /app
 
-# Копируем файлы проекта
-COPY . .
+# Copy built web files (assumes build/web directory exists)
+COPY build/web /app
 
-# Устанавливаем зависимости
-RUN flutter pub get
+# Expose port 8080
+EXPOSE 8080
 
-# Собираем веб-приложение
-RUN flutter build web --release
-
-# Используем nginx для обслуживания статических файлов
-FROM nginx:alpine
-
-# Копируем собранные файлы в nginx
-COPY --from=build /app/build/web /usr/share/nginx/html
-
-# Копируем кастомную конфигурацию nginx (если нужно)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Открываем порт 80
-EXPOSE 80
-
-# Запускаем nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start Python HTTP server
+CMD ["python3", "-m", "http.server", "8080"]

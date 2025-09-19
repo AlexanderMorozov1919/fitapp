@@ -4,6 +4,7 @@
 .pub-cache/
 .pub/
 build/
+!build/web/
 .flutter-plugins
 .flutter-plugins-dependencies
 
