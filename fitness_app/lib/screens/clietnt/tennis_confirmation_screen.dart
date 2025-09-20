@@ -120,16 +120,45 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
                     value: '${endTime.hour - startTime.hour} ч',
                   ),
                   const SizedBox(height: 8),
-                  _buildDetailRow(
-                    icon: Icons.attach_money,
-                    title: 'Тариф',
-                    value: court.getPriceDescription(DateTime(
-                      date.year,
-                      date.month,
-                      date.day,
-                      startTime.hour,
-                      startTime.minute,
-                    )),
+                  // Тариф с адаптивным отображением
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.attach_money,
+                        size: 20,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Тариф',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              court.getPriceDescription(DateTime(
+                                date.year,
+                                date.month,
+                                date.day,
+                                startTime.hour,
+                                startTime.minute,
+                              )),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
 
                   // Итоговая стоимость
