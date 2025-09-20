@@ -5,6 +5,7 @@ enum BookingStatus {
   pending,
   cancelled,
   completed,
+  awaitingPayment,
 }
 
 enum BookingType {
@@ -67,6 +68,8 @@ class Booking {
         return Colors.red;
       case BookingStatus.completed:
         return Colors.blue;
+      case BookingStatus.awaitingPayment:
+        return Colors.amber;
     }
   }
 
@@ -80,6 +83,8 @@ class Booking {
         return 'Отменено';
       case BookingStatus.completed:
         return 'Завершено';
+      case BookingStatus.awaitingPayment:
+        return 'Ожидает оплаты';
     }
   }
 }

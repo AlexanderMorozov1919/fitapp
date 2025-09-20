@@ -10,6 +10,7 @@ enum NotificationType {
   system,
   success,
   error,
+  warning,
 }
 
 class AppNotification {
@@ -51,6 +52,8 @@ class AppNotification {
         return AppColors.success;
       case NotificationType.error:
         return AppColors.error;
+      case NotificationType.warning:
+        return Colors.orange;
     }
   }
 
@@ -72,6 +75,8 @@ class AppNotification {
         return Icons.check_circle;
       case NotificationType.error:
         return Icons.error;
+      case NotificationType.warning:
+        return Icons.warning;
     }
   }
 
@@ -93,6 +98,8 @@ class AppNotification {
         return 'Успех';
       case NotificationType.error:
         return 'Ошибка';
+      case NotificationType.warning:
+        return 'Предупреждение';
     }
   }
 

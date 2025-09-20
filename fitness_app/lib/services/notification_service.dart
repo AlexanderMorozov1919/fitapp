@@ -93,4 +93,52 @@ class NotificationService {
 
     return result ?? false;
   }
+
+  static void showBookingNotification(String bookingType, String bookingName) {
+    CustomNotificationService.showNotification(
+      AppNotification(
+        id: 'booking_${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Бронирование создано',
+        message: 'Вы забронировали $bookingType "$bookingName". Оплатите в течение 15 минут для подтверждения.',
+        type: NotificationType.info,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
+
+  static void showTrainingNotification(String trainingType, String trainerName) {
+    CustomNotificationService.showNotification(
+      AppNotification(
+        id: 'training_${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Запись на тренировку',
+        message: 'Вы записались на $trainingType у тренера $trainerName. Оплатите в течение 15 минут для подтверждения.',
+        type: NotificationType.info,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
+
+  static void showPaymentSuccessNotification(String itemName) {
+    CustomNotificationService.showNotification(
+      AppNotification(
+        id: 'payment_success_${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Оплата подтверждена',
+        message: 'Оплата за "$itemName" успешно подтверждена. Бронирование активно.',
+        type: NotificationType.success,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
+
+  static void showPaymentWarningNotification(String itemName) {
+    CustomNotificationService.showNotification(
+      AppNotification(
+        id: 'payment_warning_${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Требуется оплата',
+        message: 'Бронирование "$itemName" ожидает оплаты. Оплатите в течение 15 минут.',
+        type: NotificationType.warning,
+        timestamp: DateTime.now(),
+      ),
+    );
+  }
 }

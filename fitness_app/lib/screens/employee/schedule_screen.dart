@@ -509,6 +509,8 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
         return AppColors.error;
       case BookingStatus.completed:
         return AppColors.info;
+      case BookingStatus.awaitingPayment:
+        return Colors.orange;
     }
     return AppColors.textTertiary;
   }
@@ -523,6 +525,8 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
         return 'Отменено';
       case BookingStatus.completed:
         return 'Завершено';
+      case BookingStatus.awaitingPayment:
+        return 'Ожидает оплаты';
     }
     return 'Неизвестно';
   }

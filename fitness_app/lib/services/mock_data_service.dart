@@ -320,6 +320,13 @@ class MockDataService {
     employeeTrainings.sort((a, b) => a.startTime.compareTo(b.startTime));
   }
 
+  // Метод для добавления нового бронирования пользователя
+  static void addUserBooking(Booking booking) {
+    userBookings.add(booking);
+    // Обновляем список, чтобы триггерить перерисовку
+    userBookings.sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
+
   // Метод для получения или создания чата сотрудника
   static Chat getOrCreateEmployeeChat(String contactId, String contactName, String? contactAvatar) {
     if (_employeeChats.containsKey(contactId)) {
@@ -459,6 +466,144 @@ class MockDataService {
           relatedId: training.id,
         );
         addNotification(notification);
+      }
+    }
+  }
+
+  // Метод для подтверждения оплаты бронирования
+  static void confirmBookingPayment(String bookingId) {
+    final userBookingIndex = userBookings.indexWhere((booking) => booking.id == bookingId);
+    if (userBookingIndex != -1) {
+      final booking = userBookings[userBookingIndex];
+      
+      final updatedBooking = Booking(
+        id: booking.id,
+        userId: booking.userId,
+        type: booking.type,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        title: booking.title,
+        description: booking.description,
+        status: BookingStatus.confirmed,
+        price: booking.price,
+        courtNumber: booking.courtNumber,
+        trainerId: booking.trainerId,
+        className: booking.className,
+        lockerNumber: booking.lockerNumber,
+        createdAt: booking.createdAt,
+        clientName: booking.clientName,
+      );
+      
+      userBookings[userBookingIndex] = updatedBooking;
+    }
+
+    final employeeTrainingIndex = employeeTrainings.indexWhere((training) => training.id == bookingId);
+    if (employeeTrainingIndex != -1) {
+      final training = employeeTrainings[employeeTrainingIndex];
+      
+      final updatedTraining = Booking(
+        id: training.id,
+        userId: training.userId,
+        type: training.type,
+        startTime: training.startTime,
+        endTime: training.endTime,
+        title: training.title,
+        description: training.description,
+        status: BookingStatus.confirmed,
+        price: training.price,
+        courtNumber: training.courtNumber,
+        trainerId: training.trainerId,
+        className: training.className,
+        lockerNumber: training.lockerNumber,
+        createdAt: training.createdAt,
+        clientName: training.clientName,
+      );
+      
+      employeeTrainings[employeeTrainingIndex] = updatedTraining;
+    }
+  }
+
+  // Метод для проверки истекшего времени оплаты
+  static void checkExpiredPayments() {
+    final now = DateTime.now();
+    
+    // Проверяем пользовательские бронирования
+    for (int i = 0; i < userBookings.length; i++) {
+      final booking = userBookings[i];
+      if (booking.status == BookingStatus.awaitingPayment) {
+        final timeSinceCreation = now.difference(booking.createdAt);
+        if (timeSinceCreation.inMinutes > 15) {
+          // Отменяем бронирование, если оплата не поступила в течение 15 минут
+          final updatedBooking = Booking(
+            id: booking.id,
+            userId: booking.userId,
+            type: booking.type,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            title: booking.title,
+            description: booking.description,
+            status: BookingStatus.cancelled,
+            price: booking.price,
+            courtNumber: booking.courtNumber,
+            trainerId: booking.trainerId,
+            className: booking.className,
+            lockerNumber: booking.lockerNumber,
+            createdAt: booking.createdAt,
+            clientName: booking.clientName,
+          );
+          
+          userBookings[i] = updatedBooking;
+          
+          // Добавляем уведомление об отмене
+          addNotification(AppNotification(
+            id: 'payment_expired_${DateTime.now().millisecondsSinceEpoch}',
+            title: 'Бронирование отменено',
+            message: 'Бронирование "${booking.title}" отменено из-за истечения времени оплаты',
+            type: NotificationType.warning,
+            timestamp: DateTime.now(),
+            relatedId: booking.id,
+          ));
+        }
+      }
+    }
+
+    // Проверяем тренировки сотрудников
+    for (int i = 0; i < employeeTrainings.length; i++) {
+      final training = employeeTrainings[i];
+      if (training.status == BookingStatus.awaitingPayment) {
+        final timeSinceCreation = now.difference(training.createdAt);
+        if (timeSinceCreation.inMinutes > 15) {
+          // Отменяем тренировку, если оплата не поступила в течение 15 минут
+          final updatedTraining = Booking(
+            id: training.id,
+            userId: training.userId,
+            type: training.type,
+            startTime: training.startTime,
+            endTime: training.endTime,
+            title: training.title,
+            description: training.description,
+            status: BookingStatus.cancelled,
+            price: training.price,
+            courtNumber: training.courtNumber,
+            trainerId: training.trainerId,
+            className: training.className,
+            lockerNumber: training.lockerNumber,
+            createdAt: training.createdAt,
+            clientName: training.clientName,
+          );
+          
+          employeeTrainings[i] = updatedTraining;
+          
+          // Добавляем уведомление об отмене
+          addNotification(AppNotification(
+            id: 'payment_expired_${DateTime.now().millisecondsSinceEpoch}',
+            title: 'Тренировка отменена',
+            message: 'Тренировка "${training.title}" отменена из-за истечения времени оплаты',
+            type: NotificationType.warning,
+            timestamp: DateTime.now(),
+            relatedId: training.id,
+          ));
+        }
       }
     }
   }
