@@ -120,7 +120,7 @@ class TennisCourt {
     final hour = time.hour;
     final isWeekend = time.weekday == DateTime.saturday || time.weekday == DateTime.sunday;
     
-    double multiplier = dayPriceMultiplier;
+    double multiplier;
     
     if (hour >= 6 && hour < 10) {
       multiplier = morningPriceMultiplier;
@@ -128,10 +128,13 @@ class TennisCourt {
       multiplier = dayPriceMultiplier;
     } else if (hour >= 17 && hour < 23) {
       multiplier = eveningPriceMultiplier;
+    } else {
+      multiplier = dayPriceMultiplier; // Ночное время по дневному тарифу
     }
     
+    // Для выходных используем только выходной множитель, не умножаем на дневной
     if (isWeekend) {
-      multiplier *= weekendPriceMultiplier;
+      multiplier = weekendPriceMultiplier;
     }
     
     return (basePricePerHour * multiplier).roundToDouble();
@@ -140,6 +143,11 @@ class TennisCourt {
   String getPriceDescription(DateTime time) {
     final price = getPriceForTime(time);
     final hour = time.hour;
+    final isWeekend = time.weekday == DateTime.saturday || time.weekday == DateTime.sunday;
+    
+    if (isWeekend) {
+      return '$price ₽/час (выходной тариф)';
+    }
     
     String timeOfDay;
     if (hour >= 6 && hour < 10) {
@@ -152,10 +160,7 @@ class TennisCourt {
       timeOfDay = 'ночной';
     }
     
-    final isWeekend = time.weekday == DateTime.saturday || time.weekday == DateTime.sunday;
-    final dayType = isWeekend ? 'выходной' : 'будний';
-    
-    return '$price ₽/час ($timeOfDay тариф, $dayType день)';
+    return '$price ₽/час ($timeOfDay тариф, будний день)';
   }
 
   double calculateTotalPrice(DateTime startTime, DateTime endTime) {
@@ -173,7 +178,8 @@ class TennisCourt {
       totalPrice += getPriceForTime(hourTime);
     }
     
-    return totalPrice;
+    // Округляем до ближайших 50 рублей
+    return (totalPrice / 50).round() * 50;
   }
 
   String getMultiTariffDescription(DateTime startTime, DateTime endTime) {
@@ -182,19 +188,33 @@ class TennisCourt {
     
     if (totalHours <= 0) return '';
     
+    final isWeekend = startTime.weekday == DateTime.saturday ||
+                     startTime.weekday == DateTime.sunday;
+    
+    // Если это выходной день, все часы по одному тарифу
+    if (isWeekend) {
+      return '$totalHours ч (выходной тариф)';
+    }
+    
     final tariffs = <String, int>{};
     
     // Собираем информацию о тарифах для каждого часа
     for (int i = 0; i < totalHours; i++) {
       final hourTime = startTime.add(Duration(hours: i));
-      final tariffDesc = getPriceDescription(hourTime);
+      final hour = hourTime.hour;
       
-      // Извлекаем название тарифа из описания
-      final tariffMatch = RegExp(r'\((.*?) тариф').firstMatch(tariffDesc);
-      if (tariffMatch != null) {
-        final tariffName = tariffMatch.group(1)!;
-        tariffs[tariffName] = (tariffs[tariffName] ?? 0) + 1;
+      String tariffName;
+      if (hour >= 6 && hour < 10) {
+        tariffName = 'утренний';
+      } else if (hour >= 10 && hour < 17) {
+        tariffName = 'дневной';
+      } else if (hour >= 17 && hour < 23) {
+        tariffName = 'вечерний';
+      } else {
+        tariffName = 'ночной';
       }
+      
+      tariffs[tariffName] = (tariffs[tariffName] ?? 0) + 1;
     }
     
     // Формируем описание с количеством часов по каждому тарифу
