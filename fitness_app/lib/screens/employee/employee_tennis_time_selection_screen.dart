@@ -228,12 +228,13 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
           runSpacing: 8,
           children: _availableTimes.map((time) {
             final isSelected = time == _selectedStartTime;
+            final isOccupied = _isTimeSlotOccupied(time);
             
             return TimeSlotChip(
               time: time,
               isSelected: isSelected,
-              isOccupied: false,
-              onTap: () {
+              isOccupied: isOccupied,
+              onTap: isOccupied ? null : () {
                 setState(() {
                   if (!isSelected) {
                     _selectedStartTime = time;
@@ -265,12 +266,15 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
             children: _availableTimes.where((time) =>
                 time.hour > _selectedStartTime!.hour).map((time) {
               final isSelected = time == _selectedEndTime;
+              final isOccupied = _isTimeSlotOccupied(time);
+              final durationHours = time.hour - _selectedStartTime!.hour;
+              final isTimeRangeAvailable = _isTimeRangeAvailable(_selectedStartTime!, durationHours);
               
               return TimeSlotChip(
                 time: time,
                 isSelected: isSelected,
-                isOccupied: false,
-                onTap: () {
+                isOccupied: isOccupied || !isTimeRangeAvailable,
+                onTap: (isOccupied || !isTimeRangeAvailable) ? null : () {
                   setState(() {
                     _selectedEndTime = !isSelected ? time : null;
                   });
@@ -373,5 +377,29 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
   String _formatTime(TimeOfDay time) {
     final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
     return DateFormatters.formatTimeRussian(dateTime);
+  }
+
+  bool _isTimeSlotOccupied(TimeOfDay time) {
+    final dateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      time.hour,
+      time.minute,
+    );
+    
+    return !widget.selectedCourt.isTimeSlotAvailable(dateTime, 1);
+  }
+
+  bool _isTimeRangeAvailable(TimeOfDay startTime, int durationHours) {
+    final startDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      startTime.hour,
+      startTime.minute,
+    );
+    
+    return widget.selectedCourt.isTimeSlotAvailable(startDateTime, durationHours);
   }
 }

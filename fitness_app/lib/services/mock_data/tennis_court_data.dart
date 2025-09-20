@@ -14,50 +14,69 @@ final List<TennisCourt> tennisCourts = [
     eveningPriceMultiplier: 1.3,  // 1950 ₽
     weekendPriceMultiplier: 1.6,  // 2400 ₽
     bookedSlots: [
-      // Понедельник
+      // Понедельник (22 сентября)
       DateTime(2025, 9, 22, 9, 0),
       DateTime(2025, 9, 22, 10, 0),
+      DateTime(2025, 9, 22, 11, 0),
       DateTime(2025, 9, 22, 18, 0),
       DateTime(2025, 9, 22, 19, 0),
       DateTime(2025, 9, 22, 20, 0),
+      DateTime(2025, 9, 22, 21, 0),
       
-      // Вторник
+      // Вторник (23 сентября)
       DateTime(2025, 9, 23, 10, 0),
       DateTime(2025, 9, 23, 11, 0),
+      DateTime(2025, 9, 23, 12, 0),
+      DateTime(2025, 9, 23, 13, 0),
       DateTime(2025, 9, 23, 19, 0),
       DateTime(2025, 9, 23, 20, 0),
+      DateTime(2025, 9, 23, 21, 0),
       
-      // Среда
+      // Среда (24 сентября)
       DateTime(2025, 9, 24, 14, 0),
       DateTime(2025, 9, 24, 15, 0),
       DateTime(2025, 9, 24, 16, 0),
+      DateTime(2025, 9, 24, 17, 0),
+      DateTime(2025, 9, 24, 18, 0),
       
-      // Четверг
+      // Четверг (25 сентября)
       DateTime(2025, 9, 25, 9, 0),
       DateTime(2025, 9, 25, 10, 0),
+      DateTime(2025, 9, 25, 11, 0),
       DateTime(2025, 9, 25, 17, 0),
       DateTime(2025, 9, 25, 18, 0),
+      DateTime(2025, 9, 25, 19, 0),
+      DateTime(2025, 9, 25, 20, 0),
       
-      // Пятница
+      // Пятница (26 сентября)
       DateTime(2025, 9, 26, 11, 0),
       DateTime(2025, 9, 26, 12, 0),
+      DateTime(2025, 9, 26, 13, 0),
+      DateTime(2025, 9, 26, 14, 0),
       DateTime(2025, 9, 26, 18, 0),
       DateTime(2025, 9, 26, 19, 0),
       DateTime(2025, 9, 26, 20, 0),
+      DateTime(2025, 9, 26, 21, 0),
       
-      // Суббота
+      // Суббота (27 сентября)
       DateTime(2025, 9, 27, 10, 0),
       DateTime(2025, 9, 27, 11, 0),
       DateTime(2025, 9, 27, 12, 0),
       DateTime(2025, 9, 27, 13, 0),
       DateTime(2025, 9, 27, 14, 0),
       DateTime(2025, 9, 27, 15, 0),
+      DateTime(2025, 9, 27, 16, 0),
+      DateTime(2025, 9, 27, 17, 0),
+      DateTime(2025, 9, 27, 18, 0),
       
-      // Воскресенье
+      // Воскресенье (28 сентября)
       DateTime(2025, 9, 28, 11, 0),
       DateTime(2025, 9, 28, 12, 0),
       DateTime(2025, 9, 28, 13, 0),
       DateTime(2025, 9, 28, 14, 0),
+      DateTime(2025, 9, 28, 15, 0),
+      DateTime(2025, 9, 28, 16, 0),
+      DateTime(2025, 9, 28, 17, 0),
     ],
   ),
   TennisCourt(
