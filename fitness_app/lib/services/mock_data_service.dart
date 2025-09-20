@@ -4,6 +4,7 @@ import '../models/user_model.dart';
 import '../models/payment_model.dart';
 import '../models/chat_model.dart';
 import '../models/notification_model.dart';
+import '../models/product_model.dart';
 import './chat_notification_service.dart';
 import '../utils/formatters.dart';
 
@@ -19,6 +20,7 @@ import './mock_data/chat_data.dart' as chat_data;
 import './mock_data/notification_data.dart' as notification_data;
 import './mock_data/employee_training_data.dart' as employee_training_data;
 import './mock_data/client_data.dart' as client_data;
+import './mock_data/product_data.dart' as product_data;
 
 class MockDataService {
   static User currentUser = user_data.currentUser;
@@ -35,6 +37,12 @@ class MockDataService {
   
   // Чаты сотрудника с разными контактами
   static final Map<String, Chat> _employeeChats = {};
+  
+  // Корзина покупок
+  static ShoppingCart shoppingCart = ShoppingCart();
+  
+  // Все товары
+  static final List<Product> allProducts = product_data.ProductData.allProducts;
 
   // Метод для обновления данных пользователя
   static void updateUserMembership(Membership newMembership) {
@@ -676,6 +684,162 @@ class MockDataService {
         relatedId: training.id,
       );
       addNotification(notification);
+    }
+  }
+
+  // Методы для работы с товарами и корзиной
+
+  static List<Product> getAllProducts() {
+    return allProducts;
+  }
+
+  static List<Product> getProductsByCategory(ProductCategory category) {
+    return allProducts.where((product) => product.category == category).toList();
+  }
+
+  static List<Product> getPopularProducts() {
+    return product_data.ProductData.getPopularProducts();
+  }
+
+  static List<Product> getProductsForBooking(BookingType bookingType) {
+    return product_data.ProductData.getProductsForBooking(bookingType);
+  }
+
+  static Product? getProductById(String id) {
+    return product_data.ProductData.getProductById(id);
+  }
+
+  // Методы для работы с корзиной
+
+  static void addToCart(Product product, [int quantity = 1]) {
+    shoppingCart.addItem(product, quantity);
+  }
+
+  static void removeFromCart(String productId, [int quantity = 1]) {
+    shoppingCart.removeItem(productId, quantity);
+  }
+
+  static void updateCartItemQuantity(String productId, int newQuantity) {
+    shoppingCart.updateItemQuantity(productId, newQuantity);
+  }
+
+  static void clearCart() {
+    shoppingCart.clear();
+  }
+
+  static double getCartTotalPrice() {
+    return shoppingCart.totalPrice;
+  }
+
+  static int getCartTotalItems() {
+    return shoppingCart.totalItems;
+  }
+
+  static bool isCartEmpty() {
+    return shoppingCart.isEmpty;
+  }
+
+  static List<CartItem> getCartItems() {
+    return shoppingCart.items;
+  }
+
+  static bool isProductInCart(String productId) {
+    return shoppingCart.containsProduct(productId);
+  }
+
+  static int getProductQuantityInCart(String productId) {
+    return shoppingCart.getProductQuantity(productId);
+  }
+
+  // Метод для создания бронирования с товарами
+  static Booking createBookingWithProducts({
+    required String id,
+    required String userId,
+    required BookingType type,
+    required DateTime startTime,
+    required DateTime endTime,
+    required String title,
+    String? description,
+    required BookingStatus status,
+    double price = 0,
+    String? courtNumber,
+    String? trainerId,
+    String? className,
+    String? lockerNumber,
+    String? clientName,
+  }) {
+    return Booking(
+      id: id,
+      userId: userId,
+      type: type,
+      startTime: startTime,
+      endTime: endTime,
+      title: title,
+      description: description,
+      status: status,
+      price: price,
+      courtNumber: courtNumber,
+      trainerId: trainerId,
+      className: className,
+      lockerNumber: lockerNumber,
+      createdAt: DateTime.now(),
+      clientName: clientName,
+      products: shoppingCart.items.toList(), // Копируем товары из корзины
+    );
+  }
+
+  // Метод для обновления бронирования с товарами
+  static void updateBookingWithProducts(String bookingId, List<CartItem> products) {
+    final userBookingIndex = userBookings.indexWhere((booking) => booking.id == bookingId);
+    if (userBookingIndex != -1) {
+      final booking = userBookings[userBookingIndex];
+      
+      final updatedBooking = Booking(
+        id: booking.id,
+        userId: booking.userId,
+        type: booking.type,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        title: booking.title,
+        description: booking.description,
+        status: booking.status,
+        price: booking.price,
+        courtNumber: booking.courtNumber,
+        trainerId: booking.trainerId,
+        className: booking.className,
+        lockerNumber: booking.lockerNumber,
+        createdAt: booking.createdAt,
+        clientName: booking.clientName,
+        products: products,
+      );
+      
+      userBookings[userBookingIndex] = updatedBooking;
+    }
+
+    final employeeTrainingIndex = employeeTrainings.indexWhere((training) => training.id == bookingId);
+    if (employeeTrainingIndex != -1) {
+      final training = employeeTrainings[employeeTrainingIndex];
+      
+      final updatedTraining = Booking(
+        id: training.id,
+        userId: training.userId,
+        type: training.type,
+        startTime: training.startTime,
+        endTime: training.endTime,
+        title: training.title,
+        description: training.description,
+        status: training.status,
+        price: training.price,
+        courtNumber: training.courtNumber,
+        trainerId: training.trainerId,
+        className: training.className,
+        lockerNumber: training.lockerNumber,
+        createdAt: training.createdAt,
+        clientName: training.clientName,
+        products: products,
+      );
+      
+      employeeTrainings[employeeTrainingIndex] = updatedTraining;
     }
   }
 }

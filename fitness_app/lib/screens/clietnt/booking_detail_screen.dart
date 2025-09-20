@@ -8,6 +8,7 @@ import '../../utils/formatters.dart';
 import '../../main.dart';
 import 'cancel_booking_modal.dart' as cancel_booking_modal;
 import 'reschedule_booking_modal.dart' as reschedule_booking_modal;
+import '../../models/product_model.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final Booking booking;
@@ -237,6 +238,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               const SizedBox(height: 16),
             ],
 
+            // Секция товаров
+            _buildProductsSection(booking),
+
             // Информация о создании
             Text(
               'Бронирование создано: ${DateFormatters.formatDateTime(booking.createdAt)}',
@@ -331,6 +335,109 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       // Просто показываем сообщение, так как модальные окна требуют callback функции
       showSuccessSnackBar(context, 'Функционал изменения времени доступен через быстрый доступ');
     }
+  }
+
+  Widget _buildProductsSection(Booking booking) {
+    final totalProductsPrice = booking.products.fold(
+      0.0,
+      (sum, item) => sum + item.totalPrice
+    );
+
+    if (booking.products.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        AppCard(
+          padding: AppStyles.paddingLg,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.shopping_basket,
+                    size: 20,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Дополнительные товары',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              
+              ...booking.products.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.product.name,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            '${item.quantity} × ${item.product.formattedPrice}',
+                            style: AppTextStyles.caption.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      item.formattedTotalPrice,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+
+              if (totalProductsPrice > 0) ...[
+                const SizedBox(height: 8),
+                const Divider(height: 1, color: AppColors.border),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(
+                      'Итого за товары:',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${totalProductsPrice.toInt()} ₽',
+                      style: AppTextStyles.price.copyWith(
+                        fontSize: 16,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   void _proceedToPayment() {

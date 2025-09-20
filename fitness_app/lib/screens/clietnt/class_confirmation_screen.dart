@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/trainer_model.dart';
 import '../../models/booking_model.dart';
 import '../../models/payment_model.dart';
+import '../../models/product_model.dart';
 import '../../models/user_model.dart';
 import '../../services/mock_data_service.dart';
 import '../../services/notification_service.dart';
@@ -11,6 +12,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../main.dart';
 import '../../utils/formatters.dart';
+import 'product_selection_screen.dart';
 
 class ClassConfirmationScreen extends StatefulWidget {
   final GroupClass selectedClass;
@@ -23,6 +25,7 @@ class ClassConfirmationScreen extends StatefulWidget {
 
 class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
   bool _isProcessing = false;
+  final List<CartItem> _selectedProducts = [];
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +195,44 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
                 ),
               ),
             
+            // Кнопка выбора товаров
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: _selectProducts,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: BorderSide(color: AppColors.primary),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppStyles.borderRadiusLg,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_basket,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Добавить товары к бронированию',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Отображение выбранных товаров
+            if (_selectedProducts.isNotEmpty) _buildProductsSection(),
+
             const Spacer(),
             
             // Кнопка подтверждения
@@ -258,7 +299,7 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
     // Имитация процесса бронирования
     await Future.delayed(const Duration(seconds: 1));
 
-    // Создаем бронирование
+    // Создаем бронирование с товарами
     final booking = Booking(
       id: 'booking_${DateTime.now().millisecondsSinceEpoch}',
       userId: MockDataService.currentUser.id,
@@ -271,6 +312,7 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
       price: widget.selectedClass.price,
       className: widget.selectedClass.name,
       createdAt: DateTime.now(),
+      products: _selectedProducts,
     );
 
     // Добавляем в мок данные
@@ -290,7 +332,7 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('payment', {
       'booking': booking,
-      'amount': widget.selectedClass.price,
+      'amount': booking.totalPrice,
       'description': 'Запись на занятие "${widget.selectedClass.name}"',
     });
   }
@@ -324,5 +366,89 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
     return membership.includedServices.contains('group_classes') ||
            membership.type.toLowerCase().contains('full') ||
            membership.type.toLowerCase().contains('premium');
+  }
+
+  Widget _buildProductsSection() {
+    final totalProductsPrice = _selectedProducts.fold(
+      0.0,
+      (sum, item) => sum + item.totalPrice
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Выбранные товары:',
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        
+        ..._selectedProducts.map((item) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${item.product.name} × ${item.quantity}',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              Text(
+                item.formattedTotalPrice,
+                style: AppTextStyles.bodySmall.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        )).toList(),
+
+        if (totalProductsPrice > 0) ...[
+          const SizedBox(height: 8),
+          const Divider(height: 1, color: AppColors.border),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                'Итого за товары:',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${totalProductsPrice.toInt()} ₽',
+                style: AppTextStyles.price.copyWith(
+                  fontSize: 16,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        ],
+        
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  void _selectProducts() {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateToWithCallback('product_selection', {
+      'bookingType': BookingType.groupClass,
+      'onProductsSelected': (List<CartItem> products) {
+        setState(() {
+          _selectedProducts.clear();
+          _selectedProducts.addAll(products);
+        });
+      },
+    });
   }
 }

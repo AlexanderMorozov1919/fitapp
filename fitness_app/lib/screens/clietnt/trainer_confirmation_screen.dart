@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/trainer_model.dart';
 import '../../models/booking_model.dart';
+import '../../models/product_model.dart';
 import '../../services/mock_data_service.dart';
 import '../../services/notification_service.dart';
 import '../../main.dart';
@@ -20,6 +21,19 @@ class TrainerConfirmationScreen extends StatefulWidget {
 }
 
 class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
+  final List<CartItem> _selectedProducts = [];
+  bool _showAllProducts = false;
+  late List<Product> _availableProducts;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Получаем доступные товары для персональных тренировок
+    _availableProducts = MockDataService.getProductsForBooking(BookingType.personalTraining);
+    // Перемешиваем товары для случайного порядка
+    _availableProducts.shuffle();
+  }
+
   @override
   Widget build(BuildContext context) {
     final trainer = widget.bookingData['trainer'] as Trainer;
@@ -27,6 +41,11 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
     final price = widget.bookingData['price'] as double;
     final date = widget.bookingData['date'] as DateTime;
     final time = widget.bookingData['time'] as TimeOfDay;
+
+    // Получаем товары для отображения (первые 3 или все)
+    final productsToShow = _showAllProducts
+        ? _availableProducts
+        : _availableProducts.take(3).toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -149,36 +168,17 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
                     value: '${price.toInt()} ₽/час',
                   ),
 
-                  // Итоговая стоимость
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: AppStyles.borderRadiusMd,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Итоговая стоимость:',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '${price.toInt()} ₽',
-                          style: AppTextStyles.price.copyWith(
-                            fontSize: 18,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 24),
+
+            // Секция с товарами
+            _buildProductsSelectionSection(productsToShow),
+
+            // Отображение выбранных товаров
+            if (_selectedProducts.isNotEmpty) _buildSelectedProductsSection(),
 
             const SizedBox(height: 24),
 
@@ -208,26 +208,17 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
 
             const SizedBox(height: 32),
 
-            // Кнопки действий
-            Row(
-              children: [
-                Expanded(
-                  child: SecondaryButton(
-                    text: 'Назад',
-                    onPressed: () {
-                      final navigationService = NavigationService.of(context);
-                      navigationService?.onBack();
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: PrimaryButton(
-                    text: 'Подтвердить и оплатить',
-                    onPressed: _proceedToPayment,
-                  ),
-                ),
-              ],
+            // Итоговая стоимость перед кнопкой оплаты
+            _buildFinalTotalPriceSection(price),
+            const SizedBox(height: 16),
+
+            // Кнопка оплаты
+            SizedBox(
+              width: double.infinity,
+              child: PrimaryButton(
+                text: 'Подтвердить и оплатить',
+                onPressed: _proceedToPayment,
+              ),
             ),
           ],
         ),
@@ -272,6 +263,340 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
     return DateFormatters.formatTimeRussian(dateTime);
   }
 
+  Widget _buildProductsSelectionSection(List<Product> productsToShow) {
+    if (productsToShow.isEmpty) {
+      return const SizedBox();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Заголовок секции
+        Row(
+          children: [
+            Text(
+              'Дополнительные товары:',
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const Spacer(),
+            if (!_showAllProducts && _availableProducts.length > 3)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _showAllProducts = true;
+                  });
+                },
+                child: Text(
+                  'Показать все (${_availableProducts.length})',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            if (_showAllProducts)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _showAllProducts = false;
+                  });
+                },
+                child: Text(
+                  'Свернуть',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // Список товаров
+        ...productsToShow.map((product) => _buildProductItem(product)).toList(),
+
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildProductItem(Product product) {
+    final currentQuantity = _selectedProducts
+        .where((item) => item.product.id == product.id)
+        .fold(0, (sum, item) => sum + item.quantity);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: AppStyles.paddingMd,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppStyles.borderRadiusMd,
+        border: Border.all(color: AppColors.border, width: 1),
+      ),
+      child: Row(
+        children: [
+          // Иконка категории
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: product.categoryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              product.categoryIcon,
+              size: 20,
+              color: product.categoryColor,
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Информация о товаре
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.name,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  product.description,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${product.formattedPrice} / ${product.unit}',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Управление количеством - вертикальный стек
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Кнопка увеличения
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
+                  ),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.add, size: 18),
+                  onPressed: () => _updateProductQuantity(product, currentQuantity + 1),
+                  style: IconButton.styleFrom(
+                    padding: const EdgeInsets.all(6),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ),
+              
+              // Количество (только если > 0)
+              if (currentQuantity > 0)
+                Container(
+                  width: 36,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.05),
+                    border: Border.symmetric(
+                      horizontal: BorderSide(
+                        color: AppColors.primary.withOpacity(0.2),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    currentQuantity.toString(),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              
+              // Кнопка уменьшения (только если > 0)
+              if (currentQuantity > 0)
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(8),
+                      bottomRight: Radius.circular(8),
+                    ),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.remove, size: 18),
+                    onPressed: () => _updateProductQuantity(product, currentQuantity - 1),
+                    style: IconButton.styleFrom(
+                      padding: const EdgeInsets.all(6),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectedProductsSection() {
+    final totalProductsPrice = _selectedProducts.fold(
+      0.0,
+      (sum, item) => sum + item.totalPrice
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Text(
+          'Выбранные товары:',
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        
+        ..._selectedProducts.map((item) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${item.product.name} × ${item.quantity}',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              Text(
+                item.formattedTotalPrice,
+                style: AppTextStyles.bodySmall.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        )).toList(),
+
+        if (totalProductsPrice > 0) ...[
+          const SizedBox(height: 8),
+          const Divider(height: 1, color: AppColors.border),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                'Итого за товары:',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${totalProductsPrice.toInt()} ₽',
+                style: AppTextStyles.price.copyWith(
+                  fontSize: 16,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        ],
+        
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+
+  Widget _buildFinalTotalPriceSection(double basePrice) {
+    final totalProductsPrice = _selectedProducts.fold(
+      0.0,
+      (sum, item) => sum + item.totalPrice
+    );
+    final totalPrice = basePrice + totalProductsPrice;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.05),
+        borderRadius: AppStyles.borderRadiusLg,
+        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Итоговая стоимость:',
+            style: AppTextStyles.headline6.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          Text(
+            '${totalPrice.toInt()} ₽',
+            style: AppTextStyles.price.copyWith(
+              fontSize: 20,
+              color: AppColors.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _updateProductQuantity(Product product, int newQuantity) {
+    setState(() {
+      // Удаляем товар из списка, если количество 0
+      if (newQuantity <= 0) {
+        _selectedProducts.removeWhere((item) => item.product.id == product.id);
+        return;
+      }
+
+      // Ищем существующий товар
+      final existingItemIndex = _selectedProducts.indexWhere(
+        (item) => item.product.id == product.id
+      );
+
+      if (existingItemIndex != -1) {
+        // Обновляем количество существующего товара
+        _selectedProducts[existingItemIndex] = _selectedProducts[existingItemIndex].copyWith(
+          quantity: newQuantity
+        );
+      } else {
+        // Добавляем новый товар
+        _selectedProducts.add(CartItem(
+          product: product,
+          quantity: newQuantity,
+        ));
+      }
+    });
+  }
+
   void _proceedToPayment() {
     final trainer = widget.bookingData['trainer'] as Trainer;
     final serviceName = widget.bookingData['serviceName'] as String;
@@ -289,6 +614,11 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
 
     final endDateTime = startDateTime.add(const Duration(hours: 1));
 
+    final totalProductsPrice = _selectedProducts.fold(
+      0.0,
+      (sum, item) => sum + item.totalPrice
+    );
+    
     final booking = Booking(
       id: 'training_${DateTime.now().millisecondsSinceEpoch}',
       userId: MockDataService.currentUser.id,
@@ -298,9 +628,10 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
       title: '$serviceName с ${trainer.fullName}',
       description: 'Персональная тренировка',
       status: BookingStatus.awaitingPayment,
-      price: price,
+      price: price + totalProductsPrice,
       trainerId: trainer.id,
       createdAt: DateTime.now(),
+      products: _selectedProducts,
     );
 
     // Добавляем в мок данные
@@ -315,7 +646,7 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('payment', {
       'booking': booking,
-      'amount': price,
+      'amount': price + totalProductsPrice,
       'description': '$serviceName с ${trainer.fullName}',
     });
   }

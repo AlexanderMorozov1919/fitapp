@@ -41,6 +41,7 @@ import 'package:fitness_app/screens/clietnt/trainer_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/schedule_screen.dart';
 import 'package:fitness_app/screens/clietnt/schedule_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/profile_screen.dart';
+import 'package:fitness_app/screens/clietnt/product_selection_screen.dart';
 import 'package:fitness_app/screens/employee/profile_screen.dart';
 import 'package:fitness_app/screens/clietnt/chat_screen.dart';
 import 'package:fitness_app/screens/clietnt/bookings_screen.dart';
@@ -142,6 +143,7 @@ class NavigationService extends InheritedWidget {
   final Function(String, [dynamic]) navigateTo;
   final VoidCallback navigateToHome;
   final Function(String, [dynamic]) navigateToWithResult;
+  final Function(String, [dynamic]) navigateToWithCallback;
 
   const NavigationService({
     super.key,
@@ -149,6 +151,7 @@ class NavigationService extends InheritedWidget {
     required this.navigateTo,
     required this.navigateToHome,
     required this.navigateToWithResult,
+    required this.navigateToWithCallback,
     required super.child,
   });
 
@@ -161,7 +164,8 @@ class NavigationService extends InheritedWidget {
     return oldWidget.onBack != onBack ||
            oldWidget.navigateTo != navigateTo ||
            oldWidget.navigateToHome != navigateToHome ||
-           oldWidget.navigateToWithResult != navigateToWithResult;
+           oldWidget.navigateToWithResult != navigateToWithResult ||
+           oldWidget.navigateToWithCallback != navigateToWithCallback;
   }
 }
 
@@ -394,12 +398,21 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     });
   }
 
-  void _navigateBack() {
+  void _navigateToWithCallback(String screenKey, [dynamic data]) {
     setState(() {
-      if (_navigationStack.isNotEmpty) {
-        _navigationStack.removeLast();
-      }
+      _navigationStack.add({
+        'screen': screenKey,
+        'data': data,
+      });
     });
+  }
+
+  void _navigateBack() {
+    if (_navigationStack.isNotEmpty) {
+      setState(() {
+        _navigationStack.removeLast();
+      });
+    }
   }
 
   void _navigateToHome() {
@@ -419,6 +432,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
         navigateToWithResult: _navigateToWithResult,
+        navigateToWithCallback: _navigateToWithCallback,
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {
@@ -435,6 +449,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
         navigateToWithResult: _navigateToWithResult,
+        navigateToWithCallback: _navigateToWithCallback,
         child: _screens[_currentIndex],
       );
     }
@@ -558,6 +573,18 @@ class _MainNavigationState extends State<MainNavigation> {
         ),
       );
     },
+    'product_selection': (data) {
+      if (data is Map<String, dynamic>) {
+        return ProductSelectionScreen(
+          bookingType: data['bookingType'],
+          onProductsSelected: data['onProductsSelected'],
+        );
+      }
+      return ProductSelectionScreen(
+        bookingType: BookingType.groupClass,
+        onProductsSelected: (_) {},
+      );
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
@@ -621,12 +648,21 @@ class _MainNavigationState extends State<MainNavigation> {
     });
   }
 
-  void _navigateBack() {
+  void _navigateToWithCallback(String screenKey, [dynamic data]) {
     setState(() {
-      if (_navigationStack.isNotEmpty) {
-        _navigationStack.removeLast();
-      }
+      _navigationStack.add({
+        'screen': screenKey,
+        'data': data,
+      });
     });
+  }
+
+  void _navigateBack() {
+    if (_navigationStack.isNotEmpty) {
+      setState(() {
+        _navigationStack.removeLast();
+      });
+    }
   }
 
   void _navigateToHome() {
@@ -646,6 +682,7 @@ class _MainNavigationState extends State<MainNavigation> {
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
         navigateToWithResult: _navigateToWithResult,
+        navigateToWithCallback: _navigateToWithCallback,
         child: _quickAccessScreens[_currentQuickAccessScreen]!(_quickAccessData),
       );
     } else {
@@ -662,6 +699,7 @@ class _MainNavigationState extends State<MainNavigation> {
         navigateTo: _navigateToQuickAccess,
         navigateToHome: _navigateToHome,
         navigateToWithResult: _navigateToWithResult,
+        navigateToWithCallback: _navigateToWithCallback,
         child: _screens[_currentIndex],
       );
     }

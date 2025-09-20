@@ -214,6 +214,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildFixedAmount() {
+    final booking = widget.bookingData?['booking'] as Booking?;
+    final hasProducts = booking?.hasProducts ?? false;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -221,15 +224,106 @@ class _PaymentScreenState extends State<PaymentScreen> {
         borderRadius: AppStyles.borderRadiusLg,
         border: Border.all(color: AppColors.primary),
       ),
-      child: Center(
-        child: Text(
-          '${_amount.toStringAsFixed(0)} руб.',
-          style: AppTextStyles.headline5.copyWith(
-            color: AppColors.primary,
-            fontWeight: FontWeight.w600,
+      child: Column(
+        children: [
+          if (hasProducts) ...[
+            // Детализация стоимости
+            _buildCostBreakdown(booking!),
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: AppColors.primary),
+            const SizedBox(height: 12),
+          ],
+          
+          // Итоговая сумма
+          Center(
+            child: Text(
+              '${_amount.toStringAsFixed(0)} руб.',
+              style: AppTextStyles.headline5.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildCostBreakdown(Booking booking) {
+    final basePrice = booking.price;
+    final productsPrice = booking.totalPrice - basePrice;
+
+    return Column(
+      children: [
+        // Базовая стоимость
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Основная услуга:',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            Text(
+              '${basePrice.toInt()} ₽',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+
+        // Стоимость товаров
+        if (productsPrice > 0) ...[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Дополнительные товары:',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              Text(
+                '${productsPrice.toInt()} ₽',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+        ],
+
+        // Детали товаров (если есть)
+        if (booking.products.isNotEmpty) ...[
+          ...booking.products.map((item) => Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '• ${item.product.name} × ${item.quantity}',
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+                Text(
+                  item.formattedTotalPrice,
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          )).toList(),
+          const SizedBox(height: 4),
+        ],
+      ],
     );
   }
 

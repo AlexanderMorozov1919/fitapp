@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'product_model.dart';
 
 enum BookingStatus {
   confirmed,
@@ -31,6 +32,7 @@ class Booking {
   final String? lockerNumber;
   final DateTime createdAt;
   final String? clientName;
+  final List<CartItem> products;
 
   Booking({
     required this.id,
@@ -48,6 +50,7 @@ class Booking {
     this.lockerNumber,
     required this.createdAt,
     this.clientName,
+    this.products = const [],
   });
 
   bool get isUpcoming => status == BookingStatus.confirmed && 
@@ -86,6 +89,19 @@ class Booking {
       case BookingStatus.awaitingPayment:
         return 'Ожидает оплаты';
     }
+  }
+
+  double get totalPrice {
+    final productsPrice = products.fold(0.0, (sum, item) => sum + item.totalPrice);
+    return price + productsPrice;
+  }
+
+  String get formattedTotalPrice => '${totalPrice.toInt()} ₽';
+
+  bool get hasProducts => products.isNotEmpty;
+
+  int get totalProductsQuantity {
+    return products.fold(0, (sum, item) => sum + item.quantity);
   }
 }
 
