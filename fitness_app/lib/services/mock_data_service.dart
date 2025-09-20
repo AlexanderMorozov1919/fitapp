@@ -458,6 +458,7 @@ class MockDataService {
         lockerNumber: training.lockerNumber,
         createdAt: training.createdAt,
         clientName: training.clientName,
+        products: training.products, // Сохраняем товары
       );
       
       employeeTrainings[index] = updatedTraining;
@@ -500,6 +501,7 @@ class MockDataService {
         lockerNumber: booking.lockerNumber,
         createdAt: booking.createdAt,
         clientName: booking.clientName,
+        products: booking.products, // Сохраняем товары
       );
       
       userBookings[userBookingIndex] = updatedBooking;
@@ -525,6 +527,7 @@ class MockDataService {
         lockerNumber: training.lockerNumber,
         createdAt: training.createdAt,
         clientName: training.clientName,
+        products: training.products, // Сохраняем товары
       );
       
       employeeTrainings[employeeTrainingIndex] = updatedTraining;
@@ -558,6 +561,7 @@ class MockDataService {
             lockerNumber: booking.lockerNumber,
             createdAt: booking.createdAt,
             clientName: booking.clientName,
+            products: booking.products, // Сохраняем товары
           );
           
           userBookings[i] = updatedBooking;
@@ -598,6 +602,7 @@ class MockDataService {
             lockerNumber: training.lockerNumber,
             createdAt: training.createdAt,
             clientName: training.clientName,
+            products: training.products, // Сохраняем товары
           );
           
           employeeTrainings[i] = updatedTraining;
@@ -669,6 +674,7 @@ class MockDataService {
         lockerNumber: training.lockerNumber,
         createdAt: training.createdAt,
         clientName: training.clientName,
+        products: training.products, // Сохраняем товары
       );
       
       employeeTrainings[index] = updatedTraining;

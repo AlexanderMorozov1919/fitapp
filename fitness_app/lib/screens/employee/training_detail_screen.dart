@@ -9,6 +9,7 @@ import '../../main.dart';
 import '../../services/mock_data_service.dart';
 import '../../services/custom_notification_service.dart';
 import '../../models/notification_model.dart';
+import '../../widgets/products_section_widget.dart';
 
 class TrainingDetailScreen extends StatefulWidget {
   final Booking training;
@@ -238,6 +239,9 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
             ),
             
             const SizedBox(height: 20),
+            
+            // Секция товаров
+            ProductsSectionWidget(products: widget.training.products),
           ],
         ),
       ),

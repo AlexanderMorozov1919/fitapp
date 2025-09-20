@@ -603,8 +603,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
       MockDataService.currentUser.id
     );
 
-    // Добавляем в мок данные
-    MockDataService.userBookings.add(booking);
+    // Добавляем в мок данные с помощью правильного метода
+    MockDataService.addUserBooking(booking);
 
     setState(() {
       _isProcessing = false;
