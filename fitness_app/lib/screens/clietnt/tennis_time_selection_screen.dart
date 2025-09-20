@@ -8,6 +8,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import 'calendar_filter.dart';
+import 'booking_confirmation_models.dart';
 
 class TennisTimeSelectionScreen extends StatefulWidget {
   final TennisCourt selectedCourt;
@@ -321,16 +322,32 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
   }
 
   void _proceedToConfirmation() {
-    final bookingData = {
-      'court': widget.selectedCourt,
-      'date': _selectedDate,
-      'startTime': _selectedStartTime,
-      'endTime': _selectedEndTime,
-      'totalPrice': _totalPrice,
-    };
+    final config = BookingConfirmationConfig(
+      type: ConfirmationBookingType.tennisCourt,
+      title: 'Подтверждение бронирования корта',
+      serviceName: widget.selectedCourt.number,
+      price: _totalPrice,
+      date: _selectedDate,
+      startTime: DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedStartTime!.hour,
+        _selectedStartTime!.minute,
+      ),
+      endTime: DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedEndTime!.hour,
+        _selectedEndTime!.minute,
+      ),
+      court: widget.selectedCourt,
+      location: '${widget.selectedCourt.surfaceType} • ${widget.selectedCourt.isIndoor ? 'Крытый' : 'Открытый'}',
+    );
 
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('tennis_confirmation', bookingData);
+    navigationService?.navigateTo('booking_confirmation', config);
   }
 
   List<DateTime> _getDatesWithAvailableCourts() {

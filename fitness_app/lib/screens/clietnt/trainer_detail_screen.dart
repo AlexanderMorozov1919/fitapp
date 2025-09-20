@@ -411,14 +411,17 @@ class _TrainerDetailScreenState extends State<TrainerDetailScreen> {
   void _showConfirmationScreen(BuildContext context, String serviceName, double price, DateTime date, TimeOfDay time) {
     final navigationService = NavigationService.of(context);
     if (navigationService != null) {
-      navigationService.navigateTo('booking_confirmation', {
-        'type': ConfirmationBookingType.personalTraining,
-        'trainer': widget.trainer,
-        'serviceName': serviceName,
-        'price': price,
-        'date': date,
-        'time': time,
-      });
+      navigationService.navigateTo('booking_confirmation',
+        BookingConfirmationConfig(
+          type: ConfirmationBookingType.personalTraining,
+          title: 'Персональная тренировка',
+          serviceName: serviceName,
+          price: price,
+          date: date,
+          time: time,
+          trainer: widget.trainer,
+        )
+      );
     } else {
       Navigator.push(
         context,

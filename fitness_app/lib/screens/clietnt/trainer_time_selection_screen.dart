@@ -6,6 +6,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import 'calendar_filter.dart';
+import 'booking_confirmation_models.dart';
 
 class TrainerTimeSelectionScreen extends StatefulWidget {
   final Map<String, dynamic> selectionData;
@@ -260,16 +261,18 @@ class _TrainerTimeSelectionScreenState extends State<TrainerTimeSelectionScreen>
   }
 
   void _proceedToConfirmation() {
-    final bookingData = {
-      'trainer': _trainer,
-      'serviceName': _serviceName,
-      'price': _price,
-      'date': _selectedDate,
-      'time': _selectedTime,
-    };
+    final config = BookingConfirmationConfig(
+      type: ConfirmationBookingType.personalTraining,
+      title: 'Подтверждение персональной тренировки',
+      serviceName: _serviceName,
+      price: _price,
+      date: _selectedDate,
+      time: _selectedTime,
+      trainer: _trainer,
+    );
 
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('trainer_confirmation', bookingData);
+    navigationService?.navigateTo('booking_confirmation', config);
   }
 
   bool _isTimeAvailable(TimeOfDay time) {

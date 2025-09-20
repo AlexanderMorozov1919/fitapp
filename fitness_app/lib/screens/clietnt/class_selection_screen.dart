@@ -9,6 +9,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import 'calendar_filter.dart';
+import 'booking_confirmation_models.dart';
 
 class ClassSelectionScreen extends StatefulWidget {
   final GroupClass? preselectedClass;
@@ -656,8 +657,21 @@ class _ClassSelectionScreenState extends State<ClassSelectionScreen> {
   }
 
   void _selectClass(GroupClass classItem) {
+    final config = BookingConfirmationConfig(
+      type: ConfirmationBookingType.groupClass,
+      title: 'Подтверждение записи на занятие',
+      serviceName: classItem.name,
+      price: classItem.price,
+      date: classItem.startTime,
+      startTime: classItem.startTime,
+      endTime: classItem.endTime,
+      groupClass: classItem,
+      location: classItem.location,
+      description: '${classItem.type} • ${classItem.level}',
+    );
+
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('class_confirmation', classItem);
+    navigationService?.navigateTo('booking_confirmation', config);
   }
 
   List<DateTime> _getDatesWithClasses() {

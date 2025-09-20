@@ -16,7 +16,6 @@ import 'package:fitness_app/screens/employee/employee_schedule_screen.dart';
 import 'package:fitness_app/screens/employee/add_client_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_time_selection_screen.dart';
-import 'package:fitness_app/screens/employee/employee_tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/employee/record_screen.dart';
 import 'package:fitness_app/screens/employee/employee_combined_chat_screen.dart';
 import 'package:fitness_app/screens/employee/select_client_screen.dart';
@@ -32,17 +31,13 @@ import 'package:fitness_app/screens/clietnt/help_support_screen.dart';
 import 'package:fitness_app/screens/clietnt/locker_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
-import 'package:fitness_app/screens/clietnt/tennis_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/class_selection_screen.dart';
-import 'package:fitness_app/screens/clietnt/class_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/membership_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainers_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainer_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainer_service_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainer_time_selection_screen.dart';
-import 'package:fitness_app/screens/clietnt/trainer_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/schedule_screen.dart';
-import 'package:fitness_app/screens/clietnt/schedule_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/profile_screen.dart';
 import 'package:fitness_app/screens/clietnt/product_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/product_detail_screen.dart';
@@ -320,9 +315,6 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
           selectedCourt: data['court'],
           selectedClient: data['client'],
         ),
-    'employee_tennis_confirmation': (data) => EmployeeTennisConfirmationScreen(
-          bookingData: data,
-        ),
     'select_client': (data) => SelectClientScreen(
           onClientSelected: data?['onClientSelected'],
         ),
@@ -484,7 +476,6 @@ class _MainNavigationState extends State<MainNavigation> {
   final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
     'tennis': (_) => const TennisSelectionScreen(),
     'tennis_time_selection': (data) => TennisTimeSelectionScreen(selectedCourt: data),
-    'tennis_confirmation': (data) => TennisConfirmationScreen(bookingData: data),
     'class_selection': (data) {
       if (data is GroupClass) {
         return ClassSelectionScreen(preselectedClass: data);
@@ -492,7 +483,6 @@ class _MainNavigationState extends State<MainNavigation> {
         return const ClassSelectionScreen();
       }
     },
-    'class_confirmation': (data) => ClassConfirmationScreen(selectedClass: data),
     'trainers': (_) => const TrainersScreen(),
     'membership': (_) => const MembershipScreen(),
     'payment': (data) {
@@ -519,13 +509,9 @@ class _MainNavigationState extends State<MainNavigation> {
     'trainer_detail': (data) => TrainerDetailScreen(trainer: data),
     'trainer_service_selection': (data) => TrainerServiceSelectionScreen(trainer: data),
     'trainer_time_selection': (data) => TrainerTimeSelectionScreen(selectionData: data),
-    'trainer_confirmation': (data) => TrainerConfirmationScreen(bookingData: data),
-    'schedule_confirmation': (data) => ScheduleConfirmationScreen(groupClass: data),
     'booking_confirmation': (data) {
-      if (data is Map<String, dynamic>) {
-        return BookingConfirmationScreen(
-          config: BookingConfirmationConfig.fromMap(data),
-        );
+      if (data is BookingConfirmationConfig) {
+        return BookingConfirmationScreen(config: data);
       }
       return BookingConfirmationScreen(
         config: BookingConfirmationConfig(

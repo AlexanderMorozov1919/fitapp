@@ -6,6 +6,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
+import 'booking_confirmation_models.dart';
 
 class ClassDetailScreen extends StatefulWidget {
   final GroupClass groupClass;
@@ -283,6 +284,19 @@ class _ClassDetailScreenState extends State<ClassDetailScreen> {
 
   void _bookClass() {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('schedule_confirmation', widget.groupClass);
+    navigationService?.navigateTo('booking_confirmation',
+      BookingConfirmationConfig(
+        type: ConfirmationBookingType.groupClass,
+        title: 'Подтверждение записи на занятие',
+        serviceName: widget.groupClass.name,
+        price: widget.groupClass.price,
+        date: widget.groupClass.startTime,
+        startTime: widget.groupClass.startTime,
+        endTime: widget.groupClass.endTime,
+        groupClass: widget.groupClass,
+        location: widget.groupClass.location,
+        description: '${widget.groupClass.type} • ${widget.groupClass.level}',
+      )
+    );
   }
 }
