@@ -6,7 +6,8 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../main.dart';
 import 'training_date_time_dialog.dart';
-import 'training_confirmation_screen.dart';
+import 'booking_confirmation_screen.dart';
+import 'booking_confirmation_models.dart';
 
 class TrainerDetailScreen extends StatefulWidget {
   final Trainer trainer;
@@ -410,7 +411,8 @@ class _TrainerDetailScreenState extends State<TrainerDetailScreen> {
   void _showConfirmationScreen(BuildContext context, String serviceName, double price, DateTime date, TimeOfDay time) {
     final navigationService = NavigationService.of(context);
     if (navigationService != null) {
-      navigationService.navigateTo('training_confirmation', {
+      navigationService.navigateTo('booking_confirmation', {
+        'type': ConfirmationBookingType.personalTraining,
         'trainer': widget.trainer,
         'serviceName': serviceName,
         'price': price,
@@ -421,12 +423,16 @@ class _TrainerDetailScreenState extends State<TrainerDetailScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => TrainingConfirmationScreen(
-            trainer: widget.trainer,
-            serviceName: serviceName,
-            price: price,
-            date: date,
-            time: time,
+          builder: (context) => BookingConfirmationScreen(
+            config: BookingConfirmationConfig(
+              type: ConfirmationBookingType.personalTraining,
+              title: 'Персональная тренировка',
+              serviceName: serviceName,
+              price: price,
+              date: date,
+              time: time,
+              trainer: widget.trainer,
+            ),
           ),
         ),
       );

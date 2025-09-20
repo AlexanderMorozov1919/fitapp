@@ -5,6 +5,8 @@ import 'package:fitness_app/models/trainer_model.dart';
 import 'package:fitness_app/models/user_model.dart';
 import 'package:fitness_app/models/product_model.dart';
 import 'package:fitness_app/screens/clietnt/home_screen.dart';
+import 'package:fitness_app/screens/clietnt/booking_confirmation_screen.dart';
+import 'package:fitness_app/screens/clietnt/booking_confirmation_models.dart';
 import 'package:fitness_app/screens/employee/home_screen.dart';
 import 'package:fitness_app/screens/employee/schedule_screen.dart' as employee_schedule;
 import 'package:fitness_app/screens/employee/kpi_screen.dart';
@@ -519,6 +521,22 @@ class _MainNavigationState extends State<MainNavigation> {
     'trainer_time_selection': (data) => TrainerTimeSelectionScreen(selectionData: data),
     'trainer_confirmation': (data) => TrainerConfirmationScreen(bookingData: data),
     'schedule_confirmation': (data) => ScheduleConfirmationScreen(groupClass: data),
+    'booking_confirmation': (data) {
+      if (data is Map<String, dynamic>) {
+        return BookingConfirmationScreen(
+          config: BookingConfirmationConfig.fromMap(data),
+        );
+      }
+      return BookingConfirmationScreen(
+        config: BookingConfirmationConfig(
+          type: ConfirmationBookingType.personalTraining,
+          title: 'Бронирование',
+          serviceName: 'Услуга',
+          price: 0,
+          date: DateTime.now(),
+        ),
+      );
+    },
     'payment_success': (data) {
       if (data is Map<String, dynamic>) {
         return PaymentSuccessScreen(
