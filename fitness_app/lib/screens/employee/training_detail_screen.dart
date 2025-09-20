@@ -7,6 +7,8 @@ import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
 import '../../services/mock_data_service.dart';
+import '../../services/custom_notification_service.dart';
+import '../../models/notification_model.dart';
 
 class TrainingDetailScreen extends StatefulWidget {
   final Booking training;
@@ -282,10 +284,13 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
     );
     
     // Показываем уведомление об успехе
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Тренировка "${widget.training.title}" подтверждена'),
-        backgroundColor: AppColors.success,
+    CustomNotificationService.showNotification(
+      AppNotification(
+        id: 'training_confirmed_${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Тренировка подтверждена',
+        message: 'Тренировка "${widget.training.title}" подтверждена',
+        type: NotificationType.success,
+        timestamp: DateTime.now(),
       ),
     );
     

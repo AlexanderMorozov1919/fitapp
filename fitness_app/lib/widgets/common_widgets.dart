@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fitness_app/services/custom_notification_service.dart';
+import 'package:fitness_app/models/notification_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_styles.dart';
@@ -535,57 +537,39 @@ Future<bool?> showPaymentConfirmDialog({
 
 /// Успешное уведомление
 void showSuccessSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        message,
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: AppColors.success,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: AppStyles.borderRadiusLg,
-      ),
+  CustomNotificationService.showNotification(
+    AppNotification(
+      id: 'success_${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Успешно',
+      message: message,
+      type: NotificationType.success,
+      timestamp: DateTime.now(),
     ),
   );
 }
 
 /// Ошибка уведомления
 void showErrorSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        message,
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: AppColors.error,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: AppStyles.borderRadiusLg,
-      ),
+  CustomNotificationService.showNotification(
+    AppNotification(
+      id: 'error_${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Ошибка',
+      message: message,
+      type: NotificationType.error,
+      timestamp: DateTime.now(),
     ),
   );
 }
 
 /// Информационное уведомление
 void showInfoSnackBar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        message,
-        style: AppTextStyles.bodyMedium.copyWith(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: AppColors.info,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: AppStyles.borderRadiusLg,
-      ),
+  CustomNotificationService.showNotification(
+    AppNotification(
+      id: 'info_${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Информация',
+      message: message,
+      type: NotificationType.info,
+      timestamp: DateTime.now(),
     ),
   );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 enum NotificationType {
   reminder,
@@ -7,6 +8,8 @@ enum NotificationType {
   booking,
   payment,
   system,
+  success,
+  error,
 }
 
 class AppNotification {
@@ -44,6 +47,10 @@ class AppNotification {
         return Colors.teal;
       case NotificationType.system:
         return Colors.grey;
+      case NotificationType.success:
+        return AppColors.success;
+      case NotificationType.error:
+        return AppColors.error;
     }
   }
 
@@ -61,6 +68,10 @@ class AppNotification {
         return Icons.payment;
       case NotificationType.system:
         return Icons.settings;
+      case NotificationType.success:
+        return Icons.check_circle;
+      case NotificationType.error:
+        return Icons.error;
     }
   }
 
@@ -78,6 +89,10 @@ class AppNotification {
         return 'Платеж';
       case NotificationType.system:
         return 'Системное';
+      case NotificationType.success:
+        return 'Успех';
+      case NotificationType.error:
+        return 'Ошибка';
     }
   }
 

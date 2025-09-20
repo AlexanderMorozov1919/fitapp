@@ -33,10 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Показываем тестовое уведомление через 3 секунды после старта
-    Future.delayed(const Duration(seconds: 3), () {
-      CustomNotificationService.showWelcomeNotification();
-    });
   }
   bool _showQuickAccess = true;
   bool _showUpcomingBookings = true;

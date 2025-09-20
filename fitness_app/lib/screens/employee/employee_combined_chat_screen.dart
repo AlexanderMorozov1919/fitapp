@@ -11,6 +11,8 @@ import '../../utils/formatters.dart';
 import '../../widgets/common_widgets.dart';
 import 'select_client_screen.dart';
 import '../../main.dart';
+import '../../services/custom_notification_service.dart';
+import '../../models/notification_model.dart';
 
 class EmployeeCombinedChatScreen extends StatefulWidget {
   const EmployeeCombinedChatScreen({super.key});
@@ -834,13 +836,7 @@ class _EmployeeCombinedChatScreenState extends State<EmployeeCombinedChatScreen>
     _loadContacts();
 
     // Показываем уведомление о начале чата
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Чат с ${newContact['name']} начат'),
-        backgroundColor: AppColors.success,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    showSuccessSnackBar(context, 'Чат с ${newContact['name']} начат');
   }
 
   void _createNewChat(User client) {

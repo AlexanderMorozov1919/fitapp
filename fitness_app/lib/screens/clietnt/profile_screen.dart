@@ -6,6 +6,8 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../main.dart';
 import '../../widgets/common_widgets.dart';
+import '../../services/custom_notification_service.dart';
+import '../../models/notification_model.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -67,21 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isEditing = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Профиль успешно обновлен',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: AppStyles.borderRadiusLg,
-          ),
-        ),
-      );
+      showSuccessSnackBar(context, 'Профиль успешно обновлен');
     }
   }
 

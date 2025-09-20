@@ -8,6 +8,8 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
+import '../../services/custom_notification_service.dart';
+import '../../models/notification_model.dart';
 
 class MembershipDetailScreen extends StatefulWidget {
   final dynamic membershipData; // Может быть Membership или MembershipType
@@ -360,12 +362,7 @@ class _MembershipDetailScreenState extends State<MembershipDetailScreen> {
 
   void _toggleAutoRenew() {
     // TODO: Реализовать логику отключения автопродления
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Автопродление ${widget.membershipData.autoRenew ? 'отключено' : 'включено'}'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+    showSuccessSnackBar(context, 'Автопродление ${widget.membershipData.autoRenew ? 'отключено' : 'включено'}');
   }
 
   void _renewMembership() {
