@@ -47,11 +47,14 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
 
   void _sortProductsByCategory() {
     _availableProducts.sort((a, b) {
+      // Для теннисных кортов теннисные товары должны быть первыми
+      final isTennisBooking = widget.config.type == ConfirmationBookingType.tennisCourt;
+      
       final categoryPriority = {
-        ProductCategory.fitness: 1,
-        ProductCategory.drinks: 2,
-        ProductCategory.accessories: 3,
-        ProductCategory.tennis: 4,
+        ProductCategory.tennis: isTennisBooking ? 1 : 4,
+        ProductCategory.fitness: isTennisBooking ? 2 : 1,
+        ProductCategory.drinks: 3,
+        ProductCategory.accessories: isTennisBooking ? 4 : 3,
         ProductCategory.other: 5,
       };
       
