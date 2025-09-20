@@ -146,7 +146,8 @@ extension ConfirmationBookingTypeExtension on ConfirmationBookingType {
   bool get shouldShowProductsSection {
     return this == ConfirmationBookingType.personalTraining ||
            this == ConfirmationBookingType.groupClass ||
-           this == ConfirmationBookingType.scheduleClass;
+           this == ConfirmationBookingType.scheduleClass ||
+           this == ConfirmationBookingType.tennisCourt;
   }
 }
 
@@ -211,6 +212,7 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
           price: price,
           courtNumber: court!.number,
           createdAt: DateTime.now(),
+          products: selectedProducts,
         );
     }
   }
