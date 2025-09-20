@@ -141,18 +141,27 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              court.getPriceDescription(DateTime(
-                                date.year,
-                                date.month,
-                                date.day,
-                                startTime.hour,
-                                startTime.minute,
-                              )),
+                              court.getMultiTariffDescription(
+                                DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  startTime.hour,
+                                  startTime.minute,
+                                ),
+                                DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  endTime.hour,
+                                  endTime.minute,
+                                ),
+                              ),
                               style: AppTextStyles.bodyMedium.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
                               ),
-                              maxLines: 2,
+                              maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],

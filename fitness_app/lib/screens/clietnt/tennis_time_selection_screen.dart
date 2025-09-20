@@ -44,12 +44,7 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
       return 0;
     }
     
-    final startHour = _selectedStartTime!.hour + _selectedStartTime!.minute / 60;
-    final endHour = _selectedEndTime!.hour + _selectedEndTime!.minute / 60;
-    final duration = endHour - startHour;
-    
-    // Создаем DateTime для расчета цены в зависимости от времени суток
-    final bookingDateTime = DateTime(
+    final startDateTime = DateTime(
       _selectedDate.year,
       _selectedDate.month,
       _selectedDate.day,
@@ -57,7 +52,16 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
       _selectedStartTime!.minute,
     );
     
-    return duration * widget.selectedCourt.getPriceForTime(bookingDateTime);
+    final endDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedEndTime!.hour,
+      _selectedEndTime!.minute,
+    );
+    
+    // Используем правильный расчет стоимости с учетом разных тарифов
+    return widget.selectedCourt.calculateTotalPrice(startDateTime, endDateTime);
   }
 
   bool get _canProceed => _selectedStartTime != null && _selectedEndTime != null;

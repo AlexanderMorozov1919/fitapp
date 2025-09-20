@@ -158,6 +158,56 @@ class TennisCourt {
     return '$price ₽/час ($timeOfDay тариф, $dayType день)';
   }
 
+  double calculateTotalPrice(DateTime startTime, DateTime endTime) {
+    final duration = endTime.difference(startTime);
+    final totalHours = duration.inHours.toDouble();
+    
+    if (totalHours <= 0) return 0;
+    
+    double totalPrice = 0;
+    DateTime currentTime = startTime;
+    
+    // Рассчитываем стоимость для каждого часа отдельно
+    for (int i = 0; i < totalHours; i++) {
+      final hourTime = currentTime.add(Duration(hours: i));
+      totalPrice += getPriceForTime(hourTime);
+    }
+    
+    return totalPrice;
+  }
+
+  String getMultiTariffDescription(DateTime startTime, DateTime endTime) {
+    final duration = endTime.difference(startTime);
+    final totalHours = duration.inHours;
+    
+    if (totalHours <= 0) return '';
+    
+    final tariffs = <String, int>{};
+    
+    // Собираем информацию о тарифах для каждого часа
+    for (int i = 0; i < totalHours; i++) {
+      final hourTime = startTime.add(Duration(hours: i));
+      final tariffDesc = getPriceDescription(hourTime);
+      
+      // Извлекаем название тарифа из описания
+      final tariffMatch = RegExp(r'\((.*?) тариф').firstMatch(tariffDesc);
+      if (tariffMatch != null) {
+        final tariffName = tariffMatch.group(1)!;
+        tariffs[tariffName] = (tariffs[tariffName] ?? 0) + 1;
+      }
+    }
+    
+    // Формируем описание с количеством часов по каждому тарифу
+    if (tariffs.length == 1) {
+      final tariffName = tariffs.keys.first;
+      final hours = tariffs.values.first;
+      return '$hours ч ($tariffName тариф)';
+    } else {
+      final parts = tariffs.entries.map((e) => '${e.value}ч (${e.key})').join(' + ');
+      return parts;
+    }
+  }
+
   bool isTimeSlotAvailable(DateTime startTime, int durationHours) {
     final endTime = startTime.add(Duration(hours: durationHours));
     

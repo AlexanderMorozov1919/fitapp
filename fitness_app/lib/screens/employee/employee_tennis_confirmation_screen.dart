@@ -178,12 +178,15 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              court.getPriceDescription(DateTime(date.year, date.month, date.day, startTime.hour)),
+                              court.getMultiTariffDescription(
+                                DateTime(date.year, date.month, date.day, startTime.hour),
+                                DateTime(date.year, date.month, date.day, endTime.hour),
+                              ),
                               style: AppTextStyles.bodyMedium.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
                               ),
-                              maxLines: 2,
+                              maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
