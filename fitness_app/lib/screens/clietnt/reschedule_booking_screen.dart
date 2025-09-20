@@ -8,17 +8,35 @@ import '../../utils/formatters.dart';
 import '../../main.dart';
 import 'calendar_filter.dart';
 import '../../services/mock_data_service.dart';
+import 'tennis_reschedule_screen.dart';
 
-class RescheduleBookingScreen extends StatefulWidget {
+class RescheduleBookingScreen extends StatelessWidget {
   final Booking booking;
 
   const RescheduleBookingScreen({super.key, required this.booking});
 
   @override
-  State<RescheduleBookingScreen> createState() => _RescheduleBookingScreenState();
+  Widget build(BuildContext context) {
+    // Для теннисных кортов используем специализированный экран
+    if (booking.type == BookingType.tennisCourt) {
+      return TennisRescheduleScreen(booking: booking);
+    }
+    
+    // Для других типов бронирования используем общий экран
+    return _RescheduleBookingScreen(booking: booking);
+  }
 }
 
-class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
+class _RescheduleBookingScreen extends StatefulWidget {
+  final Booking booking;
+
+  const _RescheduleBookingScreen({required this.booking});
+
+  @override
+  State<_RescheduleBookingScreen> createState() => __RescheduleBookingScreenState();
+}
+
+class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay? _selectedTime;
 
