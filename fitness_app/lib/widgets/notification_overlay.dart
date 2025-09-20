@@ -89,140 +89,69 @@ class _NotificationOverlayState extends State<NotificationOverlay>
             child: Material(
               color: Colors.transparent,
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: AppStyles.borderRadiusLg,
-                  boxShadow: AppColors.shadowLg,
-                  border: Border.all(
-                    color: widget.notification.typeColor.withOpacity(0.2),
-                    width: 1,
-                  ),
+                padding: AppStyles.paddingLg,
+                decoration: AppStyles.elevatedCardDecoration.copyWith(
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                child: Stack(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Акцентная полоса слева
-                    Positioned(
-                      left: 0,
-                      top: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 4,
-                        decoration: BoxDecoration(
-                          color: widget.notification.typeColor,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            bottomLeft: Radius.circular(12),
-                          ),
-                        ),
+                    // Иконка уведомления
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: widget.notification.typeColor.withOpacity(0.1),
+                        borderRadius: AppStyles.borderRadiusFull,
+                      ),
+                      child: Icon(
+                        widget.notification.typeIcon,
+                        color: widget.notification.typeColor,
+                        size: 22,
                       ),
                     ),
                     
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 16,
-                        bottom: 16,
-                      ),
-                      child: Row(
+                    const SizedBox(width: 12),
+                    
+                    // Контент уведомления
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Иконка уведомления
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: widget.notification.typeColor.withOpacity(0.1),
-                              borderRadius: AppStyles.borderRadiusFull,
+                          // Заголовок
+                          Text(
+                            widget.notification.title,
+                            style: AppTextStyles.headline6.copyWith(
+                              color: AppColors.textPrimary,
                             ),
-                            child: Icon(
-                              widget.notification.typeIcon,
-                              color: widget.notification.typeColor,
-                              size: 20,
-                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           
-                          const SizedBox(width: 12),
+                          const SizedBox(height: 4),
                           
-                          // Контент уведомления
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Заголовок и тип
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        widget.notification.title,
-                                        style: AppTextStyles.headline6.copyWith(
-                                          color: AppColors.textPrimary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: widget.notification.typeColor.withOpacity(0.1),
-                                        borderRadius: AppStyles.borderRadiusSm,
-                                      ),
-                                      child: Text(
-                                        widget.notification.typeText,
-                                        style: AppTextStyles.caption.copyWith(
-                                          color: widget.notification.typeColor,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                
-                                const SizedBox(height: 4),
-                                
-                                // Сообщение
-                                Text(
-                                  widget.notification.message,
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                
-                                const SizedBox(height: 8),
-                                
-                                // Время
-                                Text(
-                                  _formatTime(widget.notification.timestamp),
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.textTertiary,
-                                  ),
-                                ),
-                              ],
+                          // Сообщение
+                          Text(
+                            widget.notification.message,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.textSecondary,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           
-                          // Кнопка закрытия
-                          IconButton(
-                            icon: const Icon(
-                              Icons.close,
-                              size: 20,
-                              color: AppColors.textTertiary,
-                            ),
-                            onPressed: _dismiss,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
+                          const SizedBox(height: 8),
+                          
                         ],
                       ),
                     ),
+                    
                   ],
                 ),
               ),
@@ -231,21 +160,6 @@ class _NotificationOverlayState extends State<NotificationOverlay>
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    
-    if (difference.inSeconds < 60) {
-      return 'Только что';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} мин назад';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours} ч назад';
-    } else {
-      return '${difference.inDays} дн назад';
-    }
   }
 }
 
