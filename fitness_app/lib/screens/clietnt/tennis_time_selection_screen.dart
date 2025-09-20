@@ -48,7 +48,16 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
     final endHour = _selectedEndTime!.hour + _selectedEndTime!.minute / 60;
     final duration = endHour - startHour;
     
-    return duration * widget.selectedCourt.pricePerHour;
+    // Создаем DateTime для расчета цены в зависимости от времени суток
+    final bookingDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedStartTime!.hour,
+      _selectedStartTime!.minute,
+    );
+    
+    return duration * widget.selectedCourt.getPriceForTime(bookingDateTime);
   }
 
   bool get _canProceed => _selectedStartTime != null && _selectedEndTime != null;
@@ -98,7 +107,7 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
                         ),
                       ),
                       Text(
-                        '${widget.selectedCourt.surfaceType} • ${widget.selectedCourt.pricePerHour.toInt()} ₽/час',
+                        '${widget.selectedCourt.surfaceType} • от ${widget.selectedCourt.basePricePerHour.toInt()} ₽/час',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -191,12 +200,13 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
           runSpacing: 8,
           children: _availableTimes.map((time) {
             final isSelected = time == _selectedStartTime;
+            final isOccupied = _isTimeSlotOccupied(time);
             
             return TimeSlotChip(
               time: time,
               isSelected: isSelected,
-              isOccupied: false,
-              onTap: () {
+              isOccupied: isOccupied,
+              onTap: isOccupied ? null : () {
                 setState(() {
                   if (!isSelected) {
                     _selectedStartTime = time;
@@ -228,12 +238,15 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
             children: _availableTimes.where((time) =>
                 time.hour > _selectedStartTime!.hour).map((time) {
               final isSelected = time == _selectedEndTime;
+              final isOccupied = _isTimeSlotOccupied(time);
+              final durationHours = time.hour - _selectedStartTime!.hour;
+              final isTimeRangeAvailable = _isTimeRangeAvailable(_selectedStartTime!, durationHours);
               
               return TimeSlotChip(
                 time: time,
                 isSelected: isSelected,
-                isOccupied: false,
-                onTap: () {
+                isOccupied: isOccupied || !isTimeRangeAvailable,
+                onTap: (isOccupied || !isTimeRangeAvailable) ? null : () {
                   setState(() {
                     _selectedEndTime = !isSelected ? time : null;
                   });
@@ -335,6 +348,30 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
   String _formatTime(TimeOfDay time) {
     final dateTime = DateTime(2024, 1, 1, time.hour, time.minute);
     return DateFormatters.formatTimeRussian(dateTime);
+  }
+
+  bool _isTimeSlotOccupied(TimeOfDay time) {
+    final dateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      time.hour,
+      time.minute,
+    );
+    
+    return !widget.selectedCourt.isTimeSlotAvailable(dateTime, 1);
+  }
+
+  bool _isTimeRangeAvailable(TimeOfDay startTime, int durationHours) {
+    final startDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      startTime.hour,
+      startTime.minute,
+    );
+    
+    return widget.selectedCourt.isTimeSlotAvailable(startDateTime, durationHours);
   }
 }
 

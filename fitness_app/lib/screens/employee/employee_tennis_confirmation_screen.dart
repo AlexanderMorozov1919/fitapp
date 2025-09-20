@@ -159,8 +159,8 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
                   const SizedBox(height: 8),
                   _buildDetailRow(
                     icon: Icons.attach_money,
-                    title: 'Стоимость часа',
-                    value: '${court.pricePerHour.toInt()} ₽/час',
+                    title: 'Тариф',
+                    value: court.getPriceDescription(DateTime(date.year, date.month, date.day, startTime.hour)),
                   ),
 
                   // Итоговая стоимость
@@ -171,21 +171,44 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
                       color: AppColors.primary.withOpacity(0.1),
                       borderRadius: AppStyles.borderRadiusMd,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Итоговая стоимость:',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Стоимость часа:',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '${court.getPriceForTime(DateTime(date.year, date.month, date.day, startTime.hour)).toStringAsFixed(0)} ₽/час',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          '${totalPrice.toStringAsFixed(0)} ₽',
-                          style: AppTextStyles.price.copyWith(
-                            fontSize: 18,
-                            color: AppColors.primary,
-                          ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Итоговая стоимость:',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '${totalPrice.toStringAsFixed(0)} ₽',
+                              style: AppTextStyles.price.copyWith(
+                                fontSize: 18,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -306,6 +329,11 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
       endTime.minute,
     );
 
+    final durationHours = endTime.hour - startTime.hour;
+
+    // Блокируем время на корте
+    court.bookTimeSlot(startDateTime, durationHours);
+
     final booking = Booking(
       id: 'booking_${DateTime.now().millisecondsSinceEpoch}',
       userId: client.id,
@@ -318,6 +346,7 @@ class _EmployeeTennisConfirmationScreenState extends State<EmployeeTennisConfirm
       price: totalPrice,
       courtNumber: court.number,
       createdAt: DateTime.now(),
+      clientName: client.fullName,
     );
 
     // Добавляем в мок данные

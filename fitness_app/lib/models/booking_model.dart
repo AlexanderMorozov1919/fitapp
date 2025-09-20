@@ -95,10 +95,12 @@ class TennisCourt {
   final String surfaceType;
   final bool isIndoor;
   final bool isAvailable;
-  final double pricePerHour;
+  final double basePricePerHour;
+  final double morningPriceMultiplier;
+  final double dayPriceMultiplier;
+  final double eveningPriceMultiplier;
+  final double weekendPriceMultiplier;
   final List<DateTime> bookedSlots;
-
-  var size;
 
   TennisCourt({
     required this.id,
@@ -106,9 +108,87 @@ class TennisCourt {
     required this.surfaceType,
     required this.isIndoor,
     required this.isAvailable,
-    required this.pricePerHour,
+    required this.basePricePerHour,
+    this.morningPriceMultiplier = 0.8,
+    this.dayPriceMultiplier = 1.0,
+    this.eveningPriceMultiplier = 1.2,
+    this.weekendPriceMultiplier = 1.5,
     this.bookedSlots = const [],
   });
+
+  double getPriceForTime(DateTime time) {
+    final hour = time.hour;
+    final isWeekend = time.weekday == DateTime.saturday || time.weekday == DateTime.sunday;
+    
+    double multiplier = dayPriceMultiplier;
+    
+    if (hour >= 6 && hour < 10) {
+      multiplier = morningPriceMultiplier;
+    } else if (hour >= 10 && hour < 17) {
+      multiplier = dayPriceMultiplier;
+    } else if (hour >= 17 && hour < 23) {
+      multiplier = eveningPriceMultiplier;
+    }
+    
+    if (isWeekend) {
+      multiplier *= weekendPriceMultiplier;
+    }
+    
+    return (basePricePerHour * multiplier).roundToDouble();
+  }
+
+  String getPriceDescription(DateTime time) {
+    final price = getPriceForTime(time);
+    final hour = time.hour;
+    
+    String timeOfDay;
+    if (hour >= 6 && hour < 10) {
+      timeOfDay = 'утренний';
+    } else if (hour >= 10 && hour < 17) {
+      timeOfDay = 'дневной';
+    } else if (hour >= 17 && hour < 23) {
+      timeOfDay = 'вечерний';
+    } else {
+      timeOfDay = 'ночной';
+    }
+    
+    final isWeekend = time.weekday == DateTime.saturday || time.weekday == DateTime.sunday;
+    final dayType = isWeekend ? 'выходной' : 'будний';
+    
+    return '$price ₽/час ($timeOfDay тариф, $dayType день)';
+  }
+
+  bool isTimeSlotAvailable(DateTime startTime, int durationHours) {
+    final endTime = startTime.add(Duration(hours: durationHours));
+    
+    // Проверяем, не пересекается ли запрашиваемое время с занятыми слотами
+    for (final bookedSlot in bookedSlots) {
+      final bookedEnd = bookedSlot.add(const Duration(hours: 1));
+      
+      // Если запрашиваемое время пересекается с занятым слотом
+      if (startTime.isBefore(bookedEnd) && endTime.isAfter(bookedSlot)) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  void bookTimeSlot(DateTime startTime, int durationHours) {
+    // Добавляем все часы бронирования в занятые слоты
+    for (int i = 0; i < durationHours; i++) {
+      final slotTime = startTime.add(Duration(hours: i));
+      bookedSlots.add(slotTime);
+    }
+  }
+
+  void releaseTimeSlot(DateTime startTime, int durationHours) {
+    // Удаляем все часы бронирования из занятых слотов
+    for (int i = 0; i < durationHours; i++) {
+      final slotTime = startTime.add(Duration(hours: i));
+      bookedSlots.removeWhere((slot) => slot.isAtSameMomentAs(slotTime));
+    }
+  }
 }
 
 class Locker {

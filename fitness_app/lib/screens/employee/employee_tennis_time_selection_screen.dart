@@ -54,7 +54,16 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
     final endHour = _selectedEndTime!.hour + _selectedEndTime!.minute / 60;
     final duration = endHour - startHour;
     
-    return duration * widget.selectedCourt.pricePerHour;
+    // Создаем DateTime для расчета цены в зависимости от времени суток
+    final bookingDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedStartTime!.hour,
+      _selectedStartTime!.minute,
+    );
+    
+    return duration * widget.selectedCourt.getPriceForTime(bookingDateTime);
   }
 
   bool get _canProceed => _selectedStartTime != null && _selectedEndTime != null;
@@ -107,7 +116,7 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
                             ),
                           ),
                           Text(
-                            '${widget.selectedCourt.surfaceType} • ${widget.selectedCourt.pricePerHour.toInt()} ₽/час',
+                            '${widget.selectedCourt.surfaceType} • от ${widget.selectedCourt.basePricePerHour.toInt()} ₽/час',
                             style: AppTextStyles.caption.copyWith(
                               color: AppColors.textSecondary,
                             ),

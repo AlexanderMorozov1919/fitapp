@@ -1,4 +1,5 @@
 import '../../models/booking_model.dart';
+import 'package:flutter/material.dart';
 
 final List<TennisCourt> tennisCourts = [
   TennisCourt(
@@ -7,18 +8,56 @@ final List<TennisCourt> tennisCourts = [
     surfaceType: 'Хард',
     isIndoor: true,
     isAvailable: true,
-    pricePerHour: 1500,
+    basePricePerHour: 1500,
+    morningPriceMultiplier: 0.7,  // 1050 ₽
+    dayPriceMultiplier: 1.0,      // 1500 ₽
+    eveningPriceMultiplier: 1.3,  // 1950 ₽
+    weekendPriceMultiplier: 1.6,  // 2400 ₽
     bookedSlots: [
-      DateTime(2025, 9, 18, 9, 0),
-      DateTime(2025, 9, 18, 10, 0),
-      DateTime(2025, 9, 19, 16, 0),
-      DateTime(2025, 9, 19, 17, 0),
-      DateTime(2025, 9, 21, 19, 0),
-      DateTime(2025, 9, 21, 20, 30),
-      DateTime(2025, 9, 23, 14, 0),
-      DateTime(2025, 9, 23, 15, 30),
-      DateTime(2025, 9, 25, 15, 0),
+      // Понедельник
+      DateTime(2025, 9, 22, 9, 0),
+      DateTime(2025, 9, 22, 10, 0),
+      DateTime(2025, 9, 22, 18, 0),
+      DateTime(2025, 9, 22, 19, 0),
+      DateTime(2025, 9, 22, 20, 0),
+      
+      // Вторник
+      DateTime(2025, 9, 23, 10, 0),
+      DateTime(2025, 9, 23, 11, 0),
+      DateTime(2025, 9, 23, 19, 0),
+      DateTime(2025, 9, 23, 20, 0),
+      
+      // Среда
+      DateTime(2025, 9, 24, 14, 0),
+      DateTime(2025, 9, 24, 15, 0),
+      DateTime(2025, 9, 24, 16, 0),
+      
+      // Четверг
+      DateTime(2025, 9, 25, 9, 0),
+      DateTime(2025, 9, 25, 10, 0),
       DateTime(2025, 9, 25, 17, 0),
+      DateTime(2025, 9, 25, 18, 0),
+      
+      // Пятница
+      DateTime(2025, 9, 26, 11, 0),
+      DateTime(2025, 9, 26, 12, 0),
+      DateTime(2025, 9, 26, 18, 0),
+      DateTime(2025, 9, 26, 19, 0),
+      DateTime(2025, 9, 26, 20, 0),
+      
+      // Суббота
+      DateTime(2025, 9, 27, 10, 0),
+      DateTime(2025, 9, 27, 11, 0),
+      DateTime(2025, 9, 27, 12, 0),
+      DateTime(2025, 9, 27, 13, 0),
+      DateTime(2025, 9, 27, 14, 0),
+      DateTime(2025, 9, 27, 15, 0),
+      
+      // Воскресенье
+      DateTime(2025, 9, 28, 11, 0),
+      DateTime(2025, 9, 28, 12, 0),
+      DateTime(2025, 9, 28, 13, 0),
+      DateTime(2025, 9, 28, 14, 0),
     ],
   ),
   TennisCourt(
@@ -27,16 +66,54 @@ final List<TennisCourt> tennisCourts = [
     surfaceType: 'Грунт',
     isIndoor: false,
     isAvailable: true,
-    pricePerHour: 1200,
+    basePricePerHour: 1200,
+    morningPriceMultiplier: 0.6,  // 720 ₽
+    dayPriceMultiplier: 0.9,      // 1080 ₽
+    eveningPriceMultiplier: 1.2,  // 1440 ₽
+    weekendPriceMultiplier: 1.4,  // 1680 ₽
     bookedSlots: [
-      DateTime(2025, 9, 18, 9, 0),
-      DateTime(2025, 9, 18, 10, 0),
-      DateTime(2025, 9, 20, 14, 0),
-      DateTime(2025, 9, 20, 15, 0),
-      DateTime(2025, 9, 22, 11, 0),
-      DateTime(2025, 9, 22, 12, 30),
-      DateTime(2025, 9, 24, 16, 0),
-      DateTime(2025, 9, 24, 17, 30),
+      // Понедельник
+      DateTime(2025, 9, 22, 8, 0),
+      DateTime(2025, 9, 22, 9, 0),
+      DateTime(2025, 9, 22, 17, 0),
+      DateTime(2025, 9, 22, 18, 0),
+      
+      // Вторник
+      DateTime(2025, 9, 23, 14, 0),
+      DateTime(2025, 9, 23, 15, 0),
+      DateTime(2025, 9, 23, 16, 0),
+      
+      // Среда
+      DateTime(2025, 9, 24, 10, 0),
+      DateTime(2025, 9, 24, 11, 0),
+      DateTime(2025, 9, 24, 19, 0),
+      DateTime(2025, 9, 24, 20, 0),
+      
+      // Четверг
+      DateTime(2025, 9, 25, 13, 0),
+      DateTime(2025, 9, 25, 14, 0),
+      DateTime(2025, 9, 25, 15, 0),
+      
+      // Пятница
+      DateTime(2025, 9, 26, 9, 0),
+      DateTime(2025, 9, 26, 10, 0),
+      DateTime(2025, 9, 26, 16, 0),
+      DateTime(2025, 9, 26, 17, 0),
+      
+      // Суббота
+      DateTime(2025, 9, 27, 9, 0),
+      DateTime(2025, 9, 27, 10, 0),
+      DateTime(2025, 9, 27, 11, 0),
+      DateTime(2025, 9, 27, 15, 0),
+      DateTime(2025, 9, 27, 16, 0),
+      DateTime(2025, 9, 27, 17, 0),
+      
+      // Воскресенье
+      DateTime(2025, 9, 28, 10, 0),
+      DateTime(2025, 9, 28, 11, 0),
+      DateTime(2025, 9, 28, 12, 0),
+      DateTime(2025, 9, 28, 16, 0),
+      DateTime(2025, 9, 28, 17, 0),
     ],
   ),
   TennisCourt(
@@ -44,19 +121,28 @@ final List<TennisCourt> tennisCourts = [
     number: 'Корт 3',
     surfaceType: 'Хард',
     isIndoor: true,
-    isAvailable: false,
-    pricePerHour: 1500,
+    isAvailable: false,  // На ремонте
+    basePricePerHour: 1600,
+    morningPriceMultiplier: 0.7,
+    dayPriceMultiplier: 1.0,
+    eveningPriceMultiplier: 1.3,
+    weekendPriceMultiplier: 1.5,
     bookedSlots: [
-      DateTime(2025, 9, 18, 14, 0),
-      DateTime(2025, 9, 18, 16, 0),
-      DateTime(2025, 9, 19, 10, 0),
-      DateTime(2025, 9, 19, 12, 0),
-      DateTime(2025, 9, 20, 18, 0),
-      DateTime(2025, 9, 20, 20, 0),
+      // Полностью занят на ремонт
+      DateTime(2025, 9, 22, 8, 0),
       DateTime(2025, 9, 22, 9, 0),
+      DateTime(2025, 9, 22, 10, 0),
       DateTime(2025, 9, 22, 11, 0),
-      DateTime(2025, 9, 24, 13, 0),
-      DateTime(2025, 9, 24, 15, 0),
+      DateTime(2025, 9, 22, 12, 0),
+      DateTime(2025, 9, 22, 13, 0),
+      DateTime(2025, 9, 22, 14, 0),
+      DateTime(2025, 9, 22, 15, 0),
+      DateTime(2025, 9, 22, 16, 0),
+      DateTime(2025, 9, 22, 17, 0),
+      DateTime(2025, 9, 22, 18, 0),
+      DateTime(2025, 9, 22, 19, 0),
+      DateTime(2025, 9, 22, 20, 0),
+      DateTime(2025, 9, 22, 21, 0),
     ],
   ),
   TennisCourt(
@@ -65,14 +151,60 @@ final List<TennisCourt> tennisCourts = [
     surfaceType: 'Трава',
     isIndoor: false,
     isAvailable: true,
-    pricePerHour: 1800,
+    basePricePerHour: 2000,
+    morningPriceMultiplier: 0.8,  // 1600 ₽
+    dayPriceMultiplier: 1.2,      // 2400 ₽
+    eveningPriceMultiplier: 1.5,  // 3000 ₽
+    weekendPriceMultiplier: 1.8,  // 3600 ₽
     bookedSlots: [
-      DateTime(2025, 9, 19, 15, 0),
-      DateTime(2025, 9, 19, 17, 0),
-      DateTime(2025, 9, 21, 14, 0),
-      DateTime(2025, 9, 21, 16, 0),
+      // Понедельник
+      DateTime(2025, 9, 22, 18, 0),
+      DateTime(2025, 9, 22, 19, 0),
+      DateTime(2025, 9, 22, 20, 0),
+      
+      // Вторник
+      DateTime(2025, 9, 23, 9, 0),
+      DateTime(2025, 9, 23, 10, 0),
+      DateTime(2025, 9, 23, 17, 0),
       DateTime(2025, 9, 23, 18, 0),
-      DateTime(2025, 9, 23, 20, 0),
+      
+      // Среда
+      DateTime(2025, 9, 24, 14, 0),
+      DateTime(2025, 9, 24, 15, 0),
+      DateTime(2025, 9, 24, 16, 0),
+      
+      // Четверг
+      DateTime(2025, 9, 25, 11, 0),
+      DateTime(2025, 9, 25, 12, 0),
+      DateTime(2025, 9, 25, 19, 0),
+      DateTime(2025, 9, 25, 20, 0),
+      
+      // Пятница
+      DateTime(2025, 9, 26, 10, 0),
+      DateTime(2025, 9, 26, 11, 0),
+      DateTime(2025, 9, 26, 12, 0),
+      
+      // Суббота - полностью занят турниром
+      DateTime(2025, 9, 27, 8, 0),
+      DateTime(2025, 9, 27, 9, 0),
+      DateTime(2025, 9, 27, 10, 0),
+      DateTime(2025, 9, 27, 11, 0),
+      DateTime(2025, 9, 27, 12, 0),
+      DateTime(2025, 9, 27, 13, 0),
+      DateTime(2025, 9, 27, 14, 0),
+      DateTime(2025, 9, 27, 15, 0),
+      DateTime(2025, 9, 27, 16, 0),
+      DateTime(2025, 9, 27, 17, 0),
+      DateTime(2025, 9, 27, 18, 0),
+      
+      // Воскресенье - турнир продолжается
+      DateTime(2025, 9, 28, 9, 0),
+      DateTime(2025, 9, 28, 10, 0),
+      DateTime(2025, 9, 28, 11, 0),
+      DateTime(2025, 9, 28, 12, 0),
+      DateTime(2025, 9, 28, 13, 0),
+      DateTime(2025, 9, 28, 14, 0),
+      DateTime(2025, 9, 28, 15, 0),
     ],
   ),
   TennisCourt(
@@ -81,16 +213,51 @@ final List<TennisCourt> tennisCourts = [
     surfaceType: 'Хард',
     isIndoor: true,
     isAvailable: true,
-    pricePerHour: 1600,
+    basePricePerHour: 1400,
+    morningPriceMultiplier: 0.6,  // 840 ₽
+    dayPriceMultiplier: 0.9,      // 1260 ₽
+    eveningPriceMultiplier: 1.2,  // 1680 ₽
+    weekendPriceMultiplier: 1.4,  // 1960 ₽
     bookedSlots: [
-      DateTime(2025, 9, 18, 17, 0),
-      DateTime(2025, 9, 18, 19, 0),
-      DateTime(2025, 9, 20, 10, 0),
-      DateTime(2025, 9, 20, 12, 0),
+      // Понедельник
       DateTime(2025, 9, 22, 16, 0),
+      DateTime(2025, 9, 22, 17, 0),
       DateTime(2025, 9, 22, 18, 0),
-      DateTime(2025, 9, 24, 11, 0),
+      
+      // Вторник
+      DateTime(2025, 9, 23, 8, 0),
+      DateTime(2025, 9, 23, 9, 0),
+      DateTime(2025, 9, 23, 19, 0),
+      DateTime(2025, 9, 23, 20, 0),
+      
+      // Среда
       DateTime(2025, 9, 24, 13, 0),
+      DateTime(2025, 9, 24, 14, 0),
+      DateTime(2025, 9, 24, 15, 0),
+      
+      // Четверг
+      DateTime(2025, 9, 25, 10, 0),
+      DateTime(2025, 9, 25, 11, 0),
+      DateTime(2025, 9, 25, 16, 0),
+      DateTime(2025, 9, 25, 17, 0),
+      
+      // Пятница
+      DateTime(2025, 9, 26, 14, 0),
+      DateTime(2025, 9, 26, 15, 0),
+      DateTime(2025, 9, 26, 16, 0),
+      
+      // Суббота
+      DateTime(2025, 9, 27, 11, 0),
+      DateTime(2025, 9, 27, 12, 0),
+      DateTime(2025, 9, 27, 13, 0),
+      DateTime(2025, 9, 27, 17, 0),
+      DateTime(2025, 9, 27, 18, 0),
+      
+      // Воскресенье
+      DateTime(2025, 9, 28, 10, 0),
+      DateTime(2025, 9, 28, 11, 0),
+      DateTime(2025, 9, 28, 15, 0),
+      DateTime(2025, 9, 28, 16, 0),
     ],
   ),
   TennisCourt(
@@ -98,25 +265,27 @@ final List<TennisCourt> tennisCourts = [
     number: 'Корт 6',
     surfaceType: 'Грунт',
     isIndoor: false,
-    isAvailable: false,
-    pricePerHour: 1300,
+    isAvailable: false,  // Закрыт на сезон
+    basePricePerHour: 1000,
+    morningPriceMultiplier: 0.5,
+    dayPriceMultiplier: 0.8,
+    eveningPriceMultiplier: 1.0,
+    weekendPriceMultiplier: 1.2,
     bookedSlots: [
-      DateTime(2025, 9, 18, 8, 0),
-      DateTime(2025, 9, 18, 20, 0),
-      DateTime(2025, 9, 19, 9, 0),
-      DateTime(2025, 9, 19, 19, 0),
-      DateTime(2025, 9, 20, 14, 0),
-      DateTime(2025, 9, 20, 18, 0),
-      DateTime(2025, 9, 21, 10, 0),
-      DateTime(2025, 9, 21, 16, 0),
+      // Полностью занят на весь период
+      DateTime(2025, 9, 22, 8, 0),
+      DateTime(2025, 9, 22, 9, 0),
+      DateTime(2025, 9, 22, 10, 0),
+      DateTime(2025, 9, 22, 11, 0),
       DateTime(2025, 9, 22, 12, 0),
+      DateTime(2025, 9, 22, 13, 0),
+      DateTime(2025, 9, 22, 14, 0),
+      DateTime(2025, 9, 22, 15, 0),
+      DateTime(2025, 9, 22, 16, 0),
+      DateTime(2025, 9, 22, 17, 0),
       DateTime(2025, 9, 22, 18, 0),
-      DateTime(2025, 9, 23, 8, 0),
-      DateTime(2025, 9, 23, 20, 0),
-      DateTime(2025, 9, 24, 9, 0),
-      DateTime(2025, 9, 24, 19, 0),
-      DateTime(2025, 9, 25, 10, 0),
-      DateTime(2025, 9, 25, 18, 0),
+      DateTime(2025, 9, 22, 19, 0),
+      DateTime(2025, 9, 22, 20, 0),
     ],
   ),
 ];

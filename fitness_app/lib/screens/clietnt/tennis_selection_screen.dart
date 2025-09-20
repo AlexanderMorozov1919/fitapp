@@ -75,7 +75,7 @@ class _TennisSelectionScreenState extends State<TennisSelectionScreen> {
                         ),
                       ),
                       subtitle: Text(
-                        '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
+                        '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • от ${court.basePricePerHour.toInt()} ₽/час',
                         style: AppTextStyles.caption.copyWith(
                           color: isAvailable ? AppColors.textSecondary : AppColors.error,
                         ),

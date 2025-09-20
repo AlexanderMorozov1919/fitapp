@@ -154,7 +154,7 @@ class _EmployeeTennisScreenState extends State<EmployeeTennisScreen> {
                                 ),
                               ),
                               subtitle: Text(
-                                '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.pricePerHour.toInt()} ₽/час',
+                                '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'} • ${court.basePricePerHour.toInt()} ₽/час',
                                 style: AppTextStyles.caption.copyWith(
                                   color: isAvailable ? AppColors.textSecondary : AppColors.error,
                                 ),

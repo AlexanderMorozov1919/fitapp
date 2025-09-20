@@ -122,8 +122,14 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
                   const SizedBox(height: 8),
                   _buildDetailRow(
                     icon: Icons.attach_money,
-                    title: 'Стоимость часа',
-                    value: '${court.pricePerHour.toInt()} ₽/час',
+                    title: 'Тариф',
+                    value: court.getPriceDescription(DateTime(
+                      date.year,
+                      date.month,
+                      date.day,
+                      startTime.hour,
+                      startTime.minute,
+                    )),
                   ),
 
                   // Итоговая стоимость
@@ -259,6 +265,11 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
       endTime.minute,
     );
 
+    final durationHours = endTime.hour - startTime.hour;
+
+    // Блокируем время на корте
+    court.bookTimeSlot(startDateTime, durationHours);
+
     final booking = Booking(
       id: 'booking_${DateTime.now().millisecondsSinceEpoch}',
       userId: MockDataService.currentUser.id,
@@ -279,7 +290,7 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
     // Показываем уведомление об успехе
     NotificationService.showSuccess(
       context,
-      'Корт успешно забронирован!',
+      'Корт успешно забронирован! Оплатите в течение 15 минут.',
     );
 
     final navigationService = NavigationService.of(context);
