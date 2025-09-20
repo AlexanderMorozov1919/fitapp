@@ -10,6 +10,7 @@ import 'cancel_booking_modal.dart' as cancel_booking_modal;
 import 'reschedule_booking_modal.dart' as reschedule_booking_modal;
 import '../../models/product_model.dart';
 import '../../widgets/products_section_widget.dart';
+import 'booking_payment_info.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final Booking booking;
@@ -352,6 +353,20 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     } else {
       // Fallback навигация
       showSuccessSnackBar(context, 'Переход к оплате...');
+    }
+  }
+
+  void _payDifference() {
+    final booking = widget.booking;
+    final navigationService = NavigationService.of(context);
+    
+    if (navigationService != null) {
+      navigationService.navigateTo('payment', {
+        'booking': booking,
+        'amount': booking.priceDifference,
+        'description': 'Доплата за перенос времени бронирования',
+        'isDifferencePayment': true,
+      });
     }
   }
 }

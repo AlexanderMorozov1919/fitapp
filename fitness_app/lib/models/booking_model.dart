@@ -33,6 +33,7 @@ class Booking {
   final DateTime createdAt;
   final String? clientName;
   final List<CartItem> products;
+  final double priceDifference;
 
   Booking({
     required this.id,
@@ -51,6 +52,7 @@ class Booking {
     required this.createdAt,
     this.clientName,
     this.products = const [],
+    this.priceDifference = 0,
   });
 
   bool get isUpcoming => status == BookingStatus.confirmed && 
@@ -103,6 +105,10 @@ class Booking {
   int get totalProductsQuantity {
     return products.fold(0, (sum, item) => sum + item.quantity);
   }
+
+  bool get hasPaymentDifference => priceDifference != 0;
+  bool get requiresAdditionalPayment => priceDifference > 0;
+  bool get requiresRefund => priceDifference < 0;
 }
 
 class TennisCourt {

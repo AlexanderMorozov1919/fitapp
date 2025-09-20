@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/booking_model.dart';
+import '../../models/notification_model.dart';
 import '../../services/mock_data_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -158,28 +159,54 @@ class _TennisRescheduleScreenState extends State<TennisRescheduleScreen> {
       _selectedEndTime!.minute,
     );
 
-    // Обновляем бронирование через MockDataService
+    // Обновляем бронирование через MockDataService с учетом разницы стоимости
     MockDataService.updateUserBookingTime(
       widget.booking.id,
       newStartTime,
       newEndTime,
+      priceDifference: _priceDifference,
     );
 
-    // Если стоимость изменилась, показываем соответствующее сообщение
-    if (_priceDifference > 0) {
-      showSuccessSnackBar(context, 
-        'Время бронирования изменено. Требуется доплата ${_priceDifference.toInt()} ₽');
-      // Здесь можно перейти на экран оплаты
-    } else if (_priceDifference < 0) {
-      showSuccessSnackBar(context, 
-        'Время бронирования изменено. Будет возвращено ${(-_priceDifference).toInt()} ₽');
-    } else {
-      showSuccessSnackBar(context, 
-        'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}');
-    }
-
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateToHome();
+    
+    // Если требуется доплата, переходим на экран оплаты
+    if (_priceDifference > 0) {
+      // Получаем обновленное бронирование
+      final updatedBooking = MockDataService.userBookings.firstWhere(
+        (b) => b.id == widget.booking.id,
+        orElse: () => widget.booking,
+      );
+      
+      navigationService?.navigateTo('payment', {
+        'booking': updatedBooking,
+        'amount': _priceDifference,
+        'description': 'Доплата за перенос времени бронирования',
+        'isDifferencePayment': true,
+      });
+    } else {
+      // Если разницы нет или требуется возврат, возвращаемся домой
+      if (_priceDifference < 0) {
+        showSuccessSnackBar(context,
+          'Время бронирования изменено. Будет возвращено ${(-_priceDifference).toInt()} ₽ администратором');
+      } else {
+        showSuccessSnackBar(context,
+          'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}');
+      }
+      
+      // Добавляем уведомление о переносе
+      final notification = AppNotification(
+        id: 'reschedule_${DateTime.now().millisecondsSinceEpoch}',
+        type: NotificationType.booking,
+        title: 'Время бронирования перенесено',
+        message: 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}',
+        timestamp: DateTime.now(),
+        isRead: false,
+        relatedId: widget.booking.id,
+      );
+      MockDataService.addNotification(notification);
+      
+      navigationService?.navigateToHome();
+    }
   }
 
   @override
@@ -467,26 +494,13 @@ class _TennisRescheduleScreenState extends State<TennisRescheduleScreen> {
   }
 
   Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: SecondaryButton(
-            text: 'Назад',
-            onPressed: () {
-              final navigationService = NavigationService.of(context);
-              navigationService?.onBack();
-            },
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: PrimaryButton(
-            text: _priceDifference > 0 ? 'Оплатить разницу' : 'Подтвердить изменение',
-            onPressed: _canProceed ? _confirmReschedule : () {},
-            isEnabled: _canProceed,
-          ),
-        ),
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: PrimaryButton(
+        text: 'Перенести время',
+        onPressed: _canProceed ? _confirmReschedule : () {},
+        isEnabled: _canProceed,
+      ),
     );
   }
 

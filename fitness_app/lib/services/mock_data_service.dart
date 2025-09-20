@@ -693,13 +693,13 @@ class MockDataService {
     }
   }
 
-  // Метод для обновления времени пользовательского бронирования
-  static void updateUserBookingTime(String bookingId, DateTime newStartTime, DateTime newEndTime) {
+  // Метод для обновления времени пользовательского бронирования с учетом разницы стоимости
+  static void updateUserBookingTime(String bookingId, DateTime newStartTime, DateTime newEndTime, {double priceDifference = 0}) {
     final index = userBookings.indexWhere((booking) => booking.id == bookingId);
     if (index != -1) {
       final booking = userBookings[index];
       
-      // Создаем новое бронирование с обновленным временем
+      // Создаем новое бронирование с обновленным временем и разницей стоимости
       final updatedBooking = Booking(
         id: booking.id,
         userId: booking.userId,
@@ -708,8 +708,8 @@ class MockDataService {
         endTime: newEndTime,
         title: booking.title,
         description: booking.description,
-        status: booking.status,
-        price: booking.price,
+        status: priceDifference > 0 ? BookingStatus.awaitingPayment : booking.status,
+        price: booking.price + priceDifference,
         courtNumber: booking.courtNumber,
         trainerId: booking.trainerId,
         className: booking.className,
@@ -717,21 +717,75 @@ class MockDataService {
         createdAt: booking.createdAt,
         clientName: booking.clientName,
         products: booking.products, // Сохраняем товары
+        priceDifference: priceDifference,
       );
       
       userBookings[index] = updatedBooking;
       
       // Добавляем уведомление о переносе бронирования
+      String message;
+      if (priceDifference > 0) {
+        message = 'Бронирование "${booking.title}" перенесено. Требуется доплата ${priceDifference.toInt()} ₽';
+      } else if (priceDifference < 0) {
+        message = 'Бронирование "${booking.title}" перенесено. Будет возвращено ${(-priceDifference).toInt()} ₽';
+      } else {
+        message = 'Бронирование "${booking.title}" перенесено на ${DateFormatters.formatDate(newStartTime)} ${DateFormatters.formatTime(newStartTime)}';
+      }
+      
       final notification = AppNotification(
         id: 'notif_${DateTime.now().millisecondsSinceEpoch}',
         type: NotificationType.booking,
         title: 'Бронирование перенесено',
-        message: 'Бронирование "${booking.title}" перенесено на ${DateFormatters.formatDate(newStartTime)} ${DateFormatters.formatTime(newStartTime)}',
+        message: message,
         timestamp: DateTime.now(),
         isRead: false,
         relatedId: booking.id,
       );
       addNotification(notification);
+    }
+  }
+
+  // Метод для оплаты разницы стоимости
+  static void payBookingDifference(String bookingId) {
+    final index = userBookings.indexWhere((booking) => booking.id == bookingId);
+    if (index != -1) {
+      final booking = userBookings[index];
+      
+      if (booking.priceDifference > 0) {
+        final updatedBooking = Booking(
+          id: booking.id,
+          userId: booking.userId,
+          type: booking.type,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          title: booking.title,
+          description: booking.description,
+          status: BookingStatus.confirmed,
+          price: booking.price,
+          courtNumber: booking.courtNumber,
+          trainerId: booking.trainerId,
+          className: booking.className,
+          lockerNumber: booking.lockerNumber,
+          createdAt: booking.createdAt,
+          clientName: booking.clientName,
+          products: booking.products,
+          priceDifference: 0, // Сбрасываем разницу после оплаты
+        );
+        
+        userBookings[index] = updatedBooking;
+        
+        // Добавляем уведомление об успешной оплате
+        final notification = AppNotification(
+          id: 'payment_success_${DateTime.now().millisecondsSinceEpoch}',
+          type: NotificationType.payment,
+          title: 'Доплата принята',
+          message: 'Доплата за бронирование "${booking.title}" успешно принята',
+          timestamp: DateTime.now(),
+          isRead: false,
+          relatedId: booking.id,
+        );
+        addNotification(notification);
+      }
     }
   }
 
