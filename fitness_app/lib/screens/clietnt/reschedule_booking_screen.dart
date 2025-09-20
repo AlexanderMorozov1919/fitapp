@@ -7,6 +7,7 @@ import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
 import 'calendar_filter.dart';
+import '../../services/mock_data_service.dart';
 
 class RescheduleBookingScreen extends StatefulWidget {
   final Booking booking;
@@ -67,9 +68,28 @@ class _RescheduleBookingScreenState extends State<RescheduleBookingScreen> {
 
   void _confirmReschedule() {
     if (_selectedTime != null) {
+      // Создаем новое время начала и окончания бронирования
+      final newStartTime = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
+      
+      final duration = widget.booking.endTime.difference(widget.booking.startTime);
+      final newEndTime = newStartTime.add(duration);
+
+      // Обновляем бронирование через MockDataService
+      MockDataService.updateUserBookingTime(
+        widget.booking.id,
+        newStartTime,
+        newEndTime,
+      );
+      
       showSuccessSnackBar(context, 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedTime!.format(context)}');
       final navigationService = NavigationService.of(context);
-      navigationService?.onBack();
+      navigationService?.navigateToHome();
     }
   }
 

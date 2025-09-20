@@ -693,6 +693,48 @@ class MockDataService {
     }
   }
 
+  // Метод для обновления времени пользовательского бронирования
+  static void updateUserBookingTime(String bookingId, DateTime newStartTime, DateTime newEndTime) {
+    final index = userBookings.indexWhere((booking) => booking.id == bookingId);
+    if (index != -1) {
+      final booking = userBookings[index];
+      
+      // Создаем новое бронирование с обновленным временем
+      final updatedBooking = Booking(
+        id: booking.id,
+        userId: booking.userId,
+        type: booking.type,
+        startTime: newStartTime,
+        endTime: newEndTime,
+        title: booking.title,
+        description: booking.description,
+        status: booking.status,
+        price: booking.price,
+        courtNumber: booking.courtNumber,
+        trainerId: booking.trainerId,
+        className: booking.className,
+        lockerNumber: booking.lockerNumber,
+        createdAt: booking.createdAt,
+        clientName: booking.clientName,
+        products: booking.products, // Сохраняем товары
+      );
+      
+      userBookings[index] = updatedBooking;
+      
+      // Добавляем уведомление о переносе бронирования
+      final notification = AppNotification(
+        id: 'notif_${DateTime.now().millisecondsSinceEpoch}',
+        type: NotificationType.booking,
+        title: 'Бронирование перенесено',
+        message: 'Бронирование "${booking.title}" перенесено на ${DateFormatters.formatDate(newStartTime)} ${DateFormatters.formatTime(newStartTime)}',
+        timestamp: DateTime.now(),
+        isRead: false,
+        relatedId: booking.id,
+      );
+      addNotification(notification);
+    }
+  }
+
   // Методы для работы с товарами и корзиной
 
   static List<Product> getAllProducts() {
