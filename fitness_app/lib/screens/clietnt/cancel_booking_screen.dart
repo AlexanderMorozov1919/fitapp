@@ -6,6 +6,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
+import '../../services/mock_data_service.dart';
 
 class CancelBookingScreen extends StatefulWidget {
   final Booking booking;
@@ -28,9 +29,37 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
 
   void _confirmCancellation() {
     if (_selectedReason != null) {
+      // Обновляем статус бронирования через MockDataService
+      // Для пользовательских бронирований используем метод для обновления статуса
+      // Создаем обновленное бронирование с измененным статусом
+      final updatedBooking = Booking(
+        id: widget.booking.id,
+        userId: widget.booking.userId,
+        type: widget.booking.type,
+        startTime: widget.booking.startTime,
+        endTime: widget.booking.endTime,
+        title: widget.booking.title,
+        description: widget.booking.description,
+        status: BookingStatus.cancelled,
+        price: widget.booking.price,
+        courtNumber: widget.booking.courtNumber,
+        trainerId: widget.booking.trainerId,
+        className: widget.booking.className,
+        lockerNumber: widget.booking.lockerNumber,
+        createdAt: widget.booking.createdAt,
+        clientName: widget.booking.clientName,
+        products: widget.booking.products,
+      );
+      
+      // Обновляем бронирование в списке
+      final index = MockDataService.userBookings.indexWhere((b) => b.id == widget.booking.id);
+      if (index != -1) {
+        MockDataService.userBookings[index] = updatedBooking;
+      }
+      
       showSuccessSnackBar(context, 'Бронирование отменено. Причина: $_selectedReason');
       final navigationService = NavigationService.of(context);
-      navigationService?.onBack();
+      navigationService?.navigateToHome();
     }
   }
 

@@ -451,7 +451,15 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
       confirmColor: AppColors.error,
     ).then((confirmed) {
       if (confirmed == true) {
+        // Используем метод MockDataService для отмены тренировки
+        MockDataService.updateEmployeeTrainingStatus(
+          training.id,
+          BookingStatus.cancelled,
+          cancellationReason: 'Отменено сотрудником'
+        );
+        
         _showCancellationSuccess();
+        setState(() {}); // Обновляем UI
       }
     });
   }

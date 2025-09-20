@@ -367,6 +367,33 @@ class _BookingsScreenState extends State<BookingsScreen> {
       confirmColor: AppColors.error,
     ).then((confirmed) {
       if (confirmed == true) {
+        // Обновляем статус бронирования
+        final updatedBooking = Booking(
+          id: booking.id,
+          userId: booking.userId,
+          type: booking.type,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          title: booking.title,
+          description: booking.description,
+          status: BookingStatus.cancelled,
+          price: booking.price,
+          courtNumber: booking.courtNumber,
+          trainerId: booking.trainerId,
+          className: booking.className,
+          lockerNumber: booking.lockerNumber,
+          createdAt: booking.createdAt,
+          clientName: booking.clientName,
+          products: booking.products,
+        );
+        
+        // Обновляем бронирование в списке
+        final index = MockDataService.userBookings.indexWhere((b) => b.id == booking.id);
+        if (index != -1) {
+          MockDataService.userBookings[index] = updatedBooking;
+          setState(() {}); // Обновляем UI
+        }
+        
         _showCancellationSuccess();
       }
     });
