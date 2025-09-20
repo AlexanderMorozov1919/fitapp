@@ -242,15 +242,14 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
             children: _availableTimes.where((time) =>
                 time.hour > _selectedStartTime!.hour).map((time) {
               final isSelected = time == _selectedEndTime;
-              final isOccupied = _isTimeSlotOccupied(time);
               final durationHours = time.hour - _selectedStartTime!.hour;
               final isTimeRangeAvailable = _isTimeRangeAvailable(_selectedStartTime!, durationHours);
               
               return TimeSlotChip(
                 time: time,
                 isSelected: isSelected,
-                isOccupied: isOccupied || !isTimeRangeAvailable,
-                onTap: (isOccupied || !isTimeRangeAvailable) ? null : () {
+                isOccupied: !isTimeRangeAvailable,
+                onTap: !isTimeRangeAvailable ? null : () {
                   setState(() {
                     _selectedEndTime = !isSelected ? time : null;
                   });
@@ -363,6 +362,8 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
       time.minute,
     );
     
+    // Используем метод модели для проверки занятости конкретного часа
+    // Время считается занятым, если этот час уже забронирован
     return !widget.selectedCourt.isTimeSlotAvailable(dateTime, 1);
   }
 
@@ -375,6 +376,7 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
       startTime.minute,
     );
     
+    // Используем метод модели для проверки доступности интервала
     return widget.selectedCourt.isTimeSlotAvailable(startDateTime, durationHours);
   }
 }

@@ -236,7 +236,17 @@ class TennisCourt {
       final bookedEnd = bookedSlot.add(const Duration(hours: 1));
       
       // Если запрашиваемое время пересекается с занятым слотом
+      // Бронирование доступно, если оно начинается точно в конце занятого слота
+      // или заканчивается точно в начале занятого слота
       if (startTime.isBefore(bookedEnd) && endTime.isAfter(bookedSlot)) {
+        // Разрешаем бронирование, если оно начинается сразу после окончания занятого времени
+        if (startTime.isAtSameMomentAs(bookedEnd)) {
+          continue;
+        }
+        // Разрешаем бронирование, если оно заканчивается прямо перед началом занятого времени
+        if (endTime.isAtSameMomentAs(bookedSlot)) {
+          continue;
+        }
         return false;
       }
     }
@@ -248,7 +258,10 @@ class TennisCourt {
     // Добавляем все часы бронирования в занятые слоты
     for (int i = 0; i < durationHours; i++) {
       final slotTime = startTime.add(Duration(hours: i));
-      bookedSlots.add(slotTime);
+      // Проверяем, нет ли уже этого времени в списке
+      if (!bookedSlots.any((slot) => slot.isAtSameMomentAs(slotTime))) {
+        bookedSlots.add(slotTime);
+      }
     }
   }
 
