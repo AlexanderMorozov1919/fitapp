@@ -225,6 +225,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 ],
               ),
               const SizedBox(height: 16),
+            ] else if (booking.status == BookingStatus.awaitingPayment && booking.price > 0) ...[
+              // Кнопка оплаты для бронирований, ожидающих оплаты
+              SizedBox(
+                width: double.infinity,
+                child: PrimaryButton(
+                  text: 'Оплатить ${booking.price.toInt()} ₽',
+                  onPressed: _proceedToPayment,
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
 
             // Информация о создании
@@ -320,6 +330,22 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     } else {
       // Просто показываем сообщение, так как модальные окна требуют callback функции
       showSuccessSnackBar(context, 'Функционал изменения времени доступен через быстрый доступ');
+    }
+  }
+
+  void _proceedToPayment() {
+    final booking = widget.booking;
+    final navigationService = NavigationService.of(context);
+    
+    if (navigationService != null) {
+      navigationService.navigateTo('payment', {
+        'booking': booking,
+        'amount': booking.price,
+        'description': 'Оплата бронирования: ${booking.title}',
+      });
+    } else {
+      // Fallback навигация
+      showSuccessSnackBar(context, 'Переход к оплате...');
     }
   }
 }

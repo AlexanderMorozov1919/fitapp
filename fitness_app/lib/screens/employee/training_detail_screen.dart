@@ -266,15 +266,13 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
   }
 
   void _navigateToChat() {
-    if (widget.training.userId != null) {
-      final chat = MockDataService.findClientAndCreateChat(widget.training.userId!);
-      final navigationService = NavigationService.of(context);
-      navigationService?.navigateTo('employee_chat', {
-        'chat': chat,
-        'contactId': widget.training.userId,
-        'contactName': widget.training.clientName ?? 'Клиент',
-      });
-    }
+    final chat = MockDataService.findClientAndCreateChat(widget.training.userId);
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('employee_chat', {
+      'chat': chat,
+      'contactId': widget.training.userId,
+      'contactName': widget.training.clientName ?? 'Клиент',
+    });
   }
 
   void _confirmTraining() {
@@ -302,6 +300,7 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
     // Закрываем экран или обновляем состояние
     setState(() {});
   }
+
 
   Widget _buildInfoItem({
     required IconData icon,
@@ -438,7 +437,6 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
       case BookingStatus.pending:
         return AppColors.warning;
     }
-    return AppColors.textTertiary;
   }
 
   String _getStatusText(BookingStatus status) {
@@ -454,6 +452,5 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
       case BookingStatus.pending:
         return 'Ожидание';
     }
-    return 'Неизвестно';
   }
 }
