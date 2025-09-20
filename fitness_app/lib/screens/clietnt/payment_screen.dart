@@ -685,7 +685,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
       // Обработка оплаты бронирования
       final booking = widget.bookingData!['booking'] as Booking;
       description = 'Бронирование: ${booking.className}';
-      // TODO: Сохранить бронирование в системе
+      
+      // Обновляем статус бронирования на "подтверждено"
+      if (booking.status == BookingStatus.awaitingPayment) {
+        MockDataService.confirmBookingPayment(booking.id);
+      }
     } else {
       // Обработка пополнения счета
       description = 'Пополнение баланса';

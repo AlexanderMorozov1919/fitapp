@@ -297,7 +297,7 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
       endTime: endDateTime,
       title: '$serviceName с ${trainer.fullName}',
       description: 'Персональная тренировка',
-      status: BookingStatus.pending,
+      status: BookingStatus.awaitingPayment,
       price: price,
       trainerId: trainer.id,
       createdAt: DateTime.now(),

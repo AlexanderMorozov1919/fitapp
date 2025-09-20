@@ -267,7 +267,7 @@ class _ClassConfirmationScreenState extends State<ClassConfirmationScreen> {
       endTime: widget.selectedClass.endTime,
       title: widget.selectedClass.name,
       description: '${widget.selectedClass.type} • ${widget.selectedClass.level}',
-      status: BookingStatus.confirmed,
+      status: widget.selectedClass.price > 0 ? BookingStatus.awaitingPayment : BookingStatus.confirmed,
       price: widget.selectedClass.price,
       className: widget.selectedClass.name,
       createdAt: DateTime.now(),

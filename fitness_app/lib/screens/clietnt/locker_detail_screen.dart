@@ -282,7 +282,7 @@ class _LockerDetailScreenState extends State<LockerDetailScreen> {
             startTime: DateTime.now(),
             endTime: DateTime.now().add(Duration(days: _rentalDays)),
             title: 'Аренда шкафчика ${widget.locker.number}',
-            status: BookingStatus.pending,
+            status: BookingStatus.awaitingPayment,
             price: _calculatePrice(),
             lockerNumber: widget.locker.number,
             createdAt: DateTime.now(),

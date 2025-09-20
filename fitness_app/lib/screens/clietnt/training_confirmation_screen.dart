@@ -309,7 +309,7 @@ class _TrainingConfirmationScreenState extends State<TrainingConfirmationScreen>
       endTime: endDateTime,
       title: '${widget.serviceName} с ${widget.trainer.fullName}',
       description: 'Персональная тренировка',
-      status: BookingStatus.pending,
+      status: BookingStatus.awaitingPayment,
       price: widget.price,
       trainerId: widget.trainer.id,
       createdAt: DateTime.now(),

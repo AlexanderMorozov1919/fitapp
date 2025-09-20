@@ -164,7 +164,7 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
               const SizedBox(height: 8),
             ],
             
-            if (widget.training.status == BookingStatus.pending) ...[
+            if (widget.training.status == BookingStatus.awaitingPayment) ...[
               _buildActionButton(
                 icon: Icons.check,
                 text: 'Подтвердить тренировку',
@@ -429,14 +429,14 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
     switch (status) {
       case BookingStatus.confirmed:
         return AppColors.success;
-      case BookingStatus.pending:
+      case BookingStatus.awaitingPayment:
         return AppColors.warning;
       case BookingStatus.cancelled:
         return AppColors.error;
       case BookingStatus.completed:
         return AppColors.info;
-      case BookingStatus.awaitingPayment:
-        return Colors.orange;
+      case BookingStatus.pending:
+        return AppColors.warning;
     }
     return AppColors.textTertiary;
   }
@@ -445,14 +445,14 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
     switch (status) {
       case BookingStatus.confirmed:
         return 'Подтверждено';
-      case BookingStatus.pending:
-        return 'Ожидание';
+      case BookingStatus.awaitingPayment:
+        return 'Ожидает оплаты';
       case BookingStatus.cancelled:
         return 'Отменено';
       case BookingStatus.completed:
         return 'Завершено';
-      case BookingStatus.awaitingPayment:
-        return 'Ожидает оплаты';
+      case BookingStatus.pending:
+        return 'Ожидание';
     }
     return 'Неизвестно';
   }

@@ -293,7 +293,7 @@ class _ScheduleConfirmationScreenState extends State<ScheduleConfirmationScreen>
       endTime: groupClass.endTime,
       title: groupClass.name,
       description: '${groupClass.type} • ${groupClass.level} • ${groupClass.trainerName}',
-      status: BookingStatus.pending,
+      status: groupClass.price > 0 ? BookingStatus.awaitingPayment : BookingStatus.confirmed,
       price: groupClass.price,
       createdAt: DateTime.now(),
     );

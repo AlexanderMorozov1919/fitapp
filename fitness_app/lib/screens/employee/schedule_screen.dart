@@ -503,6 +503,8 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
     switch (status) {
       case BookingStatus.confirmed:
         return AppColors.success;
+      case BookingStatus.awaitingPayment:
+        return AppColors.warning;
       case BookingStatus.pending:
         return AppColors.warning;
       case BookingStatus.cancelled:
@@ -519,6 +521,8 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
     switch (status) {
       case BookingStatus.confirmed:
         return 'Подтверждено';
+      case BookingStatus.awaitingPayment:
+        return 'Ожидает оплаты';
       case BookingStatus.pending:
         return 'Ожидание';
       case BookingStatus.cancelled:

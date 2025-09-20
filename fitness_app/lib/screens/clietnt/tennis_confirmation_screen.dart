@@ -267,7 +267,7 @@ class _TennisConfirmationScreenState extends State<TennisConfirmationScreen> {
       endTime: endDateTime,
       title: 'Теннисный корт ${court.number}',
       description: '${court.surfaceType} • ${court.isIndoor ? 'Крытый' : 'Открытый'}',
-      status: BookingStatus.pending,
+      status: BookingStatus.awaitingPayment,
       price: totalPrice,
       courtNumber: court.number,
       createdAt: DateTime.now(),
