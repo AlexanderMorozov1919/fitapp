@@ -167,6 +167,34 @@ class _TrainerConfirmationScreenState extends State<TrainerConfirmationScreen> {
                     title: 'Стоимость часа',
                     value: '${price.toInt()} ₽/час',
                   ),
+                  
+                  // Стоимость бронирования
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      borderRadius: AppStyles.borderRadiusMd,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Стоимость бронирования:',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '${price.toInt()} ₽',
+                          style: AppTextStyles.price.copyWith(
+                            fontSize: 16,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
                 ],
               ),
