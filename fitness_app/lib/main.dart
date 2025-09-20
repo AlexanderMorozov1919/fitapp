@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:fitness_app/models/booking_model.dart';
 import 'package:fitness_app/models/trainer_model.dart';
 import 'package:fitness_app/models/user_model.dart';
+import 'package:fitness_app/models/product_model.dart';
 import 'package:fitness_app/screens/clietnt/home_screen.dart';
 import 'package:fitness_app/screens/employee/home_screen.dart';
 import 'package:fitness_app/screens/employee/schedule_screen.dart' as employee_schedule;
@@ -42,6 +43,7 @@ import 'package:fitness_app/screens/clietnt/schedule_screen.dart';
 import 'package:fitness_app/screens/clietnt/schedule_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/profile_screen.dart';
 import 'package:fitness_app/screens/clietnt/product_selection_screen.dart';
+import 'package:fitness_app/screens/clietnt/product_detail_screen.dart';
 import 'package:fitness_app/screens/employee/profile_screen.dart';
 import 'package:fitness_app/screens/clietnt/chat_screen.dart';
 import 'package:fitness_app/screens/clietnt/bookings_screen.dart';
@@ -583,6 +585,16 @@ class _MainNavigationState extends State<MainNavigation> {
       return ProductSelectionScreen(
         bookingType: BookingType.groupClass,
         onProductsSelected: (_) {},
+      );
+    },
+    'product_detail': (data) {
+      if (data is Map<String, dynamic>) {
+        return ProductDetailScreen(
+          productId: data['productId'],
+        );
+      }
+      return ProductDetailScreen(
+        productId: data is Product ? data.id : data.toString(),
       );
     },
   };
