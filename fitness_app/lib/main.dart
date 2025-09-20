@@ -60,6 +60,7 @@ import 'package:fitness_app/widgets/bottom_navigation.dart';
 import 'package:fitness_app/widgets/demo_disclaimer.dart';
 import 'package:fitness_app/widgets/employee_bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
+import 'package:fitness_app/widgets/notification_overlay.dart';
 
 void main() {
   runApp(const UserTypeSelectionWrapper());
@@ -180,7 +181,9 @@ class FitnessApp extends StatelessWidget {
         ),
         home: _buildDemoLayout(
           const SimplePhoneBorder(
-            child: MainNavigation(),
+            child: NotificationOverlayManager(
+              child: MainNavigation(),
+            ),
           ),
         ),
         debugShowCheckedModeBanner: false,
@@ -232,7 +235,9 @@ class EmployeeFitnessApp extends StatelessWidget {
         ),
         home: _buildDemoLayout(
           const SimplePhoneBorder(
-            child: EmployeeMainNavigation(),
+            child: NotificationOverlayManager(
+              child: EmployeeMainNavigation(),
+            ),
           ),
         ),
         debugShowCheckedModeBanner: false,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fitness_app/services/custom_notification_service.dart';
 import '../../services/mock_data_service.dart';
 import '../../models/booking_model.dart';
 import 'home_welcome_section.dart';
@@ -29,6 +30,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Показываем тестовое уведомление через 3 секунды после старта
+    Future.delayed(const Duration(seconds: 3), () {
+      CustomNotificationService.showWelcomeNotification();
+    });
+  }
   bool _showQuickAccess = true;
   bool _showUpcomingBookings = true;
   bool _showTodayClasses = true;
