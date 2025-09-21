@@ -14,6 +14,7 @@ class Trainer {
   final Map<String, double> hourlyRates;
   final List<WorkSchedule> schedule;
   final List<Review> reviews;
+  final List<DateTime> bookedSlots;
 
   Trainer({
     required this.id,
@@ -29,11 +30,113 @@ class Trainer {
     this.hourlyRates = const {},
     this.schedule = const [],
     this.reviews = const [],
+    this.bookedSlots = const [],
   });
 
   String get fullName => '$firstName $lastName';
   String get displayRating => rating.toStringAsFixed(1);
   bool get isAvailable => schedule.any((slot) => slot.isAvailable);
+
+  // Проверяет, свободен ли тренер в указанное время
+  bool isTimeAvailable(DateTime dateTime) {
+    // Проверяем, что время не в прошлом
+    if (dateTime.isBefore(DateTime.now())) {
+      return false;
+    }
+
+    // Проверяем, что время не в заблокированных слотах
+    for (final bookedSlot in bookedSlots) {
+      if (_isSameTimeSlot(bookedSlot, dateTime)) {
+        return false;
+      }
+    }
+
+    // Проверяем рабочее расписание тренера
+    final dayOfWeek = dateTime.weekday;
+    final time = TimeOfDay.fromDateTime(dateTime);
+    
+    return schedule.any((workSlot) =>
+        workSlot.date.weekday == dayOfWeek &&
+        _isTimeInRange(time, workSlot.startTime, workSlot.endTime) &&
+        workSlot.isAvailable);
+  }
+
+  // Получает список доступных дат в указанном диапазоне
+  List<DateTime> getAvailableDates(DateTime startDate, DateTime endDate) {
+    final availableDates = <DateTime>[];
+    var currentDate = startDate;
+    
+    while (currentDate.isBefore(endDate) || currentDate.isAtSameMomentAs(endDate)) {
+      if (isDateAvailable(currentDate)) {
+        availableDates.add(currentDate);
+      }
+      currentDate = currentDate.add(const Duration(days: 1));
+    }
+    
+    return availableDates;
+  }
+
+  // Проверяет, есть ли свободные слоты на указанную дату
+  bool isDateAvailable(DateTime date) {
+    // Проверяем рабочее расписание на этот день недели
+    final dayOfWeek = date.weekday;
+    final hasWorkSchedule = schedule.any((slot) => slot.date.weekday == dayOfWeek && slot.isAvailable);
+    
+    if (!hasWorkSchedule) {
+      return false;
+    }
+
+    // Проверяем, есть ли хотя бы один свободный слот на эту дату
+    final workSlots = schedule.where((slot) => slot.date.weekday == dayOfWeek && slot.isAvailable);
+    
+    for (final workSlot in workSlots) {
+      var currentTime = workSlot.startTime;
+      while (_isTimeBefore(currentTime, workSlot.endTime)) {
+        final dateTime = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          currentTime.hour,
+          currentTime.minute,
+        );
+        
+        if (isTimeAvailable(dateTime)) {
+          return true;
+        }
+        
+        currentTime = _addMinutes(currentTime, 60);
+      }
+    }
+    
+    return false;
+  }
+
+  // Вспомогательные методы для работы со временем
+  bool _isSameTimeSlot(DateTime slot1, DateTime slot2) {
+    return slot1.year == slot2.year &&
+        slot1.month == slot2.month &&
+        slot1.day == slot2.day &&
+        slot1.hour == slot2.hour;
+  }
+
+  bool _isTimeInRange(TimeOfDay time, TimeOfDay start, TimeOfDay end) {
+    final totalMinutes = time.hour * 60 + time.minute;
+    final startMinutes = start.hour * 60 + start.minute;
+    final endMinutes = end.hour * 60 + end.minute;
+    
+    return totalMinutes >= startMinutes && totalMinutes < endMinutes;
+  }
+
+  bool _isTimeBefore(TimeOfDay time1, TimeOfDay time2) {
+    final minutes1 = time1.hour * 60 + time1.minute;
+    final minutes2 = time2.hour * 60 + time2.minute;
+    return minutes1 < minutes2;
+  }
+
+  TimeOfDay _addMinutes(TimeOfDay time, int minutes) {
+    final totalMinutes = time.hour * 60 + time.minute + minutes;
+    return TimeOfDay(hour: totalMinutes ~/ 60, minute: totalMinutes % 60);
+  }
 }
 
 class WorkSchedule {

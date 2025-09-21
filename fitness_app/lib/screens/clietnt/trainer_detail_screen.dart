@@ -248,6 +248,46 @@ class _TrainerDetailScreenState extends State<TrainerDetailScreen> {
                         .toList(),
                   ),
 
+                  const SizedBox(height: 24),
+
+                  // Статус доступности
+                  Container(
+                    padding: AppStyles.paddingMd,
+                    decoration: BoxDecoration(
+                      color: trainer.isAvailable
+                          ? AppColors.success.withOpacity(0.1)
+                          : AppColors.error.withOpacity(0.1),
+                      borderRadius: AppStyles.borderRadiusLg,
+                      border: Border.all(
+                        color: trainer.isAvailable
+                            ? AppColors.success
+                            : AppColors.error,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          trainer.isAvailable ? Icons.check_circle : Icons.cancel,
+                          color: trainer.isAvailable ? AppColors.success : AppColors.error,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            trainer.isAvailable
+                                ? 'Тренер доступен для записи'
+                                : 'Тренер временно недоступен',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: trainer.isAvailable ? AppColors.success : AppColors.error,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 32),
 
                   // Кнопка записи

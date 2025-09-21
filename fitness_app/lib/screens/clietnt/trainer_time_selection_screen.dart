@@ -276,9 +276,6 @@ class _TrainerTimeSelectionScreenState extends State<TrainerTimeSelectionScreen>
   }
 
   bool _isTimeAvailable(TimeOfDay time) {
-    // Простая проверка доступности времени
-    // В реальном приложении нужно проверять расписание тренера
-    final now = TimeOfDay.now();
     final selectedDateTime = DateTime(
       _selectedDate.year,
       _selectedDate.month,
@@ -287,25 +284,15 @@ class _TrainerTimeSelectionScreenState extends State<TrainerTimeSelectionScreen>
       time.minute,
     );
 
-    if (_selectedDate.year == DateTime.now().year &&
-        _selectedDate.month == DateTime.now().month &&
-        _selectedDate.day == DateTime.now().day) {
-      return time.hour > now.hour || (time.hour == now.hour && time.minute > now.minute);
-    }
-
-    return selectedDateTime.isAfter(DateTime.now());
+    // Используем реальное расписание тренера
+    return _trainer.isTimeAvailable(selectedDateTime);
   }
 
   List<DateTime> _getDatesWithAvailableTrainers() {
-    final dates = <DateTime>{};
     final today = DateTime.now();
+    final endDate = today.add(const Duration(days: 21));
     
-    for (int i = 0; i <= 21; i++) {
-      final date = today.add(Duration(days: i));
-      // В реальном приложении нужно проверять доступность тренера на дату
-      dates.add(date);
-    }
-    
-    return dates.toList()..sort();
+    // Получаем доступные даты из расписания тренера
+    return _trainer.getAvailableDates(today, endDate);
   }
 }
