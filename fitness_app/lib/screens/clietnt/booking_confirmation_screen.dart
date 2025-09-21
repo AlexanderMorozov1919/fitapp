@@ -412,6 +412,16 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
             value: '${config.endTime!.difference(config.startTime!).inHours} ч',
           ),
           const SizedBox(height: 8),
+          
+          // Добавляем строку с информацией о клиенте для сотрудников
+          if (config.isEmployeeBooking && config.description != null && config.description!.contains('Клиент:'))
+            _buildDetailRow(
+              icon: Icons.person,
+              title: 'Клиент',
+              value: config.description!.replaceFirst('Клиент: ', ''),
+            ),
+          const SizedBox(height: 8),
+          
           _buildTariffRow(config),
         ]);
         break;

@@ -373,6 +373,7 @@ class _EmployeeTennisTimeSelectionScreenState extends State<EmployeeTennisTimeSe
       court: widget.selectedCourt,
       location: '${widget.selectedCourt.surfaceType} • ${widget.selectedCourt.isIndoor ? 'Крытый' : 'Открытый'}',
       isEmployeeBooking: true, // Устанавливаем флаг для сотрудника
+      description: 'Клиент: ${widget.selectedClient.fullName}', // Добавляем информацию о клиенте
     );
 
     final navigationService = NavigationService.of(context);

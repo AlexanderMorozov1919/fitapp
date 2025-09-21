@@ -209,6 +209,15 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
         );
 
       case ConfirmationBookingType.tennisCourt:
+        // Извлекаем имя клиента из описания, если оно есть
+        String? clientName;
+        if (description != null && description!.contains('Клиент:')) {
+          final clientNameMatch = RegExp(r'Клиент:\s*(.+)').firstMatch(description!);
+          if (clientNameMatch != null) {
+            clientName = clientNameMatch.group(1);
+          }
+        }
+        
         return booking_models.Booking(
           id: id,
           userId: userId,
@@ -221,6 +230,7 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
           price: price,
           courtNumber: court!.number,
           createdAt: DateTime.now(),
+          clientName: clientName, // Устанавливаем имя клиента
           products: selectedProducts,
         );
     }
