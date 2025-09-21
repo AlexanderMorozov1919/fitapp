@@ -65,27 +65,37 @@ class _RecordScreenState extends State<RecordScreen> {
       0,
     ); // Конец рабочего дня в 22:00
 
+    final now = DateTime.now();
+
     for (final training in trainings) {
       if (training.startTime.isAfter(currentTime)) {
         final freeTime = training.startTime.difference(currentTime);
         if (freeTime.inMinutes >= 30) { // Минимальный слот 30 минут
-          slots.add(FreeTimeSlot(
+          final slot = FreeTimeSlot(
             startTime: currentTime,
             endTime: training.startTime,
-          ));
+          );
+          // Добавляем только если слот не полностью прошел
+          if (slot.endTime.isAfter(now)) {
+            slots.add(slot);
+          }
         }
       }
       currentTime = training.endTime;
     }
 
-    // Добавляем свободное время после последней тренировки
+    // Добавляем свободное время после последней тренировки, только если оно в будущем
     if (currentTime.isBefore(endOfDay)) {
       final freeTime = endOfDay.difference(currentTime);
       if (freeTime.inMinutes >= 30) {
-        slots.add(FreeTimeSlot(
+        final slot = FreeTimeSlot(
           startTime: currentTime,
           endTime: endOfDay,
-        ));
+        );
+        // Добавляем только если слот не полностью прошел
+        if (slot.endTime.isAfter(now)) {
+          slots.add(slot);
+        }
       }
     }
 
@@ -108,6 +118,14 @@ class _RecordScreenState extends State<RecordScreen> {
   }
 
   void _onFreeTimeTap(FreeTimeSlot freeTimeSlot) {
+    final now = DateTime.now();
+    
+    // Проверяем, что слот не прошел
+    if (freeTimeSlot.endTime.isBefore(now)) {
+      showErrorSnackBar(context, 'Это время уже прошло. Выберите другое свободное время.');
+      return;
+    }
+    
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('create_training', freeTimeSlot);
   }

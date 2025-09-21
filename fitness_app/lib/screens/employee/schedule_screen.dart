@@ -177,6 +177,14 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
   }
 
   void _navigateToCreateTraining(FreeTimeSlot freeTimeSlot) {
+    final now = DateTime.now();
+    
+    // Проверяем, что слот не прошел
+    if (freeTimeSlot.endTime.isBefore(now)) {
+      showErrorSnackBar(context, 'Это время уже прошло. Выберите другое свободное время.');
+      return;
+    }
+    
     final navigationService = NavigationService.of(context);
     if (navigationService != null) {
       navigationService.navigateTo('create_training', freeTimeSlot);

@@ -276,46 +276,62 @@ class MockDataService {
     final freeSlots = <FreeTimeSlot>[];
     final workStart = DateTime(date.year, date.month, date.day, 8, 0); // 8:00
     final workEnd = DateTime(date.year, date.month, date.day, 22, 0); // 22:00
+    final now = DateTime.now();
 
-    // Проверяем время до первой тренировки
+    // Проверяем время до первой тренировки (только если оно в будущем)
     if (trainings.isNotEmpty) {
       final firstTraining = trainings.first;
       if (firstTraining.startTime.difference(workStart).inMinutes >= 30) {
-        freeSlots.add(FreeTimeSlot(
+        final slot = FreeTimeSlot(
           startTime: workStart,
           endTime: firstTraining.startTime,
-        ));
+        );
+        // Добавляем только если слот не полностью прошел
+        if (slot.endTime.isAfter(now)) {
+          freeSlots.add(slot);
+        }
       }
     } else {
-      // Если нет тренировок, весь день свободен
-      freeSlots.add(FreeTimeSlot(
+      // Если нет тренировок, весь день свободен (только если не прошел)
+      final slot = FreeTimeSlot(
         startTime: workStart,
         endTime: workEnd,
-      ));
+      );
+      if (slot.endTime.isAfter(now)) {
+        freeSlots.add(slot);
+      }
       return freeSlots;
     }
 
-    // Проверяем время между тренировками
+    // Проверяем время между тренировками (только если оно в будущем)
     for (int i = 0; i < trainings.length - 1; i++) {
       final currentTraining = trainings[i];
       final nextTraining = trainings[i + 1];
       
       final gap = nextTraining.startTime.difference(currentTraining.endTime);
       if (gap.inMinutes >= 30) {
-        freeSlots.add(FreeTimeSlot(
+        final slot = FreeTimeSlot(
           startTime: currentTraining.endTime,
           endTime: nextTraining.startTime,
-        ));
+        );
+        // Добавляем только если слот не полностью прошел
+        if (slot.endTime.isAfter(now)) {
+          freeSlots.add(slot);
+        }
       }
     }
 
-    // Проверяем время после последней тренировки
+    // Проверяем время после последней тренировки (только если оно в будущем)
     final lastTraining = trainings.last;
     if (workEnd.difference(lastTraining.endTime).inMinutes >= 30) {
-      freeSlots.add(FreeTimeSlot(
+      final slot = FreeTimeSlot(
         startTime: lastTraining.endTime,
         endTime: workEnd,
-      ));
+      );
+      // Добавляем только если слот не полностью прошел
+      if (slot.endTime.isAfter(now)) {
+        freeSlots.add(slot);
+      }
     }
 
     return freeSlots.where((slot) => slot.isLongEnoughForTraining).toList();

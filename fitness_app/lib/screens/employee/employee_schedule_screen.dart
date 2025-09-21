@@ -31,7 +31,15 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
   }
 
   void _updateData() {
+    final now = DateTime.now(); // Актуальное текущее время
     _filteredTrainings = MockDataService.employeeTrainings.where((training) {
+      // Исключаем прошедшие тренировки
+      if (training.endTime.isBefore(now)) {
+        return false;
+      }
+      
+      // Также исключаем тренировки, которые уже начались, но еще не закончились
+      // но показываем их как активные
       return training.startTime.year == _selectedDate.year &&
              training.startTime.month == _selectedDate.month &&
              training.startTime.day == _selectedDate.day;
@@ -49,6 +57,7 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
 
   List<FreeTimeSlot> _calculateFreeTimeSlots() {
     final slots = <FreeTimeSlot>[];
+    final now = DateTime.now(); // Текущее время при каждом вызове метода
     final trainings = _filteredTrainings.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
@@ -68,23 +77,59 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
       0,
     ); // Конец рабочего дня в 22:00
 
-    for (final training in trainings) {
-      if (training.startTime.isAfter(currentTime)) {
-        final freeTime = training.startTime.difference(currentTime);
-        if (freeTime.inMinutes >= 30) { // Минимальный слот 30 минут
-          slots.add(FreeTimeSlot(
-            startTime: currentTime,
-            endTime: training.startTime,
-          ));
-        }
-      }
-      currentTime = training.endTime;
+    // Если выбранная дата - сегодня, начинаем с текущего времени
+    if (_selectedDate.year == now.year &&
+        _selectedDate.month == now.month &&
+        _selectedDate.day == now.day) {
+      // Используем максимальное значение между текущим временем и началом рабочего дня
+      currentTime = now.isAfter(currentTime) ? now : currentTime;
     }
 
-    // Добавляем свободное время после последней тренировки
+    // Если текущее время уже после конца дня, возвращаем пустой список
+    if (currentTime.isAfter(endOfDay)) {
+      return [];
+    }
+
+    // Если текущее время находится в пределах рабочего дня, но уже после 8 утра
+    for (final training in trainings) {
+      // Пропускаем тренировки, которые уже закончились
+      if (training.endTime.isBefore(now)) {
+        continue;
+      }
+
+      // Корректируем начало тренировки, если она уже началась
+      final trainingStartTime = training.startTime.isBefore(now) ? now : training.startTime;
+      
+      // Пропускаем тренировки, которые полностью в прошлом после корректировки
+      if (trainingStartTime.isAfter(endOfDay)) {
+        continue;
+      }
+      
+      // Добавляем свободное время только если оно в будущем
+      if (trainingStartTime.isAfter(currentTime) && currentTime.isBefore(endOfDay)) {
+        final freeTime = trainingStartTime.difference(currentTime);
+        if (freeTime.inMinutes >= 30) { // Минимальный слот 30 минут
+          // Проверяем, что слот не в прошлом
+          if (currentTime.isAfter(now) || (currentTime.isAtSameMomentAs(now) && freeTime.inMinutes > 0)) {
+            slots.add(FreeTimeSlot(
+              startTime: currentTime,
+              endTime: trainingStartTime,
+            ));
+          }
+        }
+      }
+      currentTime = training.endTime.isAfter(now) ? training.endTime : now;
+      
+      // Если текущее время уже после конца дня, прерываем цикл
+      if (currentTime.isAfter(endOfDay)) {
+        break;
+      }
+    }
+
+    // Добавляем свободное время после последней тренировки, если оно в будущем
     if (currentTime.isBefore(endOfDay)) {
       final freeTime = endOfDay.difference(currentTime);
-      if (freeTime.inMinutes >= 30) {
+      if (freeTime.inMinutes >= 30 && currentTime.isAfter(now)) {
         slots.add(FreeTimeSlot(
           startTime: currentTime,
           endTime: endOfDay,
@@ -92,12 +137,22 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
       }
     }
 
-    return slots;
+    // Фильтруем слоты, которые уже прошли или начинаются в прошлом
+    return slots.where((slot) =>
+        slot.startTime.isAfter(now) && slot.endTime.isAfter(now)
+    ).toList();
   }
 
   List<DateTime> _getDatesWithTrainings() {
     final dates = <DateTime>[];
+    final today = DateTime.now();
+    
     for (final training in MockDataService.employeeTrainings) {
+      // Исключаем прошедшие тренировки
+      if (training.startTime.isBefore(today)) {
+        continue;
+      }
+      
       final date = DateTime(
         training.startTime.year,
         training.startTime.month,
@@ -111,6 +166,13 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
   }
 
   void _onFreeTimeTap(FreeTimeSlot freeTimeSlot) {
+    // Дополнительная проверка, что слот не в прошлом (используем актуальное время)
+    final now = DateTime.now();
+    if (freeTimeSlot.startTime.isBefore(now)) {
+      showErrorSnackBar(context, 'Нельзя записаться на прошедшее время');
+      return;
+    }
+
     final navigationService = NavigationService.of(context);
     navigationService?.navigateTo('create_training', {
       'freeTimeSlot': freeTimeSlot,
