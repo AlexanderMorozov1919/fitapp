@@ -146,32 +146,50 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
           ),
           
           Expanded(
-            child: SingleChildScrollView(
-              padding: AppStyles.paddingLg,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (availableCourts.isEmpty) ...[
-                    _buildNoAvailableCourts(),
-                  ] else ...[
-                    // Выбор корта
-                    Text(
-                      'Доступные корты на ${DateFormatters.formatDateWithMonth(_selectedDate)}:',
-                      style: AppTextStyles.headline6.copyWith(
-                        color: AppColors.textPrimary,
+            child: Column(
+              children: [
+                // Итоговая стоимость (фиксированная вверху)
+                if (_canProceed) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.border.withOpacity(0.3),
+                          width: 1,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildCourtSelector(availableCourts),
-                    
-                    // Итоговая стоимость
-                    if (_canProceed) ...[
-                      const SizedBox(height: 24),
-                      _buildTotalPrice(),
-                    ],
-                  ],
+                    child: _buildTotalPrice(),
+                  ),
                 ],
-              ),
+                
+                // Список кортов с прокруткой
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: AppStyles.paddingLg,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (availableCourts.isEmpty) ...[
+                          _buildNoAvailableCourts(),
+                        ] else ...[
+                          // Выбор корта
+                          Text(
+                            'Доступные корты на ${DateFormatters.formatDateWithMonth(_selectedDate)}:',
+                            style: AppTextStyles.headline6.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildCourtSelector(availableCourts),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
