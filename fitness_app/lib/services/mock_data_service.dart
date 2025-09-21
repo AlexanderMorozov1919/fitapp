@@ -943,5 +943,71 @@ class MockDataService {
       
       employeeTrainings[employeeTrainingIndex] = updatedTraining;
     }
+  
+  }
+  
+  // Метод для автоматического обновления статусов прошедших тренировок
+  static void updatePastBookingsStatus() {
+    final now = DateTime.now();
+    
+    // Обновляем пользовательские бронирования
+    for (int i = 0; i < userBookings.length; i++) {
+      final booking = userBookings[i];
+      
+      // Если тренировка уже прошла и имеет статус confirmed, меняем на completed
+      if (booking.endTime.isBefore(now) &&
+          booking.status == BookingStatus.confirmed) {
+        final updatedBooking = Booking(
+          id: booking.id,
+          userId: booking.userId,
+          type: booking.type,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          title: booking.title,
+          description: booking.description,
+          status: BookingStatus.completed,
+          price: booking.price,
+          courtNumber: booking.courtNumber,
+          trainerId: booking.trainerId,
+          className: booking.className,
+          lockerNumber: booking.lockerNumber,
+          createdAt: booking.createdAt,
+          clientName: booking.clientName,
+          products: booking.products,
+        );
+        
+        userBookings[i] = updatedBooking;
+      }
+    }
+    
+    // Обновляем тренировки сотрудников
+    for (int i = 0; i < employeeTrainings.length; i++) {
+      final training = employeeTrainings[i];
+      
+      // Если тренировка уже прошла и имеет статус confirmed, меняем на completed
+      if (training.endTime.isBefore(now) &&
+          training.status == BookingStatus.confirmed) {
+        final updatedTraining = Booking(
+          id: training.id,
+          userId: training.userId,
+          type: training.type,
+          startTime: training.startTime,
+          endTime: training.endTime,
+          title: training.title,
+          description: training.description,
+          status: BookingStatus.completed,
+          price: training.price,
+          courtNumber: training.courtNumber,
+          trainerId: training.trainerId,
+          className: training.className,
+          lockerNumber: training.lockerNumber,
+          createdAt: training.createdAt,
+          clientName: training.clientName,
+          products: training.products,
+        );
+        
+        employeeTrainings[i] = updatedTraining;
+      }
+    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:fitness_app/models/booking_model.dart';
 import 'package:fitness_app/models/trainer_model.dart';
 import 'package:fitness_app/models/user_model.dart';
 import 'package:fitness_app/models/product_model.dart';
+import 'package:fitness_app/services/mock_data_service.dart';
 import 'package:fitness_app/screens/clietnt/home_screen.dart';
 import 'package:fitness_app/screens/clietnt/booking_confirmation_screen.dart';
 import 'package:fitness_app/screens/clietnt/booking_confirmation_models.dart';
@@ -63,6 +64,8 @@ import 'package:fitness_app/widgets/phone_frame.dart';
 import 'package:fitness_app/widgets/notification_overlay.dart';
 
 void main() {
+  // Обновляем статусы прошедших бронирований при старте приложения
+  MockDataService.updatePastBookingsStatus();
   runApp(const UserTypeSelectionWrapper());
 }
 
