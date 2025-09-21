@@ -70,5 +70,15 @@
       }
     }
   </style>
+
+  <script>
+    // Функция для определения мобильного устройства
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    // Устанавливаем флаг в window объекте для доступа из Dart
+    window.isMobileDevice = isMobileDevice();
+  </script>
 </body>
 </html>

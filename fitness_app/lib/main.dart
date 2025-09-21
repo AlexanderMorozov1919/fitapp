@@ -1,3 +1,4 @@
+import 'dart:js' as js;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fitness_app/models/booking_model.dart';
@@ -75,6 +76,20 @@ void main() {
   runApp(const UserTypeSelectionWrapper());
 }
 
+// Утилитный класс для работы с определением устройства
+class DeviceUtils {
+  static bool isMobileDevice() {
+    try {
+      // Проверяем флаг isMobileDevice, установленный в JavaScript
+      final dynamic result = js.context['isMobileDevice'];
+      return result == true;
+    } catch (e) {
+      // В случае ошибки возвращаем false (не мобильное устройство)
+      return false;
+    }
+  }
+}
+
 class UserTypeSelectionWrapper extends StatefulWidget {
   const UserTypeSelectionWrapper({super.key});
 
@@ -118,6 +133,9 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
   }
 
   Widget _buildDemoLayout(Widget phoneFrame) {
+    // Проверяем, является ли устройство мобильным
+    final bool isMobile = DeviceUtils.isMobileDevice();
+    
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Stack(
@@ -129,20 +147,22 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
               child: phoneFrame,
             ),
           ),
-          // Размещаем дисклеймер слева от центра с равными отступами
-          Positioned(
-            left: 40,
-            top: 0,
-            bottom: 0,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const DemoDisclaimer(),
+          // Размещаем дисклеймер слева от центра с равными отступами, только если не мобильное устройство
+          if (!isMobile)
+            Positioned(
+              left: 40,
+              top: 0,
+              bottom: 0,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: const DemoDisclaimer(),
+              ),
             ),
-          ),
         ],
       ),
     );
   }
+
 }
 
 // Расширенный InheritedWidget для передачи функций навигации
@@ -204,6 +224,9 @@ class FitnessApp extends StatelessWidget {
   }
 
   Widget _buildDemoLayout(Widget phoneFrame) {
+    // Проверяем, является ли устройство мобильным
+    final bool isMobile = DeviceUtils.isMobileDevice();
+    
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Stack(
@@ -215,16 +238,17 @@ class FitnessApp extends StatelessWidget {
               child: phoneFrame,
             ),
           ),
-          // Размещаем дисклеймер слева от центра с равными отступами
-          Positioned(
-            left: 40,
-            top: 0,
-            bottom: 0,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const DemoDisclaimer(),
+          // Размещаем дисклеймер слева от центра с равными отступами, только если не мобильное устройство
+          if (!isMobile)
+            Positioned(
+              left: 40,
+              top: 0,
+              bottom: 0,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: const DemoDisclaimer(),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -258,6 +282,9 @@ class EmployeeFitnessApp extends StatelessWidget {
   }
 
   Widget _buildDemoLayout(Widget phoneFrame) {
+    // Проверяем, является ли устройство мобильным
+    final bool isMobile = DeviceUtils.isMobileDevice();
+    
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Stack(
@@ -269,16 +296,17 @@ class EmployeeFitnessApp extends StatelessWidget {
               child: phoneFrame,
             ),
           ),
-          // Размещаем дисклеймер слева от центра с равными отступами
-          Positioned(
-            left: 40,
-            top: 0,
-            bottom: 0,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: const DemoDisclaimer(),
+          // Размещаем дисклеймер слева от центра с равными отступами, только если не мобильное устройство
+          if (!isMobile)
+            Positioned(
+              left: 40,
+              top: 0,
+              bottom: 0,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: const DemoDisclaimer(),
+              ),
             ),
-          ),
         ],
       ),
     );
