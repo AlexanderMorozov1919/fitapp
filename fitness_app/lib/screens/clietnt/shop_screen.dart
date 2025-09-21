@@ -145,10 +145,10 @@ class _ShopScreenState extends State<ShopScreen> {
                 // Фильтры по категориям
                 if (_availableCategories.length > 1)
                   SizedBox(
-                    height: 60,
+                    height: 48,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       children: [
                         // Кнопка "Все товары"
                         FilterChipWidget(
@@ -161,10 +161,10 @@ class _ShopScreenState extends State<ShopScreen> {
                             });
                           },
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         ..._availableCategories.map((category) {
                           return Padding(
-                            padding: const EdgeInsets.only(right: 8),
+                            padding: const EdgeInsets.only(right: 6),
                             child: FilterChipWidget(
                               label: category.categoryName,
                               isSelected: _selectedCategory == category,

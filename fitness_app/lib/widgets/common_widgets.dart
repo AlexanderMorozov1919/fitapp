@@ -199,21 +199,25 @@ class FilterChipWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? (selectedColor ?? AppColors.primary) : AppColors.background,
-          borderRadius: AppStyles.borderRadiusFull,
-          border: Border.all(
-            color: isSelected ? (selectedColor ?? AppColors.primary) : AppColors.border,
-            width: 1,
+      child: IntrinsicWidth(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isSelected ? (selectedColor ?? AppColors.primary) : AppColors.background,
+            borderRadius: AppStyles.borderRadiusFull,
+            border: Border.all(
+              color: isSelected ? (selectedColor ?? AppColors.primary) : AppColors.border,
+              width: 1,
+            ),
           ),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.caption.copyWith(
-            color: isSelected ? Colors.white : AppColors.textSecondary,
-            fontWeight: FontWeight.w500,
+          child: Center(
+            child: Text(
+              label,
+              style: AppTextStyles.caption.copyWith(
+                color: isSelected ? Colors.white : AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ),
       ),
