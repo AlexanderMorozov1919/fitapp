@@ -82,11 +82,10 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
               color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           PrimaryButton(
             text: 'Оформить абонемент',
             onPressed: () {
-              // TODO: Реализовать оформление абонемента
               showInfoSnackBar(context, 'Функция оформления абонемента будет доступна в будущем обновлении');
             },
           ),
@@ -123,7 +122,7 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         _buildInfoRow('Стоимость', '${membership.price} ₽'),
         _buildInfoRow('Начало', DateFormatters.formatDate(membership.startDate)),
         _buildInfoRow('Окончание', DateFormatters.formatDate(membership.endDate)),
@@ -171,10 +170,12 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
       appBar: AppBar(
         title: Text(
           widget.client.fullName,
-          style: AppTextStyles.headline6,
+          style: AppTextStyles.headline6.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 1,
         foregroundColor: AppColors.textPrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -193,15 +194,16 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
         child: Column(
           children: [
             // Аватар и основная информация
-            Center(
+            AppCard(
+              padding: AppStyles.paddingLg,
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 48,
+                    radius: 40,
                     backgroundColor: AppColors.secondary,
                     child: Text(
                       '${widget.client.firstName[0]}${widget.client.lastName[0]}',
-                      style: AppTextStyles.headline4.copyWith(
+                      style: AppTextStyles.headline3.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -214,7 +216,7 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     widget.client.phone,
                     style: AppTextStyles.bodyMedium.copyWith(
@@ -230,7 +232,7 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
             // Личная информация
             _buildInfoCard(
@@ -242,33 +244,29 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                     DateFormatters.formatDate(widget.client.birthDate)),
                   _buildInfoRow('Возраст', 
                     '${DateTime.now().difference(widget.client.birthDate).inDays ~/ 365} лет'),
-                  if (widget.client.preferences.isNotEmpty)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-                        Text(
-                          'Предпочтения:',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: widget.client.preferences.map((pref) {
-                            return Chip(
-                              label: Text(pref),
-                              backgroundColor: AppColors.secondary.withOpacity(0.1),
-                              labelStyle: AppTextStyles.caption.copyWith(
-                                color: AppColors.secondary,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                  if (widget.client.preferences.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      'Предпочтения:',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: widget.client.preferences.map((pref) {
+                        return Chip(
+                          label: Text(pref),
+                          backgroundColor: AppColors.secondary.withOpacity(0.1),
+                          labelStyle: AppTextStyles.caption.copyWith(
+                            color: AppColors.secondary,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -288,14 +286,13 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildInfoRow('Баланс', '${widget.client.balance} ₽'),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
                         child: SecondaryButton(
                           text: 'Пополнить',
                           onPressed: () {
-                            // TODO: Реализовать пополнение баланса
                             showInfoSnackBar(context, 'Функция пополнения баланса будет доступна в будущем обновлении');
                           },
                         ),
@@ -305,7 +302,6 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                         child: PrimaryButton(
                           text: 'История',
                           onPressed: () {
-                            // TODO: Реализовать историю платежей
                             showInfoSnackBar(context, 'Функция просмотра истории платежей будет доступна в будущем обновлении');
                           },
                         ),
@@ -331,7 +327,6 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                           'preselectedClient': widget.client,
                         });
                       } else {
-                        // TODO: Реализовать навигацию на запись
                         showInfoSnackBar(context, 'Функция записи на тренировку будет доступна в будущем обновлении');
                       }
                     },
@@ -340,7 +335,6 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                   SecondaryButton(
                     text: 'Редактировать данные',
                     onPressed: () {
-                      // TODO: Реализовать редактирование данных клиента
                       showInfoSnackBar(context, 'Функция редактирования данных клиента будет доступна в будущем обновлении');
                     },
                   ),

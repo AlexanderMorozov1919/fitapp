@@ -125,10 +125,12 @@ class _AddClientScreenState extends State<AddClientScreen> {
       appBar: AppBar(
         title: Text(
           'Добавить клиента',
-          style: AppTextStyles.headline5,
+          style: AppTextStyles.headline5.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 1,
         foregroundColor: AppColors.textPrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
