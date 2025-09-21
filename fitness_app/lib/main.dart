@@ -331,6 +331,21 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     'kpi_detail': (_) => const KpiDetailScreen(),
     'security_settings': (_) => const SecuritySettingsScreen(),
     'help_support': (_) => const HelpSupportScreen(),
+    'booking_confirmation': (data) {
+      if (data is BookingConfirmationConfig) {
+        return BookingConfirmationScreen(config: data);
+      }
+      return BookingConfirmationScreen(
+        config: BookingConfirmationConfig(
+          type: ConfirmationBookingType.personalTraining,
+          title: 'Бронирование',
+          serviceName: 'Услуга',
+          price: 0,
+          date: DateTime.now(),
+          isEmployeeBooking: true, // Для сотрудника по умолчанию
+        ),
+      );
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

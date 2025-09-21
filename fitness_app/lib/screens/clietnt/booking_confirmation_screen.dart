@@ -537,7 +537,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   }
 
   String _getButtonText(BookingConfirmationConfig config) {
-    return config.type.getButtonText(config.price);
+    return config.type.getButtonText(config.price, isEmployee: config.isEmployeeBooking);
   }
 
   // Методы для работы с товарами
@@ -604,7 +604,13 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
     );
 
     // Добавляем в мок данные с помощью правильного метода
-    MockDataService.addUserBooking(booking);
+    if (config.isEmployeeBooking) {
+      // Для сотрудника добавляем в тренировки сотрудника
+      MockDataService.addEmployeeTraining(booking);
+    } else {
+      // Для клиента добавляем в бронирования пользователя
+      MockDataService.addUserBooking(booking);
+    }
 
     setState(() {
       _isProcessing = false;
@@ -625,7 +631,12 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         'description': booking.title,
       });
     } else {
-      navigationService?.navigateToHome();
+      // Для сотрудника возвращаемся назад, а не на главную
+      if (config.isEmployeeBooking) {
+        navigationService?.onBack();
+      } else {
+        navigationService?.navigateToHome();
+      }
     }
   }
 }

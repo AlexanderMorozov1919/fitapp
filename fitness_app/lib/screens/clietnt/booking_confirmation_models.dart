@@ -26,6 +26,7 @@ class BookingConfirmationConfig {
   final booking_models.TennisCourt? court;
   final String? location;
   final String? description;
+  final bool isEmployeeBooking;
 
   BookingConfirmationConfig({
     required this.type,
@@ -41,6 +42,7 @@ class BookingConfirmationConfig {
     this.court,
     this.location,
     this.description,
+    this.isEmployeeBooking = false,
   });
 
   /// Создает конфигурацию из данных бронирования
@@ -132,7 +134,11 @@ extension ConfirmationBookingTypeExtension on ConfirmationBookingType {
     }
   }
 
-  String getButtonText(double price) {
+  String getButtonText(double price, {bool isEmployee = false}) {
+    if (isEmployee) {
+      return 'Подтвердить';
+    }
+    
     switch (this) {
       case ConfirmationBookingType.personalTraining:
       case ConfirmationBookingType.tennisCourt:
@@ -156,6 +162,8 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
   /// Создает объект Booking из конфигурации
   booking_models.Booking toBooking(List<CartItem> selectedProducts, String userId) {
     final id = '${type.toString().split('.').last}_${DateTime.now().millisecondsSinceEpoch}';
+    final isEmployeeBooking = this.isEmployeeBooking;
+    
     switch (type) {
       case ConfirmationBookingType.personalTraining:
         final startDateTime = DateTime(
@@ -175,7 +183,7 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
           endTime: endDateTime,
           title: '$serviceName с ${trainer!.fullName}',
           description: 'Персональная тренировка',
-          status: booking_models.BookingStatus.awaitingPayment,
+          status: isEmployeeBooking ? booking_models.BookingStatus.confirmed : booking_models.BookingStatus.awaitingPayment,
           price: price,
           trainerId: trainer!.id,
           createdAt: DateTime.now(),
@@ -192,7 +200,8 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
           endTime: endTime!,
           title: groupClass!.name,
           description: '${groupClass!.type} • ${groupClass!.level}',
-          status: price > 0 ? booking_models.BookingStatus.awaitingPayment : booking_models.BookingStatus.confirmed,
+          status: isEmployeeBooking ? booking_models.BookingStatus.confirmed :
+                  (price > 0 ? booking_models.BookingStatus.awaitingPayment : booking_models.BookingStatus.confirmed),
           price: price,
           className: groupClass!.name,
           createdAt: DateTime.now(),
@@ -208,7 +217,7 @@ extension BookingConfirmationConfigExtension on BookingConfirmationConfig {
           endTime: endTime!,
           title: 'Теннисный корт ${court!.number}',
           description: '${court!.surfaceType} • ${court!.isIndoor ? 'Крытый' : 'Открытый'}',
-          status: booking_models.BookingStatus.awaitingPayment,
+          status: isEmployeeBooking ? booking_models.BookingStatus.confirmed : booking_models.BookingStatus.awaitingPayment,
           price: price,
           courtNumber: court!.number,
           createdAt: DateTime.now(),
