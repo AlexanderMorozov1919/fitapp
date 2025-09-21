@@ -309,13 +309,28 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
       }
       return TrainingDetailScreen(training: data);
     },
-    'create_training': (data) => CreateTrainingScreen(
+    'create_training': (data) {
+      if (data is Map<String, dynamic>) {
+        return CreateTrainingScreen(
+          freeTimeSlot: data['freeTimeSlot'],
+          preselectedClient: data['preselectedClient'],
+        );
+      } else {
+        return CreateTrainingScreen(
           freeTimeSlot: data,
-        ),
+        );
+      }
+    },
     'employee_schedule_calendar': (_) => EmployeeScheduleScreen(),
     'add_client': (_) => const AddClientScreen(),
     'employee_tennis': (_) => EmployeeTennisScreen(),
-    'record_screen': (_) => const RecordScreen(),
+    'record_screen': (data) {
+      if (data is Map<String, dynamic>) {
+        return RecordScreen(preselectedClient: data['preselectedClient']);
+      } else {
+        return const RecordScreen();
+      }
+    },
     'employee_combined_chat': (_) => const EmployeeCombinedChatScreen(),
     'employee_tennis_time_selection': (data) => EmployeeTennisTimeSelectionScreen(
           selectedCourt: data['court'],

@@ -11,10 +11,12 @@ import '../../main.dart';
 
 class CreateTrainingScreen extends StatefulWidget {
   final FreeTimeSlot freeTimeSlot;
+  final User? preselectedClient;
 
   const CreateTrainingScreen({
     super.key,
     required this.freeTimeSlot,
+    this.preselectedClient,
   });
 
   @override
@@ -44,6 +46,11 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
     _selectedStartTime = widget.freeTimeSlot.startTime;
     _selectedEndTime = _selectedStartTime.add(Duration(minutes: _selectedDuration));
     _filteredClients = MockDataService.clients;
+    
+    // Устанавливаем предварительно выбранного клиента, если он передан
+    if (widget.preselectedClient != null) {
+      _selectedClient = widget.preselectedClient;
+    }
     
     _clientSearchController.addListener(() {
       _filterClients(_clientSearchController.text);
@@ -117,25 +124,96 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Выбор клиента
-              AppCard(
-                padding: AppStyles.paddingLg,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Клиент',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+              // Информация о предварительно выбранном клиенте или выбор клиента
+              if (widget.preselectedClient != null) ...[
+                AppCard(
+                  padding: AppStyles.paddingLg,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Клиент',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildClientSelector(),
-                  ],
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: AppStyles.paddingMd,
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withOpacity(0.1),
+                          borderRadius: AppStyles.borderRadiusLg,
+                          border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: AppColors.success.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Icon(
+                                Icons.person,
+                                color: AppColors.success,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${widget.preselectedClient!.firstName} ${widget.preselectedClient!.lastName}',
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    widget.preselectedClient!.phone,
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.check_circle,
+                              color: AppColors.success,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
+              ] else ...[
+                AppCard(
+                  padding: AppStyles.paddingLg,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Клиент',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildClientSelector(),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
 
               // Описание (опционально)
               AppCard(
