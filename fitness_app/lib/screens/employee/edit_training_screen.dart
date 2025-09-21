@@ -596,6 +596,12 @@ class _EditTrainingScreenState extends State<EditTrainingScreen> {
         return;
       }
 
+      // Проверка на прошедшее время
+      if (_selectedStartTime.isBefore(DateTime.now())) {
+        showErrorSnackBar(context, 'Невозможно перенести тренировку на прошедшее время');
+        return;
+      }
+
       // Сначала удаляем старую тренировку
       MockDataService.employeeTrainings.removeWhere((t) => t.id == widget.training.id);
 

@@ -322,19 +322,27 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
   }
 
   void _proceedToConfirmation() {
+    final startTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedStartTime!.hour,
+      _selectedStartTime!.minute,
+    );
+    
+    // Проверяем, что время не в прошлом
+    if (startTime.isBefore(DateTime.now())) {
+      showErrorSnackBar(context, 'Нельзя забронировать корт на прошедшее время');
+      return;
+    }
+
     final config = BookingConfirmationConfig(
       type: ConfirmationBookingType.tennisCourt,
       title: 'Подтверждение бронирования корта',
       serviceName: widget.selectedCourt.number,
       price: _totalPrice,
       date: _selectedDate,
-      startTime: DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedStartTime!.hour,
-        _selectedStartTime!.minute,
-      ),
+      startTime: startTime,
       endTime: DateTime(
         _selectedDate.year,
         _selectedDate.month,
@@ -356,6 +364,11 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
     
     for (int i = 0; i <= 21; i++) {
       final date = today.add(Duration(days: i));
+      // Исключаем прошедшие даты
+      if (date.isBefore(DateTime(today.year, today.month, today.day))) {
+        continue;
+      }
+      
       final hasAvailableCourts = MockDataService.tennisCourts.any((court) => court.isAvailable);
       if (hasAvailableCourts) {
         dates.add(date);
@@ -379,9 +392,11 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
       time.minute,
     );
     
-    // Используем метод модели для проверки занятости конкретного часа
-    // Время считается занятым, если этот час уже забронирован
-    return !widget.selectedCourt.isTimeSlotAvailable(dateTime, 1);
+    // Время считается занятым, если оно в прошлом или уже забронировано
+    final isPastTime = dateTime.isBefore(DateTime.now());
+    final isBooked = !widget.selectedCourt.isTimeSlotAvailable(dateTime, 1);
+    
+    return isPastTime || isBooked;
   }
 
   bool _isTimeRangeAvailable(TimeOfDay startTime, int durationHours) {
@@ -393,8 +408,11 @@ class _TennisTimeSelectionScreenState extends State<TennisTimeSelectionScreen> {
       startTime.minute,
     );
     
-    // Используем метод модели для проверки доступности интервала
-    return widget.selectedCourt.isTimeSlotAvailable(startDateTime, durationHours);
+    // Время считается недоступным, если оно в прошлом или уже забронировано
+    final isPastTime = startDateTime.isBefore(DateTime.now());
+    final isAvailable = widget.selectedCourt.isTimeSlotAvailable(startDateTime, durationHours);
+    
+    return !isPastTime && isAvailable;
   }
 }
 

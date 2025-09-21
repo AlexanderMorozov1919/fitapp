@@ -585,6 +585,12 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
         return;
       }
 
+      // Проверка на прошедшее время
+      if (_selectedStartTime.isBefore(DateTime.now())) {
+        showErrorSnackBar(context, 'Невозможно создать тренировку на прошедшее время');
+        return;
+      }
+
       // Проверка доступного времени
       if (!_isTimeSlotAvailable()) {
         showErrorSnackBar(context, 'Выбранное время недоступно. Пожалуйста, выберите другую продолжительность.');

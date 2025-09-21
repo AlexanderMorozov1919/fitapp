@@ -30,6 +30,12 @@ class _CancelTrainingScreenState extends State<CancelTrainingScreen> {
 
   void _confirmCancellation() {
     if (_selectedReason != null) {
+      // Проверяем, что тренировка еще не прошла
+      if (widget.training.startTime.isBefore(DateTime.now())) {
+        showErrorSnackBar(context, 'Нельзя отменить прошедшую тренировку');
+        return;
+      }
+      
       // Обновляем статус тренировки через MockDataService
       MockDataService.updateEmployeeTrainingStatus(
         widget.training.id,

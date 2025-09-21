@@ -603,6 +603,32 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
   void _confirmBooking() {
     final config = widget.config;
     
+    // Проверяем, что время бронирования не в прошлом
+    final now = DateTime.now();
+    DateTime? bookingStartTime;
+    
+    switch (config.type) {
+      case ConfirmationBookingType.personalTraining:
+        bookingStartTime = DateTime(
+          config.date.year,
+          config.date.month,
+          config.date.day,
+          config.time!.hour,
+          config.time!.minute,
+        );
+        break;
+      case ConfirmationBookingType.groupClass:
+      case ConfirmationBookingType.scheduleClass:
+      case ConfirmationBookingType.tennisCourt:
+        bookingStartTime = config.startTime;
+        break;
+    }
+    
+    if (bookingStartTime != null && bookingStartTime.isBefore(now)) {
+      showErrorSnackBar(context, 'Невозможно создать бронирование на прошедшее время');
+      return;
+    }
+    
     setState(() {
       _isProcessing = true;
     });

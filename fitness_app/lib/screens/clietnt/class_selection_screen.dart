@@ -31,6 +31,11 @@ class _ClassSelectionScreenState extends State<ClassSelectionScreen> {
 
   List<GroupClass> get _filteredClasses {
     return MockDataService.groupClasses.where((classItem) {
+      // Исключаем прошедшие занятия
+      if (classItem.startTime.isBefore(DateTime.now())) {
+        return false;
+      }
+      
       final isDateMatch = classItem.startTime.year == _selectedDate.year &&
                          classItem.startTime.month == _selectedDate.month &&
                          classItem.startTime.day == _selectedDate.day;
@@ -657,6 +662,12 @@ class _ClassSelectionScreenState extends State<ClassSelectionScreen> {
   }
 
   void _selectClass(GroupClass classItem) {
+    // Проверяем, что занятие еще не прошло
+    if (classItem.startTime.isBefore(DateTime.now())) {
+      showErrorSnackBar(context, 'Нельзя записаться на прошедшее занятие');
+      return;
+    }
+
     final config = BookingConfirmationConfig(
       type: ConfirmationBookingType.groupClass,
       title: 'Подтверждение записи на занятие',
@@ -676,13 +687,18 @@ class _ClassSelectionScreenState extends State<ClassSelectionScreen> {
 
   List<DateTime> _getDatesWithClasses() {
     final dates = <DateTime>{};
+    final today = DateTime.now();
+    
     for (final classItem in MockDataService.groupClasses) {
       final date = DateTime(
         classItem.startTime.year,
         classItem.startTime.month,
         classItem.startTime.day,
       );
-      dates.add(date);
+      // Исключаем прошедшие даты
+      if (!date.isBefore(DateTime(today.year, today.month, today.day))) {
+        dates.add(date);
+      }
     }
     return dates.toList()..sort();
   }

@@ -70,6 +70,12 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
       time.minute,
     );
 
+    // Время считается недоступным, если оно в прошлом
+    final isPastTime = selectedDateTime.isBefore(DateTime.now());
+    if (isPastTime) {
+      return false;
+    }
+
     // Для тренировок с тренером проверяем реальное расписание
     if (widget.booking.type == BookingType.personalTraining && widget.booking.trainerId != null) {
       final trainer = MockDataService.trainers.firstWhere(
@@ -79,8 +85,8 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
       return trainer.isTimeAvailable(selectedDateTime);
     }
 
-    // Для других типов бронирования используем базовую проверку
-    return selectedDateTime.isAfter(DateTime.now());
+    // Для других типов бронирования время доступно, если не в прошлом
+    return true;
   }
 
   @override
@@ -100,6 +106,12 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
         _selectedTime!.hour,
         _selectedTime!.minute,
       );
+      
+      // Проверяем, что время не в прошлом
+      if (newStartTime.isBefore(DateTime.now())) {
+        showErrorSnackBar(context, 'Нельзя перенести бронирование на прошедшее время');
+        return;
+      }
       
       final duration = widget.booking.endTime.difference(widget.booking.startTime);
       final newEndTime = newStartTime.add(duration);
@@ -338,14 +350,21 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
         (t) => t.id == widget.booking.trainerId,
         orElse: () => MockDataService.trainers.first,
       );
-      return trainer.getAvailableDates(today, endDate);
+      final availableDates = trainer.getAvailableDates(today, endDate);
+      // Фильтруем прошедшие даты
+      return availableDates.where((date) =>
+          !date.isBefore(DateTime(today.year, today.month, today.day))
+      ).toList();
     }
     
-    // Для других типов бронирования возвращаем все даты
+    // Для других типов бронирования возвращаем только будущие даты
     final dates = <DateTime>{};
     for (int i = 0; i <= 21; i++) {
       final date = today.add(Duration(days: i));
-      dates.add(date);
+      // Исключаем прошедшие даты
+      if (!date.isBefore(DateTime(today.year, today.month, today.day))) {
+        dates.add(date);
+      }
     }
     
     return dates.toList()..sort();

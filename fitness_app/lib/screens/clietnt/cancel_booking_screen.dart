@@ -29,6 +29,12 @@ class _CancelBookingScreenState extends State<CancelBookingScreen> {
 
   void _confirmCancellation() {
     if (_selectedReason != null) {
+      // Проверяем, что бронирование еще не прошло
+      if (widget.booking.startTime.isBefore(DateTime.now())) {
+        showErrorSnackBar(context, 'Нельзя отменить прошедшее бронирование');
+        return;
+      }
+      
       // Обновляем статус бронирования через MockDataService
       // Для пользовательских бронирований используем метод для обновления статуса
       // Создаем обновленное бронирование с измененным статусом

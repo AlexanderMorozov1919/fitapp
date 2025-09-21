@@ -261,6 +261,20 @@ class _TrainerTimeSelectionScreenState extends State<TrainerTimeSelectionScreen>
   }
 
   void _proceedToConfirmation() {
+    final selectedDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime!.hour,
+      _selectedTime!.minute,
+    );
+    
+    // Проверяем, что время не в прошлом
+    if (selectedDateTime.isBefore(DateTime.now())) {
+      showErrorSnackBar(context, 'Нельзя забронировать тренировку на прошедшее время');
+      return;
+    }
+
     final config = BookingConfirmationConfig(
       type: ConfirmationBookingType.personalTraining,
       title: 'Подтверждение персональной тренировки',
@@ -284,15 +298,21 @@ class _TrainerTimeSelectionScreenState extends State<TrainerTimeSelectionScreen>
       time.minute,
     );
 
-    // Используем реальное расписание тренера
-    return _trainer.isTimeAvailable(selectedDateTime);
+    // Время считается недоступным, если оно в прошлом или уже занято у тренера
+    final isPastTime = selectedDateTime.isBefore(DateTime.now());
+    final isAvailable = _trainer.isTimeAvailable(selectedDateTime);
+    
+    return !isPastTime && isAvailable;
   }
 
   List<DateTime> _getDatesWithAvailableTrainers() {
     final today = DateTime.now();
     final endDate = today.add(const Duration(days: 21));
     
-    // Получаем доступные даты из расписания тренера
-    return _trainer.getAvailableDates(today, endDate);
+    // Получаем доступные даты из расписания тренера и фильтруем прошедшие
+    final availableDates = _trainer.getAvailableDates(today, endDate);
+    return availableDates.where((date) =>
+        !date.isBefore(DateTime(today.year, today.month, today.day))
+    ).toList();
   }
 }

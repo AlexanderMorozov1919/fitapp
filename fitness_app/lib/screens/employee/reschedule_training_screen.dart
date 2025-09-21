@@ -40,6 +40,12 @@ class _RescheduleTrainingScreenState extends State<RescheduleTrainingScreen> {
         _selectedTime!.minute,
       );
       
+      // Проверяем, что время не в прошлом
+      if (newStartTime.isBefore(DateTime.now())) {
+        showErrorSnackBar(context, 'Нельзя перенести тренировку на прошедшее время');
+        return;
+      }
+      
       final duration = widget.training.endTime.difference(widget.training.startTime);
       final newEndTime = newStartTime.add(duration);
 
