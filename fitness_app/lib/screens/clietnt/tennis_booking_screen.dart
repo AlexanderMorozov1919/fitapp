@@ -471,29 +471,75 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
 
 
   Widget _buildTotalPrice() {
+    if (_selectedCourt == null || _selectedStartTime == null || _selectedEndTime == null) {
+      return Container();
+    }
+    
+    final startDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedStartTime!.hour,
+      _selectedStartTime!.minute,
+    );
+    
+    final endDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedEndTime!.hour,
+      _selectedEndTime!.minute,
+    );
+    
+    final durationHours = endDateTime.difference(startDateTime).inHours;
+    final tariffDescription = _selectedCourt!.getMultiTariffDescription(startDateTime, endDateTime);
+    
     return Container(
       padding: AppStyles.paddingLg,
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.1),
         borderRadius: AppStyles.borderRadiusLg,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Итоговая стоимость:',
-            style: AppTextStyles.bodyMedium.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Итоговая стоимость:',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              Text(
+                '${_totalPrice.toStringAsFixed(0)} ₽',
+                style: AppTextStyles.price.copyWith(
+                  fontSize: 18,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
           ),
-          Text(
-            '${_totalPrice.toStringAsFixed(0)} ₽',
-            style: AppTextStyles.price.copyWith(
-              fontSize: 18,
-              color: AppColors.primary,
+          if (durationHours > 0) ...[
+            const SizedBox(height: 8),
+            Text(
+              '• ${_selectedCourt!.number}',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
+            const SizedBox(height: 4),
+            Text(
+              '• $tariffDescription',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ],
       ),
     );
