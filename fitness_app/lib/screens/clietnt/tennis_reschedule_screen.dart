@@ -142,93 +142,70 @@ class _TennisRescheduleScreenState extends State<TennisRescheduleScreen> {
       _isProcessing = true;
     });
 
-    try {
-      // Создаем новое время начала и окончания бронирования
-      final newStartTime = DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedStartTime!.hour,
-        _selectedStartTime!.minute,
+    // Создаем новое время начала и окончания бронирования
+    final newStartTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedStartTime!.hour,
+      _selectedStartTime!.minute,
+    );
+    
+    final newEndTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedEndTime!.hour,
+      _selectedEndTime!.minute,
+    );
+
+    // Обновляем бронирование через MockDataService с учетом разницы стоимости
+    MockDataService.updateUserBookingTime(
+      widget.booking.id,
+      newStartTime,
+      newEndTime,
+      priceDifference: _priceDifference,
+    );
+
+    final navigationService = NavigationService.of(context);
+    
+    // Если требуется доплата, переходим на экран оплаты
+    if (_priceDifference > 0) {
+      // Получаем обновленное бронирование
+      final updatedBooking = MockDataService.userBookings.firstWhere(
+        (b) => b.id == widget.booking.id,
+        orElse: () => widget.booking,
       );
       
-      final newEndTime = DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedEndTime!.hour,
-        _selectedEndTime!.minute,
-      );
-
-      // Обновляем бронирование через MockDataService с учетом разницы стоимости
-      MockDataService.updateUserBookingTime(
-        widget.booking.id,
-        newStartTime,
-        newEndTime,
-        priceDifference: _priceDifference,
-      );
-
-      // Показываем уведомление о переносе сразу после нажатия кнопки
-      String snackBarMessage;
-      String notificationMessage;
-      
-      if (_priceDifference > 0) {
-        snackBarMessage = 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Требуется доплата ${_priceDifference.toInt()} ₽';
-        notificationMessage = 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Требуется доплата ${_priceDifference.toInt()} ₽';
-      } else if (_priceDifference < 0) {
-        snackBarMessage = 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Будет возвращено ${(-_priceDifference).toInt()} ₽ администратором';
-        notificationMessage = 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Будет возвращено ${(-_priceDifference).toInt()} ₽';
+      navigationService?.navigateTo('payment', {
+        'booking': updatedBooking,
+        'amount': _priceDifference,
+        'description': 'Доплата за перенос времени бронирования',
+        'isDifferencePayment': true,
+      });
+    } else {
+      // Если разницы нет или требуется возврат, возвращаемся домой
+      if (_priceDifference < 0) {
+        showSuccessSnackBar(context,
+          'Время бронирования изменено. Будет возвращено ${(-_priceDifference).toInt()} ₽ администратором');
       } else {
-        snackBarMessage = 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Доплата и возврат не требуются';
-        notificationMessage = 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Доплата и возврат не требуются';
+        showSuccessSnackBar(context,
+          'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}');
       }
       
-      showSuccessSnackBar(context, snackBarMessage);
-      
-      // Добавляем системное уведомление о переносе
+      // Добавляем уведомление о переносе
       final notification = AppNotification(
         id: 'reschedule_${DateTime.now().millisecondsSinceEpoch}',
         type: NotificationType.booking,
         title: 'Время бронирования перенесено',
-        message: notificationMessage,
+        message: 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}',
         timestamp: DateTime.now(),
         isRead: false,
         relatedId: widget.booking.id,
       );
       MockDataService.addNotification(notification);
-
-      final navigationService = NavigationService.of(context);
       
-      // Если требуется доплата, переходим на экран оплаты
-      if (_priceDifference > 0) {
-        // Получаем обновленное бронирование
-        final updatedBooking = MockDataService.userBookings.firstWhere(
-          (b) => b.id == widget.booking.id,
-          orElse: () => widget.booking,
-        );
-        
-        // Ждем немного, чтобы уведомление успело показаться
-        await Future.delayed(const Duration(milliseconds: 500));
-        
-        navigationService?.navigateTo('payment', {
-          'booking': updatedBooking,
-          'amount': _priceDifference,
-          'description': 'Доплата за перенос времени бронирования',
-          'isDifferencePayment': true,
-        });
-      } else {
-        // Ждем немного, чтобы уведомление успело показаться
-        await Future.delayed(const Duration(milliseconds: 500));
-        
-        navigationService?.navigateToHome();
-      }
-    } catch (e) {
-      // В случае ошибки показываем сообщение
-      showSuccessSnackBar(context, 'Ошибка при переносе времени: $e');
-    } finally {
-      setState(() {
-        _isProcessing = false;
-      });
+      navigationService?.navigateToHome();
     }
   }
 
