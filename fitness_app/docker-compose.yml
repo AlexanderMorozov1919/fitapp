@@ -4,7 +4,7 @@ services:
   fitness-app:
     build: .
     ports:
-      - "8080:80"
+      - "5555:8080"
     container_name: fitness-app
     restart: unless-stopped
     environment:
