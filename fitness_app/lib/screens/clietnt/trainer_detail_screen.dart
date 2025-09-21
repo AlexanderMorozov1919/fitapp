@@ -7,7 +7,7 @@ import '../../widgets/common_widgets.dart';
 import '../../main.dart';
 import 'training_date_time_dialog.dart';
 import 'booking_confirmation_screen.dart';
-import 'booking_confirmation_models.dart';
+import '../../models/booking_confirmation_models.dart';
 
 class TrainerDetailScreen extends StatefulWidget {
   final Trainer trainer;

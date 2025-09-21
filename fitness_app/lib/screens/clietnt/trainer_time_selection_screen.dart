@@ -6,7 +6,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import 'calendar_filter.dart';
-import 'booking_confirmation_models.dart';
+import '../../models/booking_confirmation_models.dart';
 
 class TrainerTimeSelectionScreen extends StatefulWidget {
   final Map<String, dynamic> selectionData;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/trainer_model.dart';
-import '../../models/booking_model.dart' as booking_models;
-import '../../models/product_model.dart';
+import 'trainer_model.dart';
+import 'booking_model.dart' as booking_models;
+import 'product_model.dart';
 
 /// Типы бронирования для универсального экрана
 enum ConfirmationBookingType {

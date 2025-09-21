@@ -13,7 +13,7 @@ import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import 'product_selection_screen.dart';
 import 'booking_confirmation_widgets.dart';
-import 'booking_confirmation_models.dart';
+import '../../models/booking_confirmation_models.dart';
 
 
 class BookingConfirmationScreen extends StatefulWidget {

@@ -9,7 +9,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import 'calendar_filter.dart';
-import 'booking_confirmation_models.dart';
+import '../../models/booking_confirmation_models.dart';
 
 class TennisBookingScreen extends StatefulWidget {
   const TennisBookingScreen({super.key});

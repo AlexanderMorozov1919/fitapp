@@ -10,7 +10,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../clietnt/calendar_filter.dart';
-import '../clietnt/booking_confirmation_models.dart';
+import '../../models/booking_confirmation_models.dart';
 
 class EmployeeTennisBookingScreen extends StatefulWidget {
   const EmployeeTennisBookingScreen({super.key});
