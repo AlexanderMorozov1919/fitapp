@@ -19,6 +19,7 @@ import 'package:fitness_app/screens/employee/clients_screen.dart';
 import 'package:fitness_app/screens/employee/client_detail_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_time_selection_screen.dart';
+import 'package:fitness_app/screens/employee/employee_tennis_booking_screen.dart';
 import 'package:fitness_app/screens/employee/record_screen.dart';
 import 'package:fitness_app/screens/employee/employee_combined_chat_screen.dart';
 import 'package:fitness_app/screens/employee/select_client_screen.dart';
@@ -324,7 +325,7 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
     },
     'employee_schedule_calendar': (_) => EmployeeScheduleScreen(),
     'add_client': (_) => const AddClientScreen(),
-    'employee_tennis': (_) => EmployeeTennisScreen(),
+    'employee_tennis': (_) => EmployeeTennisBookingScreen(),
     'record_screen': (data) {
       if (data is Map<String, dynamic>) {
         return RecordScreen(preselectedClient: data['preselectedClient']);
