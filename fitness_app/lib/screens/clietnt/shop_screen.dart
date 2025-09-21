@@ -110,6 +110,11 @@ class _ShopScreenState extends State<ShopScreen> {
     navigationService?.navigateTo('purchase_history', {});
   }
 
+  void _navigateToProductDetail(Product product) {
+    final navigationService = NavigationService.of(context);
+    navigationService?.navigateTo('product_detail', {'productId': product.id});
+  }
+
   @override
   Widget build(BuildContext context) {
     final filteredProducts = _filteredProducts;
@@ -298,16 +303,18 @@ class _ShopScreenState extends State<ShopScreen> {
         )
         .quantity;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: AppStyles.paddingMd,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppStyles.borderRadiusMd,
-        border: Border.all(color: AppColors.border, width: 1),
-      ),
-      child: Row(
-        children: [
+    return GestureDetector(
+      onTap: () => _navigateToProductDetail(product),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: AppStyles.paddingMd,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: AppStyles.borderRadiusMd,
+          border: Border.all(color: AppColors.border, width: 1),
+        ),
+        child: Row(
+          children: [
           // Изображение товара
           Container(
             width: 60,
@@ -367,6 +374,7 @@ class _ShopScreenState extends State<ShopScreen> {
           // Селектор количества
           _buildQuantitySelector(product, currentQuantity),
         ],
+      ),
       ),
     );
   }
