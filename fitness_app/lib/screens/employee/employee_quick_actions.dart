@@ -52,10 +52,10 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
         'employee_tennis',
       ),
       _buildActionData(
-        Icons.person_add,
+        Icons.people,
         'Клиенты',
         AppColors.success,
-        'add_client',
+        'clients',
       ),
     ];
 

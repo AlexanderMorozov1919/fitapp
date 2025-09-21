@@ -87,8 +87,8 @@ class _AddClientScreenState extends State<AddClientScreen> {
 
         showSuccessSnackBar(context, 'Клиент успешно добавлен!');
 
-        // Предлагаем записать клиента на тренировку
-        _showTrainingConfirmation(newClient);
+        // Возвращаемся на главный экран
+        _navigateToHome();
 
       } catch (e) {
         showErrorSnackBar(context, 'Ошибка при добавлении клиента: $e');
@@ -100,66 +100,13 @@ class _AddClientScreenState extends State<AddClientScreen> {
     }
   }
 
-  void _showTrainingConfirmation(User client) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: AppStyles.borderRadiusXl,
-        ),
-        child: Padding(
-          padding: AppStyles.paddingXl,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Клиент добавлен',
-                style: AppTextStyles.headline5.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Хотите записать ${client.firstName} ${client.lastName} на тренировку?',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: SecondaryButton(
-                      text: 'Позже',
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _navigateBack();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: PrimaryButton(
-                      text: 'Записать сейчас',
-                      onPressed: () {
-                        Navigator.pop(context);
-                        final navigationService = NavigationService.of(context);
-                        navigationService?.navigateTo('employee_schedule', {
-                          'preselectedClient': client,
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void _navigateToHome() {
+    final navigationService = NavigationService.of(context);
+    if (navigationService != null) {
+      navigationService.navigateToHome();
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   void _navigateBack() {

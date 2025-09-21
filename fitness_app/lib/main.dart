@@ -15,6 +15,8 @@ import 'package:fitness_app/screens/employee/training_detail_screen.dart';
 import 'package:fitness_app/screens/employee/create_training_screen.dart';
 import 'package:fitness_app/screens/employee/employee_schedule_screen.dart';
 import 'package:fitness_app/screens/employee/add_client_screen.dart';
+import 'package:fitness_app/screens/employee/clients_screen.dart';
+import 'package:fitness_app/screens/employee/client_detail_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_screen.dart';
 import 'package:fitness_app/screens/employee/employee_tennis_time_selection_screen.dart';
 import 'package:fitness_app/screens/employee/record_screen.dart';
@@ -295,7 +297,8 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
   final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
     'employee_schedule': (_) => const employee_schedule.EmployeeScheduleScreen(),
     'employee_kpi': (_) => const EmployeeKpiScreen(),
-    'employee_clients': (_) => _buildPlaceholderScreen('Клиенты'),
+    'clients': (_) => const ClientsScreen(),
+    'client_detail': (data) => ClientDetailScreen(client: data),
     'chat': (_) => const EmployeeCombinedChatScreen(),
     'training_detail': (data) {
       if (data is Map<String, dynamic>) {
