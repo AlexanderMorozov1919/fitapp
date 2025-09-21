@@ -591,13 +591,21 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
     }
     
     // Формируем детализацию для каждого тарифа
+    double totalCalculated = 0;
     for (final entry in tariffs.entries) {
       final tariffName = entry.key;
       final hours = entry.value;
       final pricePerHour = tariffPrices[tariffName]!;
       final totalForTariff = pricePerHour * hours;
+      totalCalculated += totalForTariff;
       
       details.add('  ${pricePerHour.toInt()} ₽/час × $hours ч = ${totalForTariff.toInt()} ₽ ($tariffName)');
+    }
+    
+    // Добавляем строку с округлением, если есть разница
+    final roundedTotal = (totalCalculated / 50).round() * 50;
+    if (roundedTotal != totalCalculated) {
+      details.add('  Округление до 50 ₽: ${totalCalculated.toInt()} → ${roundedTotal.toInt()} ₽');
     }
     
     return details;
