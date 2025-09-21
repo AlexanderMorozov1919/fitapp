@@ -117,10 +117,8 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
           fontFamily: 'Roboto',
         ),
         home: _buildDemoLayout(
-          SimplePhoneBorder(
-            child: UserTypeSelectionScreen(
-              onUserTypeSelected: _handleUserTypeSelected,
-            ),
+          UserTypeSelectionScreen(
+            onUserTypeSelected: _handleUserTypeSelected,
           ),
         ),
         debugShowCheckedModeBanner: false,
@@ -132,23 +130,29 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
     }
   }
 
-  Widget _buildDemoLayout(Widget phoneFrame) {
+  Widget _buildDemoLayout(Widget content) {
     // Проверяем, является ли устройство мобильным
     final bool isMobile = DeviceUtils.isMobileDevice();
     
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Stack(
-        children: [
-          // Центрируем телефон по центру экрана
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: phoneFrame,
+    if (isMobile) {
+      // Для мобильных устройств возвращаем прямой контент без обертки
+      return content;
+    } else {
+      // Для десктопов оборачиваем в SimplePhoneBorder и добавляем диклеймер
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        body: Stack(
+          children: [
+            // Центрируем телефон по центру экрана
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: SimplePhoneBorder(
+                  child: content,
+                ),
+              ),
             ),
-          ),
-          // Размещаем дисклеймер слева от центра с равными отступами, только если не мобильное устройство
-          if (!isMobile)
+            // Размещаем дисклеймер слева от центра с равными отступами
             Positioned(
               left: 40,
               top: 0,
@@ -158,9 +162,10 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
                 child: const DemoDisclaimer(),
               ),
             ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 
 }
@@ -212,10 +217,8 @@ class FitnessApp extends StatelessWidget {
           fontFamily: 'Roboto',
         ),
         home: _buildDemoLayout(
-          const SimplePhoneBorder(
-            child: NotificationOverlayManager(
-              child: MainNavigation(),
-            ),
+          const NotificationOverlayManager(
+            child: MainNavigation(),
           ),
         ),
         debugShowCheckedModeBanner: false,
@@ -223,23 +226,29 @@ class FitnessApp extends StatelessWidget {
     );
   }
 
-  Widget _buildDemoLayout(Widget phoneFrame) {
+  Widget _buildDemoLayout(Widget content) {
     // Проверяем, является ли устройство мобильным
     final bool isMobile = DeviceUtils.isMobileDevice();
     
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Stack(
-        children: [
-          // Центрируем телефон по центру экрана
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: phoneFrame,
+    if (isMobile) {
+      // Для мобильных устройств возвращаем прямой контент без обертки
+      return content;
+    } else {
+      // Для десктопов оборачиваем в SimplePhoneBorder и добавляем диклеймер
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        body: Stack(
+          children: [
+            // Центрируем телефон по центру экрана
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: SimplePhoneBorder(
+                  child: content,
+                ),
+              ),
             ),
-          ),
-          // Размещаем дисклеймер слева от центра с равными отступами, только если не мобильное устройство
-          if (!isMobile)
+            // Размещаем дисклеймер слева от центра с равными отступами
             Positioned(
               left: 40,
               top: 0,
@@ -249,9 +258,10 @@ class FitnessApp extends StatelessWidget {
                 child: const DemoDisclaimer(),
               ),
             ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 }
 
@@ -270,10 +280,8 @@ class EmployeeFitnessApp extends StatelessWidget {
           fontFamily: 'Roboto',
         ),
         home: _buildDemoLayout(
-          const SimplePhoneBorder(
-            child: NotificationOverlayManager(
-              child: EmployeeMainNavigation(),
-            ),
+          const NotificationOverlayManager(
+            child: EmployeeMainNavigation(),
           ),
         ),
         debugShowCheckedModeBanner: false,
@@ -281,23 +289,29 @@ class EmployeeFitnessApp extends StatelessWidget {
     );
   }
 
-  Widget _buildDemoLayout(Widget phoneFrame) {
+  Widget _buildDemoLayout(Widget content) {
     // Проверяем, является ли устройство мобильным
     final bool isMobile = DeviceUtils.isMobileDevice();
     
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Stack(
-        children: [
-          // Центрируем телефон по центру экрана
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: phoneFrame,
+    if (isMobile) {
+      // Для мобильных устройств возвращаем прямой контент без обертки
+      return content;
+    } else {
+      // Для десктопов оборачиваем в SimplePhoneBorder и добавляем диклеймер
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        body: Stack(
+          children: [
+            // Центрируем телефон по центру экрана
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: SimplePhoneBorder(
+                  child: content,
+                ),
+              ),
             ),
-          ),
-          // Размещаем дисклеймер слева от центра с равными отступами, только если не мобильное устройство
-          if (!isMobile)
+            // Размещаем дисклеймер слева от центра с равными отступами
             Positioned(
               left: 40,
               top: 0,
@@ -307,9 +321,10 @@ class EmployeeFitnessApp extends StatelessWidget {
                 child: const DemoDisclaimer(),
               ),
             ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 }
 

@@ -34,15 +34,7 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <div id="mobile-frame" style="
-    max-width: 414px;
-    margin: 0 auto;
-    height: 100vh;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    border-radius: 20px;
-    background: white;
-  ">
+  <div id="mobile-frame">
     <div id="flutter-app" style="height: 100%;">
       <script src="flutter_bootstrap.js" async></script>
     </div>
@@ -57,6 +49,16 @@
       align-items: center;
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    #mobile-frame {
+      max-width: 414px;
+      margin: 0 auto;
+      height: 100vh;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      border-radius: 20px;
+      background: white;
     }
     
     @media (max-width: 480px) {
@@ -74,11 +76,42 @@
   <script>
     // Функция для определения мобильного устройства
     function isMobileDevice() {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log('Mobile device detected:', isMobile, 'User agent:', navigator.userAgent);
+      return isMobile;
     }
     
     // Устанавливаем флаг в window объекте для доступа из Dart
     window.isMobileDevice = isMobileDevice();
+    
+    // Применяем стили для мобильных устройств
+    function applyMobileStyles() {
+      const isMobile = window.isMobileDevice;
+      console.log('Applying mobile styles:', isMobile);
+      
+      if (isMobile) {
+        document.body.style.padding = '0';
+        document.body.style.justifyContent = 'flex-start';
+        document.body.style.alignItems = 'stretch';
+        document.body.style.background = 'white';
+        
+        const mobileFrame = document.getElementById('mobile-frame');
+        if (mobileFrame) {
+          mobileFrame.style.maxWidth = '100%';
+          mobileFrame.style.margin = '0';
+          mobileFrame.style.borderRadius = '0';
+          mobileFrame.style.boxShadow = 'none';
+          mobileFrame.style.background = 'transparent';
+        }
+      }
+    }
+    
+    // Вызываем при загрузке и при изменении размера окна
+    document.addEventListener('DOMContentLoaded', applyMobileStyles);
+    window.addEventListener('resize', applyMobileStyles);
+    
+    // Также вызываем с задержкой для Flutter web
+    setTimeout(applyMobileStyles, 1000);
   </script>
 </body>
 </html>
