@@ -379,6 +379,16 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
       final isEmployee = data is Map ? data['isEmployee'] == true : false;
       return PurchaseHistoryScreen(isEmployee: isEmployee);
     },
+    'product_detail': (data) {
+      if (data is Map<String, dynamic>) {
+        return ProductDetailScreen(
+          productId: data['productId'],
+        );
+      }
+      return ProductDetailScreen(
+        productId: data is Product ? data.id : data.toString(),
+      );
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
