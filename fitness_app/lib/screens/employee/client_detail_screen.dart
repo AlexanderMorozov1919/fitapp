@@ -193,9 +193,21 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
         padding: AppStyles.paddingLg,
         child: Column(
           children: [
-            // Аватар и основная информация
-            AppCard(
+            // Аватар и основная информация (на всю ширину)
+            Container(
+              width: double.infinity,
               padding: AppStyles.paddingLg,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: AppStyles.borderRadiusLg,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Column(
                 children: [
                   CircleAvatar(
@@ -240,9 +252,9 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoRow('Дата рождения', 
+                  _buildInfoRow('Дата рождения',
                     DateFormatters.formatDate(widget.client.birthDate)),
-                  _buildInfoRow('Возраст', 
+                  _buildInfoRow('Возраст',
                     '${DateTime.now().difference(widget.client.birthDate).inDays ~/ 365} лет'),
                   if (widget.client.preferences.isNotEmpty) ...[
                     const SizedBox(height: 12),
@@ -279,46 +291,12 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Финансовая информация
-            _buildInfoCard(
-              'Финансы',
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildInfoRow('Баланс', '${widget.client.balance} ₽'),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: SecondaryButton(
-                          text: 'Пополнить',
-                          onPressed: () {
-                            showInfoSnackBar(context, 'Функция пополнения баланса будет доступна в будущем обновлении');
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: PrimaryButton(
-                          text: 'История',
-                          onPressed: () {
-                            showInfoSnackBar(context, 'Функция просмотра истории платежей будет доступна в будущем обновлении');
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Действия
-            _buildInfoCard(
-              'Действия',
-              Column(
-                children: [
-                  PrimaryButton(
+            // Кнопки действий (на всю ширину без подложки)
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: PrimaryButton(
                     text: 'Записать на тренировку',
                     onPressed: () {
                       final navigationService = NavigationService.of(context);
@@ -331,15 +309,16 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
                       }
                     },
                   ),
-                  const SizedBox(height: 12),
-                  SecondaryButton(
-                    text: 'Редактировать данные',
-                    onPressed: () {
-                      showInfoSnackBar(context, 'Функция редактирования данных клиента будет доступна в будущем обновлении');
-                    },
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: SecondaryButton(
+                    text: 'Написать клиенту',
+                    onPressed: _startChatWithClient,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
           ],
