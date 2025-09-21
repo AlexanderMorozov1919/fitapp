@@ -65,8 +65,8 @@ class BookingPaymentInfo extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             booking.priceDifference > 0
-              ? 'Необходимо доплатить ${booking.priceDifference.abs().toInt()} ₽ за изменение времени бронирования'
-              : 'Вам будет возвращено ${booking.priceDifference.abs().toInt()} ₽ администратором',
+              ? 'Было оплачено ${(booking.price - booking.priceDifference).toInt()} ₽. Необходимо доплатить ${booking.priceDifference.abs().toInt()} ₽ за изменение времени бронирования'
+              : 'Было оплачено ${(booking.price - booking.priceDifference).toInt()} ₽. Вам будет возвращено ${booking.priceDifference.abs().toInt()} ₽ администратором',
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
             ),
