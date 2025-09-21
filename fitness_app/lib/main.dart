@@ -389,6 +389,32 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         productId: data is Product ? data.id : data.toString(),
       );
     },
+    'payment': (data) {
+      if (data is Map<String, dynamic>) {
+        return PaymentScreen(bookingData: data);
+      } else if (data is Booking) {
+        // Конвертируем Booking в Map для обратной совместимости
+        return PaymentScreen(bookingData: {
+          'booking': data,
+          'amount': data.price,
+          'description': 'Оплата бронирования: ${data.title}',
+        });
+      }
+      return PaymentScreen(bookingData: null);
+    },
+    'payment_success': (data) {
+      if (data is Map<String, dynamic>) {
+        return PaymentSuccessScreen(
+          amount: data['amount'],
+          paymentMethod: data['paymentMethod'],
+          description: data['description'],
+        );
+      }
+      return const PaymentSuccessScreen(
+        amount: 0,
+        paymentMethod: 'Неизвестно',
+      );
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
