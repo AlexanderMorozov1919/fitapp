@@ -169,20 +169,28 @@ class _TennisRescheduleScreenState extends State<TennisRescheduleScreen> {
       );
 
       // Показываем уведомление о переносе сразу после нажатия кнопки
-      if (_priceDifference < 0) {
-        showSuccessSnackBar(context,
-          'Время бронирования изменено. Будет возвращено ${(-_priceDifference).toInt()} ₽ администратором');
+      String snackBarMessage;
+      String notificationMessage;
+      
+      if (_priceDifference > 0) {
+        snackBarMessage = 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Требуется доплата ${_priceDifference.toInt()} ₽';
+        notificationMessage = 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Требуется доплата ${_priceDifference.toInt()} ₽';
+      } else if (_priceDifference < 0) {
+        snackBarMessage = 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Будет возвращено ${(-_priceDifference).toInt()} ₽ администратором';
+        notificationMessage = 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Будет возвращено ${(-_priceDifference).toInt()} ₽';
       } else {
-        showSuccessSnackBar(context,
-          'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}');
+        snackBarMessage = 'Время бронирования изменено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Доплата и возврат не требуются';
+        notificationMessage = 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}. Доплата и возврат не требуются';
       }
+      
+      showSuccessSnackBar(context, snackBarMessage);
       
       // Добавляем системное уведомление о переносе
       final notification = AppNotification(
         id: 'reschedule_${DateTime.now().millisecondsSinceEpoch}',
         type: NotificationType.booking,
         title: 'Время бронирования перенесено',
-        message: 'Бронирование "${widget.booking.title}" перенесено на ${DateFormatters.formatDate(_selectedDate)} ${_selectedStartTime!.format(context)}',
+        message: notificationMessage,
         timestamp: DateTime.now(),
         isRead: false,
         relatedId: widget.booking.id,
