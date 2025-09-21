@@ -277,64 +277,97 @@ class MockDataService {
     final workStart = DateTime(date.year, date.month, date.day, 8, 0); // 8:00
     final workEnd = DateTime(date.year, date.month, date.day, 22, 0); // 22:00
     final now = DateTime.now();
+    
+    // Округляем текущее время до ближайших 30 минут в большую сторону
+    DateTime roundedNow = _roundToNext30Minutes(now);
 
-    // Проверяем время до первой тренировки (только если оно в будущем)
-    if (trainings.isNotEmpty) {
-      final firstTraining = trainings.first;
-      if (firstTraining.startTime.difference(workStart).inMinutes >= 30) {
-        final slot = FreeTimeSlot(
-          startTime: workStart,
-          endTime: firstTraining.startTime,
-        );
-        // Добавляем только если слот не полностью прошел
-        if (slot.endTime.isAfter(now)) {
+    DateTime currentTime = workStart;
+
+    // Если выбранная дата - сегодня, начинаем с округленного текущего времени
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
+      // Используем максимальное значение между округленным текущим временем и началом рабочего дня
+      currentTime = roundedNow.isAfter(workStart) ? roundedNow : workStart;
+    }
+
+    // Если текущее время уже после конца дня, возвращаем пустой список
+    if (currentTime.isAfter(workEnd)) {
+      return [];
+    }
+
+    for (final training in trainings) {
+      if (training.startTime.isAfter(currentTime)) {
+        final freeTime = training.startTime.difference(currentTime);
+        if (freeTime.inMinutes >= 30) { // Минимальный слот 30 минут
+          DateTime slotStartTime = currentTime;
+          DateTime slotEndTime = training.startTime;
+          
+          // Если слот начинается в прошлом, сдвигаем начало на округленное текущее время
+          if (slotStartTime.isBefore(roundedNow)) {
+            slotStartTime = roundedNow;
+          }
+          
+          // Проверяем, что после сдвига слот все еще имеет достаточную длительность
+          if (slotEndTime.difference(slotStartTime).inMinutes >= 30) {
+            final slot = FreeTimeSlot(
+              startTime: slotStartTime,
+              endTime: slotEndTime,
+            );
+            freeSlots.add(slot);
+          }
+        }
+      }
+      currentTime = training.endTime;
+    }
+
+    // Добавляем свободное время после последней тренировки
+    if (currentTime.isBefore(workEnd)) {
+      final freeTime = workEnd.difference(currentTime);
+      if (freeTime.inMinutes >= 30) {
+        DateTime slotStartTime = currentTime;
+        DateTime slotEndTime = workEnd;
+        
+        // Если слот начинается в прошлом, сдвигаем начало на округленное текущее время
+        if (slotStartTime.isBefore(roundedNow)) {
+          slotStartTime = roundedNow;
+        }
+        
+        // Проверяем, что после сдвига слот все еще имеет достаточную длительность
+        if (slotEndTime.difference(slotStartTime).inMinutes >= 30) {
+          final slot = FreeTimeSlot(
+            startTime: slotStartTime,
+            endTime: slotEndTime,
+          );
           freeSlots.add(slot);
         }
       }
+    }
+
+    return freeSlots;
+  }
+
+  static DateTime _roundToNext30Minutes(DateTime dateTime) {
+    int minutes = dateTime.minute;
+    int roundedMinutes = ((minutes + 29) ~/ 30) * 30;
+    
+    if (roundedMinutes == 60) {
+      return DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        dateTime.hour + 1,
+        0,
+      );
     } else {
-      // Если нет тренировок, весь день свободен (только если не прошел)
-      final slot = FreeTimeSlot(
-        startTime: workStart,
-        endTime: workEnd,
+      return DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        dateTime.hour,
+        roundedMinutes,
       );
-      if (slot.endTime.isAfter(now)) {
-        freeSlots.add(slot);
-      }
-      return freeSlots;
     }
-
-    // Проверяем время между тренировками (только если оно в будущем)
-    for (int i = 0; i < trainings.length - 1; i++) {
-      final currentTraining = trainings[i];
-      final nextTraining = trainings[i + 1];
-      
-      final gap = nextTraining.startTime.difference(currentTraining.endTime);
-      if (gap.inMinutes >= 30) {
-        final slot = FreeTimeSlot(
-          startTime: currentTraining.endTime,
-          endTime: nextTraining.startTime,
-        );
-        // Добавляем только если слот не полностью прошел
-        if (slot.endTime.isAfter(now)) {
-          freeSlots.add(slot);
-        }
-      }
-    }
-
-    // Проверяем время после последней тренировки (только если оно в будущем)
-    final lastTraining = trainings.last;
-    if (workEnd.difference(lastTraining.endTime).inMinutes >= 30) {
-      final slot = FreeTimeSlot(
-        startTime: lastTraining.endTime,
-        endTime: workEnd,
-      );
-      // Добавляем только если слот не полностью прошел
-      if (slot.endTime.isAfter(now)) {
-        freeSlots.add(slot);
-      }
-    }
-
-    return freeSlots.where((slot) => slot.isLongEnoughForTraining).toList();
   }
 
   // Метод для добавления новой тренировки сотрудника

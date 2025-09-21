@@ -57,7 +57,6 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
 
   List<FreeTimeSlot> _calculateFreeTimeSlots() {
     final slots = <FreeTimeSlot>[];
-    final now = DateTime.now(); // Текущее время при каждом вызове метода
     final trainings = _filteredTrainings.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
@@ -77,12 +76,17 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
       0,
     ); // Конец рабочего дня в 22:00
 
-    // Если выбранная дата - сегодня, начинаем с текущего времени
+    final now = DateTime.now();
+    
+    // Округляем текущее время до ближайших 30 минут в большую сторону
+    DateTime roundedNow = _roundToNext30Minutes(now);
+
+    // Если выбранная дата - сегодня, начинаем с округленного текущего времени
     if (_selectedDate.year == now.year &&
         _selectedDate.month == now.month &&
         _selectedDate.day == now.day) {
-      // Используем максимальное значение между текущим временем и началом рабочего дня
-      currentTime = now.isAfter(currentTime) ? now : currentTime;
+      // Используем максимальное значение между округленным текущим временем и началом рабочего дня
+      currentTime = roundedNow.isAfter(currentTime) ? roundedNow : currentTime;
     }
 
     // Если текущее время уже после конца дня, возвращаем пустой список
@@ -90,57 +94,78 @@ class _EmployeeScheduleScreenState extends State<EmployeeScheduleScreen> {
       return [];
     }
 
-    // Если текущее время находится в пределах рабочего дня, но уже после 8 утра
     for (final training in trainings) {
-      // Пропускаем тренировки, которые уже закончились
-      if (training.endTime.isBefore(now)) {
-        continue;
-      }
-
-      // Корректируем начало тренировки, если она уже началась
-      final trainingStartTime = training.startTime.isBefore(now) ? now : training.startTime;
-      
-      // Пропускаем тренировки, которые полностью в прошлом после корректировки
-      if (trainingStartTime.isAfter(endOfDay)) {
-        continue;
-      }
-      
-      // Добавляем свободное время только если оно в будущем
-      if (trainingStartTime.isAfter(currentTime) && currentTime.isBefore(endOfDay)) {
-        final freeTime = trainingStartTime.difference(currentTime);
+      if (training.startTime.isAfter(currentTime)) {
+        final freeTime = training.startTime.difference(currentTime);
         if (freeTime.inMinutes >= 30) { // Минимальный слот 30 минут
-          // Проверяем, что слот не в прошлом
-          if (currentTime.isAfter(now) || (currentTime.isAtSameMomentAs(now) && freeTime.inMinutes > 0)) {
-            slots.add(FreeTimeSlot(
-              startTime: currentTime,
-              endTime: trainingStartTime,
-            ));
+          DateTime slotStartTime = currentTime;
+          DateTime slotEndTime = training.startTime;
+          
+          // Если слот начинается в прошлом, сдвигаем начало на округленное текущее время
+          if (slotStartTime.isBefore(roundedNow)) {
+            slotStartTime = roundedNow;
+          }
+          
+          // Проверяем, что после сдвига слот все еще имеет достаточную длительность
+          if (slotEndTime.difference(slotStartTime).inMinutes >= 30) {
+            final slot = FreeTimeSlot(
+              startTime: slotStartTime,
+              endTime: slotEndTime,
+            );
+            slots.add(slot);
           }
         }
       }
-      currentTime = training.endTime.isAfter(now) ? training.endTime : now;
-      
-      // Если текущее время уже после конца дня, прерываем цикл
-      if (currentTime.isAfter(endOfDay)) {
-        break;
-      }
+      currentTime = training.endTime;
     }
 
-    // Добавляем свободное время после последней тренировки, если оно в будущем
+    // Добавляем свободное время после последней тренировки
     if (currentTime.isBefore(endOfDay)) {
       final freeTime = endOfDay.difference(currentTime);
-      if (freeTime.inMinutes >= 30 && currentTime.isAfter(now)) {
-        slots.add(FreeTimeSlot(
-          startTime: currentTime,
-          endTime: endOfDay,
-        ));
+      if (freeTime.inMinutes >= 30) {
+        DateTime slotStartTime = currentTime;
+        DateTime slotEndTime = endOfDay;
+        
+        // Если слот начинается в прошлом, сдвигаем начало на округленное текущее время
+        if (slotStartTime.isBefore(roundedNow)) {
+          slotStartTime = roundedNow;
+        }
+        
+        // Проверяем, что после сдвига слот все еще имеет достаточную длительность
+        if (slotEndTime.difference(slotStartTime).inMinutes >= 30) {
+          final slot = FreeTimeSlot(
+            startTime: slotStartTime,
+            endTime: slotEndTime,
+          );
+          slots.add(slot);
+        }
       }
     }
 
-    // Фильтруем слоты, которые уже прошли или начинаются в прошлом
-    return slots.where((slot) =>
-        slot.startTime.isAfter(now) && slot.endTime.isAfter(now)
-    ).toList();
+    return slots;
+  }
+
+  DateTime _roundToNext30Minutes(DateTime dateTime) {
+    int minutes = dateTime.minute;
+    int roundedMinutes = ((minutes + 29) ~/ 30) * 30;
+    
+    if (roundedMinutes == 60) {
+      return DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        dateTime.hour + 1,
+        0,
+      );
+    } else {
+      return DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        dateTime.hour,
+        roundedMinutes,
+      );
+    }
   }
 
   List<DateTime> _getDatesWithTrainings() {
