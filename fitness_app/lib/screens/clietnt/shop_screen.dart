@@ -138,28 +138,11 @@ class _ShopScreenState extends State<ShopScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.isEmployee ? 'Магазин (сотрудник)' : 'Магазин'),
+        title: Text(widget.isEmployee ? 'Магазин' : 'Магазин'),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: AppColors.textPrimary,
         actions: [
-          if (widget.isEmployee)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                borderRadius: AppStyles.borderRadiusLg,
-                border: Border.all(color: AppColors.success, width: 1),
-              ),
-              child: Text(
-                '20% скидка',
-                style: AppTextStyles.caption.copyWith(
-                  color: AppColors.success,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: _navigateToPurchaseHistory,
@@ -219,6 +202,38 @@ class _ShopScreenState extends State<ShopScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Баннер скидки для сотрудников
+                        if (widget.isEmployee)
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withOpacity(0.1),
+                              borderRadius: AppStyles.borderRadiusLg,
+                              border: Border.all(color: AppColors.success, width: 1.5),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.local_offer,
+                                  size: 20,
+                                  color: AppColors.success,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Специальная скидка 20% для сотрудников!',
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: AppColors.success,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+        
                         // Заголовок
                         Text(
                           _selectedCategory == null
