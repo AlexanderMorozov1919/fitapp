@@ -95,7 +95,7 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
   Widget build(BuildContext context) {
     if (_selectedUserType == null) {
       return MaterialApp(
-        title: 'Фитнес Трекер',
+        title: 'Фитнес приложение',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
