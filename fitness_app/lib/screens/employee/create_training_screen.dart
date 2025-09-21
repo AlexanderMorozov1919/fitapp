@@ -609,12 +609,12 @@ class _CreateTrainingScreenState extends State<CreateTrainingScreen> {
       
       showSuccessSnackBar(context, 'Тренировка успешно создана!');
       
-      // Используем NavigationService для возврата назад
+      // Переходим на главный экран после создания тренировки
       final navigationService = NavigationService.of(context);
       if (navigationService != null) {
-        navigationService.onBack();
+        navigationService.navigateToHome();
       } else {
-        Navigator.of(context).pop();
+        Navigator.of(context).popUntil((route) => route.isFirst);
       }
     }
   }

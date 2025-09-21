@@ -631,12 +631,8 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         'description': booking.title,
       });
     } else {
-      // Для сотрудника возвращаемся назад, а не на главную
-      if (config.isEmployeeBooking) {
-        navigationService?.onBack();
-      } else {
-        navigationService?.navigateToHome();
-      }
+      // Всегда переходим на главный экран после завершения бронирования
+      navigationService?.navigateToHome();
     }
   }
 }
