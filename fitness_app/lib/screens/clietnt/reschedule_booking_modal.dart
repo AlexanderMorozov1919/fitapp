@@ -165,13 +165,6 @@ class _RescheduleBookingModalState extends State<RescheduleBookingModal> {
           Row(
             children: [
               Expanded(
-                child: SecondaryButton(
-                  text: 'Назад',
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
                 child: PrimaryButton(
                   text: 'Подтвердить изменение',
                   onPressed: _selectedTime != null

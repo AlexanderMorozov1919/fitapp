@@ -303,16 +303,8 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
                   // Кнопки действий
                   Row(
                     children: [
-                      Expanded(
-                        child: SecondaryButton(
-                          text: 'Назад',
-                          onPressed: () {
-                            final navigationService = NavigationService.of(context);
-                            navigationService?.onBack();
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
+                        
+                      
                       Expanded(
                         child: PrimaryButton(
                           text: 'Подтвердить изменение',
