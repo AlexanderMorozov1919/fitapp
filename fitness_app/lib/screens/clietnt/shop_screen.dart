@@ -11,7 +11,9 @@ import 'payment_screen.dart';
 import 'purchase_history_screen.dart';
 
 class ShopScreen extends StatefulWidget {
-  const ShopScreen({super.key});
+  final bool isEmployee;
+
+  const ShopScreen({super.key, this.isEmployee = false});
 
   @override
   State<ShopScreen> createState() => _ShopScreenState();
@@ -29,6 +31,17 @@ class _ShopScreenState extends State<ShopScreen> {
     super.initState();
     _availableProducts = MockDataService.allProducts;
     _sortProductsByCategory();
+  }
+
+  double _getDiscountedPrice(double originalPrice) {
+    if (widget.isEmployee) {
+      return (originalPrice * 0.8).roundToDouble(); // 20% скидка для сотрудников
+    }
+    return originalPrice;
+  }
+
+  double _getCartItemPrice(CartItem item) {
+    return _getDiscountedPrice(item.product.price) * item.quantity;
   }
 
   void _sortProductsByCategory() {
@@ -74,7 +87,7 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   double get _totalPrice {
-    return _cartItems.fold(0.0, (sum, item) => sum + item.totalPrice);
+    return _cartItems.fold(0.0, (sum, item) => sum + _getCartItemPrice(item));
   }
 
   void _proceedToPayment() {
@@ -107,7 +120,7 @@ class _ShopScreenState extends State<ShopScreen> {
 
   void _navigateToPurchaseHistory() {
     final navigationService = NavigationService.of(context);
-    navigationService?.navigateTo('purchase_history', {});
+    navigationService?.navigateTo('purchase_history', {'isEmployee': widget.isEmployee});
   }
 
   void _navigateToProductDetail(Product product) {
@@ -125,11 +138,28 @@ class _ShopScreenState extends State<ShopScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Магазин'),
+        title: Text(widget.isEmployee ? 'Магазин (сотрудник)' : 'Магазин'),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: AppColors.textPrimary,
         actions: [
+          if (widget.isEmployee)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.1),
+                borderRadius: AppStyles.borderRadiusLg,
+                border: Border.all(color: AppColors.success, width: 1),
+              ),
+              child: Text(
+                '20% скидка',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.success,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: _navigateToPurchaseHistory,
@@ -360,13 +390,43 @@ class _ShopScreenState extends State<ShopScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  '${product.formattedPrice} / ${product.unit}',
-                  style: AppTextStyles.caption.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
+                if (widget.isEmployee) ...[
+                  Row(
+                    children: [
+                      Text(
+                        '${_getDiscountedPrice(product.price).toInt()} ₽',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${product.price.toInt()} ₽',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textTertiary,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '/ ${product.unit}',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ] else ...[
+                  Text(
+                    '${product.formattedPrice} / ${product.unit}',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

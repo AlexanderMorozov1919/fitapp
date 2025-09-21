@@ -8,7 +8,9 @@ import '../../widgets/common_widgets.dart';
 import '../../main.dart';
 
 class PurchaseHistoryScreen extends StatelessWidget {
-  const PurchaseHistoryScreen({super.key});
+  final bool isEmployee;
+
+  const PurchaseHistoryScreen({super.key, this.isEmployee = false});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class PurchaseHistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('История покупок'),
+        title: Text(isEmployee ? 'История покупок (сотрудник)' : 'История покупок'),
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: AppColors.textPrimary,

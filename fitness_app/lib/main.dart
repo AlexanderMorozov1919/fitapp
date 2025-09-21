@@ -371,6 +371,14 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
         ),
       );
     },
+    'shop': (data) {
+      final isEmployee = data is Map ? data['isEmployee'] == true : false;
+      return ShopScreen(isEmployee: isEmployee);
+    },
+    'purchase_history': (data) {
+      final isEmployee = data is Map ? data['isEmployee'] == true : false;
+      return PurchaseHistoryScreen(isEmployee: isEmployee);
+    },
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

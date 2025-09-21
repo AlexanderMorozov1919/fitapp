@@ -57,6 +57,12 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
         AppColors.success,
         'clients',
       ),
+      _buildActionData(
+        Icons.shopping_cart,
+        'Магазин',
+        AppColors.warning,
+        'shop',
+      ),
     ];
 
     return SizedBox(
@@ -156,6 +162,10 @@ class _EmployeeQuickActionsState extends State<EmployeeQuickActions>
   }
 
   void _onActionTap(String screenKey) {
-    widget.onQuickAccessNavigate(screenKey);
+    if (screenKey == 'shop') {
+      widget.onQuickAccessNavigate(screenKey, {'isEmployee': true});
+    } else {
+      widget.onQuickAccessNavigate(screenKey);
+    }
   }
 }
