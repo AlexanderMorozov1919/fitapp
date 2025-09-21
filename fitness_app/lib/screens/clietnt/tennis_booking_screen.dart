@@ -235,11 +235,36 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
         
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
-          decoration: AppStyles.elevatedCardDecoration.copyWith(
-            color: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blueGrey.withOpacity(0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
             border: isSelected
-                ? Border.all(color: AppColors.primary, width: 2)
-                : null,
+                ? Border.all(color: Color(0xFF4F8DFF), width: 2.5)
+                : Border.all(color: Colors.grey.shade200, width: 1.5),
+            gradient: isSelected
+                ? LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFE8F2FF),
+                      Color(0xFFF0F7FF),
+                    ],
+                  )
+                : LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white,
+                      Colors.grey.shade50,
+                    ],
+                  ),
           ),
           child: Column(
             children: [
