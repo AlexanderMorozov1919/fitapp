@@ -76,7 +76,7 @@ class BookingPaymentInfo extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: PrimaryButton(
-                text: 'Оплатить разницу',
+                text: 'Оплатить разницу ${booking.priceDifference.abs().toInt()} ₽',
                 onPressed: onPayDifference ?? () {},
               ),
             ),
