@@ -7,6 +7,7 @@ import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
 import '../../main.dart';
+import 'package:flutter/services.dart';
 
 class AddClientScreen extends StatefulWidget {
   const AddClientScreen({super.key});
@@ -36,32 +37,54 @@ class _AddClientScreenState extends State<AddClientScreen> {
     super.dispose();
   }
 
-  Future<void> _selectBirthDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedBirthDate ?? DateTime.now().subtract(const Duration(days: 365 * 25)),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-            ),
-            dialogBackgroundColor: Colors.white,
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null && picked != _selectedBirthDate) {
-      setState(() {
-        _selectedBirthDate = picked;
-        _birthDateController.text = DateFormatters.formatDate(picked);
-      });
+  void _onBirthDateChanged(String value) {
+    // Удаляем все нецифровые символы
+    final digitsOnly = value.replaceAll(RegExp(r'[^\d]'), '');
+    
+    // Ограничиваем длину (ддммгггг = 8 цифр)
+    final limitedDigits = digitsOnly.length > 8 ? digitsOnly.substring(0, 8) : digitsOnly;
+    
+    // Форматируем в ДД.ММ.ГГГГ
+    String formatted = '';
+    for (int i = 0; i < limitedDigits.length; i++) {
+      if (i == 2 || i == 4) {
+        formatted += '.';
+      }
+      formatted += limitedDigits[i];
     }
+    
+    // Обновляем контроллер, избегая бесконечного цикла
+    if (_birthDateController.text != formatted) {
+      _birthDateController.text = formatted;
+      _birthDateController.selection = TextSelection.collapsed(offset: formatted.length);
+    }
+    
+    // Парсим дату, если введены все 8 цифр
+    if (limitedDigits.length == 8) {
+      try {
+        final day = int.parse(limitedDigits.substring(0, 2));
+        final month = int.parse(limitedDigits.substring(2, 4));
+        final year = int.parse(limitedDigits.substring(4, 8));
+        
+        if (year >= 1900 && year <= DateTime.now().year &&
+            month >= 1 && month <= 12 &&
+            day >= 1 && day <= 31) {
+          final date = DateTime(year, month, day);
+          if (date.isBefore(DateTime.now())) {
+            setState(() {
+              _selectedBirthDate = date;
+            });
+            return;
+          }
+        }
+      } catch (e) {
+        // Невалидная дата
+      }
+    }
+    
+    setState(() {
+      _selectedBirthDate = null;
+    });
   }
 
   void _addClient() async {
@@ -291,23 +314,25 @@ class _AddClientScreenState extends State<AddClientScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: _selectBirthDate,
-                      child: AbsorbPointer(
-                        child: TextFormField(
-                          controller: _birthDateController,
-                          decoration: AppStyles.inputDecoration.copyWith(
-                            hintText: 'Выберите дату рождения',
-                            suffixIcon: Icon(Icons.calendar_today, color: AppColors.textSecondary),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Пожалуйста, выберите дату рождения';
-                            }
-                            return null;
-                          },
-                        ),
+                    TextFormField(
+                      controller: _birthDateController,
+                      decoration: AppStyles.inputDecoration.copyWith(
+                        hintText: 'ДД.ММ.ГГГГ (например: 19.12.1994)',
                       ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      onChanged: _onBirthDateChanged,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Пожалуйста, введите дату рождения';
+                        }
+                        if (_selectedBirthDate == null) {
+                          return 'Пожалуйста, введите корректную дату в формате ДД.ММ.ГГГГ';
+                        }
+                        return null;
+                      },
                     ),
                   ],
                 ),
