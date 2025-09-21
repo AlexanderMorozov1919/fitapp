@@ -9,6 +9,7 @@ import 'package:fitness_app/screens/clietnt/home_screen.dart';
 import 'package:fitness_app/screens/clietnt/booking_confirmation_screen.dart';
 import 'package:fitness_app/models/booking_confirmation_models.dart';
 import 'package:fitness_app/screens/clietnt/shop_screen.dart';
+import 'package:fitness_app/screens/clietnt/purchase_history_screen.dart';
 import 'package:fitness_app/screens/employee/home_screen.dart';
 import 'package:fitness_app/screens/employee/schedule_screen.dart' as employee_schedule;
 import 'package:fitness_app/screens/employee/kpi_screen.dart';
@@ -642,6 +643,7 @@ class _MainNavigationState extends State<MainNavigation> {
       );
     },
     'shop': (_) => const ShopScreen(),
+    'purchase_history': (_) => const PurchaseHistoryScreen(),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];

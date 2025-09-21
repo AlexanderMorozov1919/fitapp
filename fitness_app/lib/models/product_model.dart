@@ -214,3 +214,50 @@ class ShoppingCart {
     );
   }
 }
+
+extension ProductCategoryExtension on ProductCategory {
+  String get categoryName {
+    switch (this) {
+      case ProductCategory.tennis:
+        return 'Теннис';
+      case ProductCategory.fitness:
+        return 'Фитнес';
+      case ProductCategory.drinks:
+        return 'Напитки';
+      case ProductCategory.accessories:
+        return 'Аксессуары';
+      case ProductCategory.other:
+        return 'Другое';
+    }
+  }
+
+  Color get categoryColor {
+    switch (this) {
+      case ProductCategory.tennis:
+        return Colors.green;
+      case ProductCategory.fitness:
+        return Colors.blue;
+      case ProductCategory.drinks:
+        return Colors.orange;
+      case ProductCategory.accessories:
+        return Colors.purple;
+      case ProductCategory.other:
+        return Colors.grey;
+    }
+  }
+
+  IconData get categoryIcon {
+    switch (this) {
+      case ProductCategory.tennis:
+        return Icons.sports_tennis;
+      case ProductCategory.fitness:
+        return Icons.fitness_center;
+      case ProductCategory.drinks:
+        return Icons.local_drink;
+      case ProductCategory.accessories:
+        return Icons.shopping_bag;
+      case ProductCategory.other:
+        return Icons.category;
+    }
+  }
+}

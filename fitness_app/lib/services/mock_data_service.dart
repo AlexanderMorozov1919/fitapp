@@ -5,6 +5,7 @@ import '../models/payment_model.dart';
 import '../models/chat_model.dart';
 import '../models/notification_model.dart';
 import '../models/product_model.dart';
+import '../models/purchase_model.dart';
 import './chat_notification_service.dart';
 import '../utils/formatters.dart';
 
@@ -43,6 +44,36 @@ class MockDataService {
   
   // Все товары
   static final List<Product> allProducts = product_data.ProductData.allProducts;
+
+  // История покупок
+  static final List<Purchase> purchaseHistory = _createMockPurchaseHistory();
+
+  static List<Purchase> _createMockPurchaseHistory() {
+    final products = allProducts;
+    return [
+      Purchase(
+        id: 'purchase_1',
+        purchaseDate: DateTime.now().subtract(const Duration(days: 2)),
+        items: [
+          CartItem(product: products[0], quantity: 2),
+          CartItem(product: products[1], quantity: 1),
+        ],
+        totalAmount: products[0].price * 2 + products[1].price,
+        status: PurchaseStatus.completed,
+        paymentMethod: 'Карта',
+      ),
+      Purchase(
+        id: 'purchase_2',
+        purchaseDate: DateTime.now().subtract(const Duration(days: 1)),
+        items: [
+          CartItem(product: products[2], quantity: 3),
+        ],
+        totalAmount: products[2].price * 3,
+        status: PurchaseStatus.completed,
+        paymentMethod: 'Карта',
+      ),
+    ];
+  }
 
   // Метод для обновления данных пользователя
   static void updateUserMembership(Membership newMembership) {
@@ -1058,5 +1089,48 @@ class MockDataService {
         employeeTrainings[i] = updatedTraining;
       }
     }
+  }
+  // Методы для работы с историей покупок
+  
+  static void addPurchase(List<CartItem> items, double totalAmount, {String paymentMethod = 'Карта'}) {
+    final purchase = Purchase(
+      id: 'purchase_${DateTime.now().millisecondsSinceEpoch}',
+      items: items.map((item) => CartItem(
+        product: item.product,
+        quantity: item.quantity,
+      )).toList(),
+      totalAmount: totalAmount,
+      purchaseDate: DateTime.now(),
+      status: PurchaseStatus.completed,
+      paymentMethod: paymentMethod,
+    );
+    
+    purchaseHistory.add(purchase);
+    // Сортируем по дате (новые сверху)
+    purchaseHistory.sort((a, b) => b.purchaseDate.compareTo(a.purchaseDate));
+  }
+  
+  static List<Purchase> getPurchaseHistory() {
+    return purchaseHistory;
+  }
+  
+  static double getTotalSpent() {
+    return purchaseHistory.fold(0.0, (sum, purchase) => sum + purchase.totalAmount);
+  }
+  
+  static int getTotalItemsPurchased() {
+    return purchaseHistory.fold(0, (sum, purchase) => sum + purchase.items.length);
+  }
+  
+  static List<Purchase> getPurchasesByDate(DateTime date) {
+    return purchaseHistory.where((purchase) =>
+      purchase.purchaseDate.year == date.year &&
+      purchase.purchaseDate.month == date.month &&
+      purchase.purchaseDate.day == date.day
+    ).toList();
+  }
+  
+  static List<Purchase> getRecentPurchases({int limit = 10}) {
+    return purchaseHistory.take(limit).toList();
   }
 }
