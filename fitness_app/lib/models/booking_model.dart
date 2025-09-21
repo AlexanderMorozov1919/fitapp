@@ -200,8 +200,7 @@ class TennisCourt {
       totalPrice += getPriceForTime(hourTime);
     }
     
-    // Округляем до ближайших 50 рублей
-    return (totalPrice / 50).round() * 50;
+    return totalPrice;
   }
 
   String getMultiTariffDescription(DateTime startTime, DateTime endTime) {
