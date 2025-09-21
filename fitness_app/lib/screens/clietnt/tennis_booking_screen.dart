@@ -494,6 +494,9 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
     final durationHours = endDateTime.difference(startDateTime).inHours;
     final tariffDescription = _selectedCourt!.getMultiTariffDescription(startDateTime, endDateTime);
     
+    // Рассчитываем детализацию по тарифам
+    final tariffDetails = _getTariffDetails(startDateTime, endDateTime);
+    
     return Container(
       padding: AppStyles.paddingLg,
       decoration: BoxDecoration(
@@ -539,10 +542,65 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
+            // Детализация по тарифам
+            ...tariffDetails.map((detail) => Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                detail,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 11,
+                ),
+              ),
+            )).toList(),
           ],
         ],
       ),
     );
+  }
+
+  List<String> _getTariffDetails(DateTime startTime, DateTime endTime) {
+    final details = <String>[];
+    final duration = endTime.difference(startTime);
+    final totalHours = duration.inHours;
+    
+    if (totalHours <= 0) return details;
+    
+    final tariffs = <String, int>{};
+    final tariffPrices = <String, double>{};
+    
+    // Собираем информацию о тарифах для каждого часа
+    for (int i = 0; i < totalHours; i++) {
+      final hourTime = startTime.add(Duration(hours: i));
+      final hourPrice = _selectedCourt!.getPriceForTime(hourTime);
+      final hour = hourTime.hour;
+      
+      String tariffName;
+      if (hour >= 6 && hour < 10) {
+        tariffName = 'утренний';
+      } else if (hour >= 10 && hour < 17) {
+        tariffName = 'дневной';
+      } else if (hour >= 17 && hour < 23) {
+        tariffName = 'вечерний';
+      } else {
+        tariffName = 'ночной';
+      }
+      
+      tariffs[tariffName] = (tariffs[tariffName] ?? 0) + 1;
+      tariffPrices[tariffName] = hourPrice;
+    }
+    
+    // Формируем детализацию для каждого тарифа
+    for (final entry in tariffs.entries) {
+      final tariffName = entry.key;
+      final hours = entry.value;
+      final pricePerHour = tariffPrices[tariffName]!;
+      final totalForTariff = pricePerHour * hours;
+      
+      details.add('  ${pricePerHour.toInt()} ₽/час × $hours ч = ${totalForTariff.toInt()} ₽ ($tariffName)');
+    }
+    
+    return details;
   }
 
   Widget _buildContinueButton() {
