@@ -301,8 +301,13 @@ class _TrainingDetailScreenState extends State<TrainingDetailScreen> {
       widget.onTrainingUpdated!();
     }
     
-    // Закрываем экран или обновляем состояние
-    setState(() {});
+    // Переходим на главный экран после подтверждения
+    final navigationService = NavigationService.of(context);
+    if (navigationService != null) {
+      navigationService.navigateToHome();
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
 
