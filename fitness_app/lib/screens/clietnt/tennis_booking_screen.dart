@@ -236,7 +236,10 @@ class _TennisBookingScreenState extends State<TennisBookingScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: AppStyles.elevatedCardDecoration.copyWith(
-            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
+            color: isSelected ? AppColors.primary.withOpacity(0.05) : Colors.white,
+            border: isSelected
+                ? Border.all(color: AppColors.primary, width: 2)
+                : null,
           ),
           child: Column(
             children: [
