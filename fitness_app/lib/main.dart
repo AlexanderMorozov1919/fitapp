@@ -185,7 +185,7 @@ class FitnessApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => StoryService(),
       child: MaterialApp(
-        title: 'Фитнес Трекер',
+        title: 'Фитнес приложение',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
@@ -239,7 +239,7 @@ class EmployeeFitnessApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => StoryService(),
       child: MaterialApp(
-        title: 'Фитнес Трекер - Сотрудник',
+        title: 'Фитнес приложение - Сотрудник',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
           useMaterial3: true,
