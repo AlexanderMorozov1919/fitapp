@@ -11,6 +11,7 @@ import 'reschedule_booking_modal.dart' as reschedule_booking_modal;
 import '../../models/product_model.dart';
 import '../../widgets/products_section_widget.dart';
 import 'booking_payment_info.dart';
+import '../../services/mock_data_service.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final Booking booking;
@@ -162,7 +163,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     _buildDetailRow(
                       icon: Icons.person,
                       title: 'Тренер',
-                      value: booking.trainerId!,
+                      value: _getTrainerName(booking.trainerId!),
                     ),
                   ],
                   if (booking.className != null) ...[
@@ -380,5 +381,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         'isDifferencePayment': true,
       });
     }
+  }
+
+  String _getTrainerName(String trainerId) {
+    final trainer = MockDataService.trainers
+        .firstWhere((t) => t.id == trainerId, orElse: () => MockDataService.trainers.first);
+    return trainer.fullName;
   }
 }
