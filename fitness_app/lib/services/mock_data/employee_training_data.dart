@@ -1,7 +1,7 @@
 import '../../models/booking_model.dart';
 
 final List<Booking> employeeTrainings = [
-  // Тренировки на сегодня (18 сентября)
+  // Тренировки на сегодня (18 сентября) - 3 подтвержденных, 1 ожидает оплаты
   Booking(
     id: 'training_001',
     userId: 'user_002',
@@ -10,7 +10,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 18, 10, 30),
     title: 'Персональная тренировка',
     description: 'Силовая тренировка, работа с техникой',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2500,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -25,7 +25,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 18, 12, 0),
     title: 'Групповое занятие: Йога',
     description: 'Утренняя йога для всех уровней',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.completed,
     price: 600,
     trainerId: 'trainer_001',
     className: 'Йога',
@@ -40,7 +40,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 18, 15, 30),
     title: 'Персональная тренировка',
     description: 'Кардио и функциональный тренинг',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2200,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -63,7 +63,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Сидоров Михаил Иванович',
   ),
 
-  // Тренировки на завтра (19 сентября)
+  // Тренировки на завтра (19 сентября) - 2 подтвержденных, 1 отменена
   Booking(
     id: 'training_005',
     userId: 'user_006',
@@ -72,7 +72,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 19, 11, 30),
     title: 'Персональная тренировка',
     description: 'Работа над выносливостью',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2300,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -87,7 +87,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 19, 13, 0),
     title: 'Групповое занятие: Фитнес',
     description: 'Силовой тренинг для продвинутых',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 550,
     trainerId: 'trainer_001',
     className: 'Фитнес',
@@ -110,7 +110,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Николаев Дмитрий Алексеевич',
   ),
 
-  // Тренировки на 20 сентября
+  // Тренировки на 20 сентября - 1 подтверждена, 1 ожидает оплаты
   Booking(
     id: 'training_008',
     userId: 'user_009',
@@ -119,7 +119,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 20, 10, 30),
     title: 'Персональная тренировка',
     description: 'Подготовка к соревнованиям',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2700,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -142,7 +142,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Группа (10 человек)',
   ),
 
-  // Тренировки на 21 сентября
+  // Тренировки на 21 сентября - 2 подтвержденных
   Booking(
     id: 'training_010',
     userId: 'user_011',
@@ -151,7 +151,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 21, 12, 30),
     title: 'Персональная тренировка',
     description: 'Коррекция осанки',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2100,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -166,7 +166,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 21, 20, 0),
     title: 'Групповое занятие: Пилатес',
     description: 'Укрепление мышечного корсета',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 600,
     trainerId: 'trainer_001',
     className: 'Пилатес',
@@ -174,7 +174,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Группа (8 человек)',
   ),
 
-  // Тренировки на 22 сентября
+  // Тренировки на 22 сентября - 1 подтверждена, 1 отменена
   Booking(
     id: 'training_012',
     userId: 'user_013',
@@ -183,7 +183,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 22, 15, 30),
     title: 'Персональная тренировка',
     description: 'Функциональный тренинг',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2400,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -198,7 +198,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 22, 17, 0),
     title: 'Групповое занятие: Кроссфит',
     description: 'Высокоинтенсивный интервальный тренинг',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.cancelled,
     price: 700,
     trainerId: 'trainer_001',
     className: 'Кроссфит',
@@ -206,7 +206,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Группа (12 человек)',
   ),
 
-  // Тренировки на 23 сентября
+  // Тренировки на 23 сентября - 1 подтверждена, 1 завершена
   Booking(
     id: 'training_014',
     userId: 'user_015',
@@ -215,7 +215,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 23, 11, 30),
     title: 'Персональная тренировка',
     description: 'Снижение веса',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2200,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -238,7 +238,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Группа (14 человек)',
   ),
 
-  // Тренировки на 24 сентября
+  // Тренировки на 24 сентября - 1 ожидает оплаты, 1 подтверждена
   Booking(
     id: 'training_016',
     userId: 'user_017',
@@ -262,7 +262,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 24, 21, 0),
     title: 'Групповое занятие: Зумба',
     description: 'Танцевальная фитнес-программа',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 550,
     trainerId: 'trainer_001',
     className: 'Зумба',
@@ -270,7 +270,7 @@ final List<Booking> employeeTrainings = [
     clientName: 'Группа (20 человек)',
   ),
 
-  // Тренировки на 25 сентября
+  // Тренировки на 25 сентября - 2 подтвержденных
   Booking(
     id: 'training_018',
     userId: 'user_019',
@@ -279,7 +279,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 25, 10, 30),
     title: 'Персональная тренировка',
     description: 'Подготовка к марафону',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 2300,
     trainerId: 'trainer_001',
     className: 'Персональная тренировка',
@@ -294,7 +294,7 @@ final List<Booking> employeeTrainings = [
     endTime: DateTime(2025, 9, 25, 18, 0),
     title: 'Групповое занятие: Боди-балет',
     description: 'Силовой тренинг с элементами балета',
-    status: BookingStatus.awaitingPayment,
+    status: BookingStatus.confirmed,
     price: 600,
     trainerId: 'trainer_001',
     className: 'Боди-балет',
