@@ -70,16 +70,27 @@ class _RecordScreenState extends State<RecordScreen> {
 
     final now = DateTime.now();
 
+    // Округляем текущее время до ближайших 30 минут в большую сторону
+    DateTime roundedNow = _roundToNext30Minutes(now);
+
     for (final training in trainings) {
       if (training.startTime.isAfter(currentTime)) {
         final freeTime = training.startTime.difference(currentTime);
         if (freeTime.inMinutes >= 30) { // Минимальный слот 30 минут
-          final slot = FreeTimeSlot(
-            startTime: currentTime,
-            endTime: training.startTime,
-          );
-          // Добавляем только если слот не полностью прошел
-          if (slot.endTime.isAfter(now)) {
+          DateTime slotStartTime = currentTime;
+          DateTime slotEndTime = training.startTime;
+          
+          // Если слот начинается в прошлом, сдвигаем начало на округленное текущее время
+          if (slotStartTime.isBefore(roundedNow)) {
+            slotStartTime = roundedNow;
+          }
+          
+          // Проверяем, что после сдвига слот все еще имеет достаточную длительность
+          if (slotEndTime.difference(slotStartTime).inMinutes >= 30) {
+            final slot = FreeTimeSlot(
+              startTime: slotStartTime,
+              endTime: slotEndTime,
+            );
             slots.add(slot);
           }
         }
@@ -87,22 +98,53 @@ class _RecordScreenState extends State<RecordScreen> {
       currentTime = training.endTime;
     }
 
-    // Добавляем свободное время после последней тренировки, только если оно в будущем
+    // Добавляем свободное время после последней тренировки
     if (currentTime.isBefore(endOfDay)) {
       final freeTime = endOfDay.difference(currentTime);
       if (freeTime.inMinutes >= 30) {
-        final slot = FreeTimeSlot(
-          startTime: currentTime,
-          endTime: endOfDay,
-        );
-        // Добавляем только если слот не полностью прошел
-        if (slot.endTime.isAfter(now)) {
+        DateTime slotStartTime = currentTime;
+        DateTime slotEndTime = endOfDay;
+        
+        // Если слот начинается в прошлом, сдвигаем начало на округленное текущее время
+        if (slotStartTime.isBefore(roundedNow)) {
+          slotStartTime = roundedNow;
+        }
+        
+        // Проверяем, что после сдвига слот все еще имеет достаточную длительность
+        if (slotEndTime.difference(slotStartTime).inMinutes >= 30) {
+          final slot = FreeTimeSlot(
+            startTime: slotStartTime,
+            endTime: slotEndTime,
+          );
           slots.add(slot);
         }
       }
     }
 
     return slots;
+  }
+
+  DateTime _roundToNext30Minutes(DateTime dateTime) {
+    int minutes = dateTime.minute;
+    int roundedMinutes = ((minutes + 29) ~/ 30) * 30;
+    
+    if (roundedMinutes == 60) {
+      return DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        dateTime.hour + 1,
+        0,
+      );
+    } else {
+      return DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+        dateTime.hour,
+        roundedMinutes,
+      );
+    }
   }
 
   List<DateTime> _getDatesWithTrainings() {
@@ -123,8 +165,8 @@ class _RecordScreenState extends State<RecordScreen> {
   void _onFreeTimeTap(FreeTimeSlot freeTimeSlot) {
     final now = DateTime.now();
     
-    // Проверяем, что слот не прошел
-    if (freeTimeSlot.endTime.isBefore(now)) {
+    // Проверяем, что слот не прошел (начало слота должно быть в будущем)
+    if (freeTimeSlot.startTime.isBefore(now)) {
       showErrorSnackBar(context, 'Это время уже прошло. Выберите другое свободное время.');
       return;
     }
