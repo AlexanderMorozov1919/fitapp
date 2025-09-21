@@ -34,6 +34,7 @@ import 'package:fitness_app/screens/clietnt/help_support_screen.dart';
 import 'package:fitness_app/screens/clietnt/locker_detail_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/tennis_time_selection_screen.dart';
+import 'package:fitness_app/screens/clietnt/tennis_booking_screen.dart';
 import 'package:fitness_app/screens/clietnt/class_selection_screen.dart';
 import 'package:fitness_app/screens/clietnt/membership_screen.dart';
 import 'package:fitness_app/screens/clietnt/trainers_screen.dart';
@@ -510,7 +511,8 @@ class _MainNavigationState extends State<MainNavigation> {
 
   // Дополнительные экраны для быстрого доступа
   final Map<String, Widget Function(dynamic)> _quickAccessScreens = {
-    'tennis': (_) => const TennisSelectionScreen(),
+    'tennis': (_) => const TennisBookingScreen(),
+    'tennis_selection': (_) => const TennisSelectionScreen(),
     'tennis_time_selection': (data) => TennisTimeSelectionScreen(selectedCourt: data),
     'class_selection': (data) {
       if (data is GroupClass) {
