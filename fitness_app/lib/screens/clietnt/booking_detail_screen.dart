@@ -229,18 +229,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               ),
               const SizedBox(height: 16),
             ] else if (booking.status == BookingStatus.awaitingPayment && booking.price > 0) ...[
-              // Кнопка оплаты для бронирований, ожидающих оплаты
-              if (booking.hasPaymentDifference && booking.requiresAdditionalPayment) ...[
-                // Если требуется доплата, показываем кнопку оплаты разницы
-                SizedBox(
-                  width: double.infinity,
-                  child: PrimaryButton(
-                    text: 'Оплатить разницу ${booking.priceDifference.toInt()} ₽',
-                    onPressed: _payDifference,
-                  ),
-                ),
-              ] else ...[
-                // Если это обычная оплата полной стоимости
+              // Кнопка оплаты для бронирований, ожидающих оплаты (только для обычной оплаты)
+              if (!booking.hasPaymentDifference || !booking.requiresAdditionalPayment) ...[
                 SizedBox(
                   width: double.infinity,
                   child: PrimaryButton(
@@ -248,8 +238,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     onPressed: _proceedToPayment,
                   ),
                 ),
+                const SizedBox(height: 16),
               ],
-              const SizedBox(height: 16),
             ],
 
             // Информация о доплате/возврате
@@ -258,7 +248,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               BookingPaymentInfo(
                 booking: booking,
                 onPayDifference: _payDifference,
-                showPayButton: booking.requiresAdditionalPayment,
+                showPayButton: booking.requiresAdditionalPayment, // Показываем кнопку только для доплаты
               ),
             ],
 
