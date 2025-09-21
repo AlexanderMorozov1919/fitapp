@@ -780,9 +780,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
       final booking = widget.bookingData!['booking'] as Booking;
       description = 'Бронирование: ${booking.className}';
       
-      // Обновляем статус бронирования на "подтверждено"
+      // Обновляем статус бронирования
       if (booking.status == BookingStatus.awaitingPayment) {
-        MockDataService.confirmBookingPayment(booking.id);
+        final isDifferencePayment = widget.bookingData?['isDifferencePayment'] == true;
+        if (isDifferencePayment) {
+          // Для оплаты разницы используем специальный метод
+          MockDataService.payBookingDifference(booking.id);
+        } else {
+          // Для обычной оплаты используем стандартный метод
+          MockDataService.confirmBookingPayment(booking.id);
+        }
       }
     } else {
       // Обработка пополнения счета
