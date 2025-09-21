@@ -5,6 +5,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
 import '../../utils/formatters.dart';
+import '../../services/mock_data_service.dart';
 
 class RescheduleBookingModal extends StatefulWidget {
   final Booking booking;
@@ -24,7 +25,7 @@ class _RescheduleBookingModalState extends State<RescheduleBookingModal> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay? _selectedTime;
 
-  final List<TimeOfDay> _availableTimes = [
+  final List<TimeOfDay> _allTimes = [
     TimeOfDay(hour: 8, minute: 0),
     TimeOfDay(hour: 9, minute: 0),
     TimeOfDay(hour: 10, minute: 0),
@@ -39,6 +40,32 @@ class _RescheduleBookingModalState extends State<RescheduleBookingModal> {
     TimeOfDay(hour: 19, minute: 0),
     TimeOfDay(hour: 20, minute: 0),
   ];
+
+  List<TimeOfDay> get _availableTimes {
+    return _allTimes.where((time) => _isTimeAvailable(time)).toList();
+  }
+
+  bool _isTimeAvailable(TimeOfDay time) {
+    final selectedDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      time.hour,
+      time.minute,
+    );
+
+    // Для тренировок с тренером проверяем реальное расписание
+    if (widget.booking.type == BookingType.personalTraining && widget.booking.trainerId != null) {
+      final trainer = MockDataService.trainers.firstWhere(
+        (t) => t.id == widget.booking.trainerId,
+        orElse: () => MockDataService.trainers.first,
+      );
+      return trainer.isTimeAvailable(selectedDateTime);
+    }
+
+    // Для других типов бронирования используем базовую проверку
+    return selectedDateTime.isAfter(DateTime.now());
+  }
 
   @override
   void initState() {

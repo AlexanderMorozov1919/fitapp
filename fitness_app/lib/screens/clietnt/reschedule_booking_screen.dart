@@ -56,25 +56,31 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
     TimeOfDay(hour: 20, minute: 0),
   ];
 
-  // Моковые данные для занятых временных слотов
-  List<TimeOfDay> get _occupiedTimes {
-    // Для примера: заняты утренние и вечерние часы
-    return [
-      TimeOfDay(hour: 8, minute: 0),
-      TimeOfDay(hour: 9, minute: 0),
-      TimeOfDay(hour: 18, minute: 0),
-      TimeOfDay(hour: 19, minute: 0),
-      TimeOfDay(hour: 20, minute: 0),
-    ];
-  }
-
+  // Получаем реальное расписание тренера для проверки занятости
   List<TimeOfDay> get _availableTimes {
-    return _allTimes.where((time) => !_isTimeOccupied(time)).toList();
+    return _allTimes.where((time) => _isTimeAvailable(time)).toList();
   }
 
-  bool _isTimeOccupied(TimeOfDay time) {
-    return _occupiedTimes.any((occupiedTime) =>
-        occupiedTime.hour == time.hour && occupiedTime.minute == time.minute);
+  bool _isTimeAvailable(TimeOfDay time) {
+    final selectedDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      time.hour,
+      time.minute,
+    );
+
+    // Для тренировок с тренером проверяем реальное расписание
+    if (widget.booking.type == BookingType.personalTraining && widget.booking.trainerId != null) {
+      final trainer = MockDataService.trainers.firstWhere(
+        (t) => t.id == widget.booking.trainerId,
+        orElse: () => MockDataService.trainers.first,
+      );
+      return trainer.isTimeAvailable(selectedDateTime);
+    }
+
+    // Для других типов бронирования используем базовую проверку
+    return selectedDateTime.isAfter(DateTime.now());
   }
 
   @override
@@ -245,7 +251,7 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
                       childAspectRatio: 2.5,
                       children: _allTimes.map((time) {
                         final isSelected = time == _selectedTime;
-                        final isOccupied = _isTimeOccupied(time);
+                        final isOccupied = !_isTimeAvailable(time);
                         
                         return TimeSlotChip(
                           time: time,
@@ -323,10 +329,20 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
   }
 
   List<DateTime> _getDatesWithAvailableTimes() {
-    final dates = <DateTime>{};
     final today = DateTime.now();
+    final endDate = today.add(const Duration(days: 21));
     
-    // Добавляем даты на 21 день вперед (как в CalendarFilter)
+    // Для тренировок с тренером получаем реальные доступные даты
+    if (widget.booking.type == BookingType.personalTraining && widget.booking.trainerId != null) {
+      final trainer = MockDataService.trainers.firstWhere(
+        (t) => t.id == widget.booking.trainerId,
+        orElse: () => MockDataService.trainers.first,
+      );
+      return trainer.getAvailableDates(today, endDate);
+    }
+    
+    // Для других типов бронирования возвращаем все даты
+    final dates = <DateTime>{};
     for (int i = 0; i <= 21; i++) {
       final date = today.add(Duration(days: i));
       dates.add(date);
