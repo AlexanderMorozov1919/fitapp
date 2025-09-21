@@ -303,8 +303,6 @@ class __RescheduleBookingScreenState extends State<_RescheduleBookingScreen> {
                   // Кнопки действий
                   Row(
                     children: [
-                        
-                      
                       Expanded(
                         child: PrimaryButton(
                           text: 'Подтвердить изменение',

@@ -17,7 +17,7 @@ class BookingsScreen extends StatefulWidget {
 }
 
 class _BookingsScreenState extends State<BookingsScreen> {
-  String _selectedFilter = 'Все';
+  String _selectedFilter = 'Предстоящие';
 
   final List<String> _filters = ['Все', 'Предстоящие', 'Завершенные', 'Отмененные'];
 
@@ -88,7 +88,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 
   List<Booking> _filterBookings() {
-    return MockDataService.userBookings.where((booking) {
+    final filteredBookings = MockDataService.userBookings.where((booking) {
       switch (_selectedFilter) {
         case 'Предстоящие':
           return booking.isUpcoming;
@@ -100,6 +100,11 @@ class _BookingsScreenState extends State<BookingsScreen> {
           return true;
       }
     }).toList();
+
+    // Сортируем по времени начала (ближайшие сверху)
+    filteredBookings.sort((a, b) => a.startTime.compareTo(b.startTime));
+    
+    return filteredBookings;
   }
 
   Widget _buildBookingItem(Booking booking) {
