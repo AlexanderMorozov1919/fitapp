@@ -176,7 +176,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                         ] else ...[
                           StatusBadge(
                             text: 'Завершено',
-                            color: AppColors.warning,
+                            color: AppColors.info,
                           ),
                         ],
                       ],

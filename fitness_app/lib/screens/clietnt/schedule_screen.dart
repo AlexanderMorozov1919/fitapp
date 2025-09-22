@@ -411,7 +411,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 child: Text(
                   isPast ? 'Завершено' : (isFull ? 'Нет мест' : '$availableSpots мест'),
                   style: AppTextStyles.overline.copyWith(
-                    color: isPast ? AppColors.warning : statusColor,
+                    color: isPast ? AppColors.info : statusColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
