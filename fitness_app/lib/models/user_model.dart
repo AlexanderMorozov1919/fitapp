@@ -4,6 +4,7 @@ import './payment_model.dart';
 enum UserType {
   client,
   employee,
+  personal_cabinet,
 }
 
 class User {

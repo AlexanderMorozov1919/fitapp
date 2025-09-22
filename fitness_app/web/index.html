@@ -80,16 +80,26 @@
       console.log('Mobile device detected:', isMobile, 'User agent:', navigator.userAgent);
       return isMobile;
     }
+
+    // Функция для определения режима личного кабинета из URL параметров
+    function isPersonalCabinetMode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPersonalCabinet = urlParams.get('mode') === 'personal_cabinet';
+      console.log('Personal cabinet mode detected:', isPersonalCabinet);
+      return isPersonalCabinet;
+    }
     
-    // Устанавливаем флаг в window объекте для доступа из Dart
+    // Устанавливаем флаги в window объекте для доступа из Dart
     window.isMobileDevice = isMobileDevice();
+    window.isPersonalCabinetMode = isPersonalCabinetMode();
     
-    // Применяем стили для мобильных устройств
-    function applyMobileStyles() {
+    // Применяем стили для мобильных устройств и личного кабинета
+    function applyStyles() {
       const isMobile = window.isMobileDevice;
-      console.log('Applying mobile styles:', isMobile);
+      const isPersonalCabinet = window.isPersonalCabinetMode;
+      console.log('Applying styles - Mobile:', isMobile, 'Personal Cabinet:', isPersonalCabinet);
       
-      if (isMobile) {
+      if (isMobile || isPersonalCabinet) {
         document.body.style.padding = '0';
         document.body.style.justifyContent = 'flex-start';
         document.body.style.alignItems = 'stretch';
@@ -107,11 +117,11 @@
     }
     
     // Вызываем при загрузке и при изменении размера окна
-    document.addEventListener('DOMContentLoaded', applyMobileStyles);
-    window.addEventListener('resize', applyMobileStyles);
+    document.addEventListener('DOMContentLoaded', applyStyles);
+    window.addEventListener('resize', applyStyles);
     
     // Также вызываем с задержкой для Flutter web
-    setTimeout(applyMobileStyles, 1000);
+    setTimeout(applyStyles, 1000);
   </script>
 </body>
 </html>

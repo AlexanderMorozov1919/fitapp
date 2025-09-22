@@ -84,7 +84,18 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
               color: AppColors.success,
               onTap: () => widget.onUserTypeSelected(UserType.employee),
             ),
-            
+
+            const SizedBox(height: 16),
+
+            // Карточка личного кабинета
+            _buildUserTypeCard(
+              title: 'Личный кабинет',
+              subtitle: 'Веб-версия приложения для работы в браузере',
+              icon: Icons.web,
+              color: AppColors.warning,
+              onTap: () => widget.onUserTypeSelected(UserType.personal_cabinet),
+            ),
+
             const SizedBox(height: 32),
             
             // Информационный текст

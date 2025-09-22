@@ -65,6 +65,7 @@ import 'package:fitness_app/screens/clietnt/story_view_screen.dart';
 import 'package:fitness_app/services/story_service.dart';
 import 'package:fitness_app/theme/app_colors.dart';
 import 'package:fitness_app/widgets/bottom_navigation.dart';
+import 'package:fitness_app/widgets/side_navigation.dart';
 import 'package:fitness_app/widgets/demo_disclaimer.dart';
 import 'package:fitness_app/widgets/employee_bottom_navigation.dart';
 import 'package:fitness_app/widgets/phone_frame.dart';
@@ -85,6 +86,17 @@ class DeviceUtils {
       return result == true;
     } catch (e) {
       // В случае ошибки возвращаем false (не мобильное устройство)
+      return false;
+    }
+  }
+
+  static bool isPersonalCabinetMode() {
+    try {
+      // Проверяем флаг isPersonalCabinetMode, установленный в JavaScript
+      final dynamic result = js.context['isPersonalCabinetMode'];
+      return result == true;
+    } catch (e) {
+      // В случае ошибки возвращаем false (режим по умолчанию)
       return false;
     }
   }
@@ -125,17 +137,21 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
       );
     } else if (_selectedUserType == UserType.client) {
       return const FitnessApp();
-    } else {
+    } else if (_selectedUserType == UserType.employee) {
       return const EmployeeFitnessApp();
+    } else {
+      // Для личного кабинета используем обычный FitnessApp, но без обертки
+      return const PersonalCabinetApp();
     }
   }
 
   Widget _buildDemoLayout(Widget content) {
     // Проверяем, является ли устройство мобильным
     final bool isMobile = DeviceUtils.isMobileDevice();
+    final bool isPersonalCabinet = DeviceUtils.isPersonalCabinetMode();
     
-    if (isMobile) {
-      // Для мобильных устройств возвращаем прямой контент без обертки
+    if (isMobile || isPersonalCabinet) {
+      // Для мобильных устройств и личного кабинета возвращаем прямой контент без обертки
       return content;
     } else {
       // Для десктопов оборачиваем в SimplePhoneBorder и добавляем диклеймер
@@ -218,7 +234,7 @@ class FitnessApp extends StatelessWidget {
         ),
         home: _buildDemoLayout(
           const NotificationOverlayManager(
-            child: MainNavigation(),
+            child: MainNavigation(isPersonalCabinet: false),
           ),
         ),
         debugShowCheckedModeBanner: false,
@@ -325,6 +341,29 @@ class EmployeeFitnessApp extends StatelessWidget {
         ),
       );
     }
+  }
+}
+
+class PersonalCabinetApp extends StatelessWidget {
+  const PersonalCabinetApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => StoryService(),
+      child: MaterialApp(
+        title: 'Фитнес приложение - Личный кабинет',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+          fontFamily: 'Roboto',
+        ),
+        home: const NotificationOverlayManager(
+          child: MainNavigation(isPersonalCabinet: true),
+        ),
+        debugShowCheckedModeBanner: false,
+      ),
+    );
   }
 }
 
@@ -588,7 +627,9 @@ class _EmployeeMainNavigationState extends State<EmployeeMainNavigation> {
 }
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final bool isPersonalCabinet;
+  
+  const MainNavigation({super.key, this.isPersonalCabinet = false});
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -731,6 +772,9 @@ class _MainNavigationState extends State<MainNavigation> {
     },
     'shop': (_) => const ShopScreen(),
     'purchase_history': (_) => const PurchaseHistoryScreen(),
+    'locker': (_) => const LockerScreen(),
+    'security_settings': (_) => const ClientSecuritySettingsScreen(),
+    'help_support': (_) => const ClientHelpSupportScreen(),
   };
 
   List<Map<String, dynamic>> _navigationStack = [];
@@ -761,12 +805,28 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
-    _screens = [
-      HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
-      const ScheduleScreen(),
-      const BookingsScreen(),
-      const ProfileScreen(),
-    ];
+    final bool isPersonalCabinet = widget.isPersonalCabinet || DeviceUtils.isPersonalCabinetMode();
+    
+    if (isPersonalCabinet) {
+      // Для личного кабинета расширенный набор экранов
+      _screens = [
+        HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
+        const ScheduleScreen(),
+        const BookingsScreen(),
+        const ProfileScreen(),
+        const ShopScreen(),
+        const LockerScreen(),
+        const ClientHelpSupportScreen(),
+      ];
+    } else {
+      // Для обычного режима стандартный набор
+      _screens = [
+        HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
+        const ScheduleScreen(),
+        const BookingsScreen(),
+        const ProfileScreen(),
+      ];
+    }
   }
 
   void _onTabTapped(int index) {
@@ -850,12 +910,32 @@ class _MainNavigationState extends State<MainNavigation> {
       );
     }
 
-    return Scaffold(
-      body: currentBody,
-      bottomNavigationBar: BottomNavigation(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-      ),
-    );
+    final bool isPersonalCabinet = widget.isPersonalCabinet || DeviceUtils.isPersonalCabinetMode();
+    
+    if (isPersonalCabinet) {
+      // Для личного кабинета используем вертикальное меню
+      return Scaffold(
+        body: Row(
+          children: [
+            SideNavigation(
+              currentIndex: _currentIndex,
+              onTap: _onTabTapped,
+            ),
+            Expanded(
+              child: currentBody,
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Для обычного режима используем нижнюю навигацию
+      return Scaffold(
+        body: currentBody,
+        bottomNavigationBar: BottomNavigation(
+          currentIndex: _currentIndex,
+          onTap: _onTabTapped,
+        ),
+      );
+    }
   }
 }
