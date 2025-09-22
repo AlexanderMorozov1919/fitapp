@@ -7,6 +7,7 @@ import 'package:fitness_app/models/user_model.dart';
 import 'package:fitness_app/models/product_model.dart';
 import 'package:fitness_app/services/mock_data_service.dart';
 import 'package:fitness_app/screens/clietnt/home_screen.dart';
+import 'package:fitness_app/screens/clietnt/home_screen_personal_cabinet.dart';
 import 'package:fitness_app/screens/clietnt/booking_confirmation_screen.dart';
 import 'package:fitness_app/models/booking_confirmation_models.dart';
 import 'package:fitness_app/screens/clietnt/shop_screen.dart';
@@ -349,20 +350,17 @@ class PersonalCabinetApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => StoryService(),
-      child: MaterialApp(
-        title: 'Фитнес приложение - Личный кабинет',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-        ),
-        home: const NotificationOverlayManager(
-          child: MainNavigation(isPersonalCabinet: true),
-        ),
-        debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      title: 'Фитнес приложение - Личный кабинет',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
+      home: const NotificationOverlayManager(
+        child: MainNavigation(isPersonalCabinet: true),
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -808,15 +806,21 @@ class _MainNavigationState extends State<MainNavigation> {
     final bool isPersonalCabinet = widget.isPersonalCabinet || DeviceUtils.isPersonalCabinetMode();
     
     if (isPersonalCabinet) {
-      // Для личного кабинета расширенный набор экранов
+      // Для личного кабинета расширенный набор экранов (все из быстрых команд)
       _screens = [
-        HomeScreen(onQuickAccessNavigate: _navigateToQuickAccess),
+        HomeScreenPersonalCabinet(onQuickAccessNavigate: _navigateToQuickAccess),
+        const TennisBookingScreen(), // Теннис
         const ScheduleScreen(),
         const BookingsScreen(),
-        const ProfileScreen(),
-        const ShopScreen(),
+        const MembershipScreen(), // Абонемент
         const LockerScreen(),
+        const ShopScreen(),
+        const ChatScreen(), // Чат
         const ClientHelpSupportScreen(),
+        const ProfileScreen(),
+        const TrainersScreen(), // Тренеры
+        const PaymentMethodsScreen(), // Методы оплаты
+        const ClientSecuritySettingsScreen(), // Настройки безопасности
       ];
     } else {
       // Для обычного режима стандартный набор
