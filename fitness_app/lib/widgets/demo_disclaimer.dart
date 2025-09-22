@@ -9,18 +9,20 @@ class DemoDisclaimer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 340,
+      height: double.infinity, // Растягиваем на всю высоту
       padding: const EdgeInsets.all(24),
-      margin: const EdgeInsets.only(right: 24),
+      margin: const EdgeInsets.only(right: 24, top: 40, bottom: 40),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border, width: 1),
         boxShadow: AppColors.shadowLg,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
           // Заголовок с иконкой
           Row(
             children: [
@@ -61,20 +63,114 @@ class DemoDisclaimer extends StatelessWidget {
           const SizedBox(height: 16),
           
           // Основной текст
-          Text(
-            'Данный демонстрационный стенд от Система.Поток показывает, '
-            'как можно быстро и легко сконфигурировать платформу мобильного '
-            'приложения под бизнес-процессы любого бизнеса.\n\n'
-            'В данном случае это фитнес-центр с теннисными кортами, '
-            'где реализованы все ключевые процессы: бронирование занятий, '
-            'управление абонементами, работа с тренерами и клиентами.\n\n'
-            'Некоторые функции могут быть временно недоступны или ограничены. '
-            'Анимации и визуальные переходы intentionally упрощены, поскольку '
-            'веб-браузер не позволяет в полной мере воспроизвести нативные '
-            'жесты и взаимодействия, характерные для мобильных устройств.',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.6,
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Данный демонстрационный стенд от ',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Система.Поток',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: ' показывает, как можно быстро и легко сконфигурировать платформу мобильного приложения под бизнес-процессы любого бизнеса.\n\n'
+                        'В данном случае это фитнес-центр с теннисными кортами, где реализованы все ключевые процессы: ',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+                TextSpan(
+                  text: 'бронирование занятий, управление абонементами, работа с тренерами и клиентами',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: '.\n\n'
+                        'В приложении реализована ',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+                TextSpan(
+                  text: 'полноценная система оплаты',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: ', а также ',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+                TextSpan(
+                  text: 'умный магазин с персонализированными предложениями товаров',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: ', которые подбираются под выбранные услуги и предпочтения пользователя.\n\n'
+                        'Также доступен ',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+                TextSpan(
+                  text: 'режим личного кабинета клиента',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: ', который ',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+                TextSpan(
+                  text: 'доступен только через браузер компьютера',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: ' и предоставляет расширенный интерфейс для удобной работы.\n\n'
+                        'Некоторые функции могут быть временно недоступны или ограничены. '
+                        'Анимации и визуальные переходы intentionally упрощены, поскольку '
+                        'веб-браузер не позволяет в полной мере воспроизвести нативные '
+                        'жесты и взаимодействия, характерные для мобильных устройств.',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.6,
+                  ),
+                ),
+              ],
             ),
           ),
           
@@ -102,7 +198,8 @@ class DemoDisclaimer extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Полная функциональность доступна в мобильном приложении',
+                    'Полная функциональность доступна в мобильном приложении. '
+                    'Для максимально приближенного к смартфону опыта запустите приложение в браузере на мобильном устройстве.',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.info,
                       fontWeight: FontWeight.w500,
@@ -132,7 +229,8 @@ class DemoDisclaimer extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Все данные являются тестовыми и служат для демонстрации',
+                    'Все данные являются тестовыми и служат для демонстрации. '
+                    'Приложение поддерживает все современные функции мобильных приложений.',
                     style: AppTextStyles.bodySmall.copyWith(
                       color: AppColors.textTertiary,
                     ),
@@ -142,6 +240,7 @@ class DemoDisclaimer extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
