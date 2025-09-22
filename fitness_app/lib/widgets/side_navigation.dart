@@ -77,10 +77,20 @@ class SideNavigation extends StatelessWidget {
                 ),
                 _buildMenuItem(
                   context,
+                  index: 10,
+                  icon: Icons.people_outlined,
+                  activeIcon: Icons.people,
+                  label: 'Тренеры',
+                ),
+                
+                const SizedBox(height: 8),
+                _buildSectionTitle('Услуги'),
+                _buildMenuItem(
+                  context,
                   index: 5,
                   icon: Icons.lock_outlined,
                   activeIcon: Icons.lock,
-                  label: 'Боксеры',
+                  label: 'Шкафчики',
                 ),
                 _buildMenuItem(
                   context,
@@ -115,13 +125,6 @@ class SideNavigation extends StatelessWidget {
                   icon: Icons.person_outlined,
                   activeIcon: Icons.person,
                   label: 'Профиль',
-                ),
-                _buildMenuItem(
-                  context,
-                  index: 10,
-                  icon: Icons.people_outlined,
-                  activeIcon: Icons.people,
-                  label: 'Тренеры',
                 ),
                 
                 const SizedBox(height: 8),
