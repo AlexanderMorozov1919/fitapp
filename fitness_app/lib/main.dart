@@ -114,6 +114,13 @@ class _UserTypeSelectionWrapperState extends State<UserTypeSelectionWrapper> {
   UserType? _selectedUserType;
 
   void _handleUserTypeSelected(UserType userType) {
+    // Проверяем, является ли устройство мобильным и пытается ли пользователь выбрать личный кабинет
+    if (userType == UserType.personal_cabinet && DeviceUtils.isMobileDevice()) {
+      // В мобильном режиме личный кабинет недоступен
+      // Показываем сообщение или просто игнорируем выбор
+      return;
+    }
+    
     setState(() {
       _selectedUserType = userType;
     });

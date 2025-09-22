@@ -405,7 +405,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isPast ? AppColors.textTertiary.withOpacity(0.1) : statusColor.withOpacity(0.1),
+                  color: isPast ? AppColors.info.withOpacity(0.1) : statusColor.withOpacity(0.1),
                   borderRadius: AppStyles.borderRadiusSm,
                 ),
                 child: Text(

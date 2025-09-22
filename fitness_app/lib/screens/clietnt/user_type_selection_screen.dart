@@ -3,6 +3,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_styles.dart';
 import '../../widgets/common_widgets.dart';
+import '../../main.dart';
 
 import '../../models/user_model.dart';
 
@@ -87,14 +88,17 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
 
             const SizedBox(height: 16),
 
-            // Карточка личного кабинета
-            _buildUserTypeCard(
-              title: 'Личный кабинет',
-              subtitle: 'Веб-версия приложения для работы в браузере',
-              icon: Icons.web,
-              color: AppColors.warning,
-              onTap: () => widget.onUserTypeSelected(UserType.personal_cabinet),
-            ),
+            // Карточка личного кабинета (только для веб-режима)
+            if (!DeviceUtils.isMobileDevice()) ...[
+              _buildUserTypeCard(
+                title: 'Личный кабинет',
+                subtitle: 'Веб-версия приложения для работы в браузере',
+                icon: Icons.web,
+                color: AppColors.warning,
+                onTap: () => widget.onUserTypeSelected(UserType.personal_cabinet),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             const SizedBox(height: 32),
             
