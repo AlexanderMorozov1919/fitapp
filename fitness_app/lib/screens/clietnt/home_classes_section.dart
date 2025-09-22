@@ -64,7 +64,14 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
     final availableSpots = classItem.maxParticipants - classItem.currentParticipants;
     final isAlmostFull = availableSpots <= 2;
     final isFull = availableSpots == 0;
-
+    
+    // Проверяем, прошло ли время занятия сегодня
+    final now = DateTime.now();
+    final isToday = classItem.startTime.year == now.year &&
+                   classItem.startTime.month == now.month &&
+                   classItem.startTime.day == now.day;
+    final isPast = isToday && classItem.startTime.isBefore(now);
+    
     Color statusColor;
     if (isFull) {
       statusColor = AppColors.error;
@@ -80,14 +87,14 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
         var isPressed = false;
         
         return GestureDetector(
-          onTap: () => widget.onClassTap(classItem),
-          onTapDown: (_) => setState(() => isPressed = true),
-          onTapUp: (_) => setState(() => isPressed = false),
-          onTapCancel: () => setState(() => isPressed = false),
+          onTap: isPast ? null : () => widget.onClassTap(classItem),
+          onTapDown: isPast ? null : (_) => setState(() => isPressed = true),
+          onTapUp: isPast ? null : (_) => setState(() => isPressed = false),
+          onTapCancel: isPast ? null : () => setState(() => isPressed = false),
           child: MouseRegion(
-            cursor: SystemMouseCursors.click,
-            onEnter: (_) => setState(() => isHovered = true),
-            onExit: (_) => setState(() {
+            cursor: isPast ? SystemMouseCursors.basic : SystemMouseCursors.click,
+            onEnter: isPast ? null : (_) => setState(() => isHovered = true),
+            onExit: isPast ? null : (_) => setState(() {
               isHovered = false;
               isPressed = false;
             }),
@@ -105,8 +112,10 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                     : AppColors.shadowMd,
               ),
               child: AppCard(
-                padding: AppStyles.paddingLg,
-                backgroundColor: isHovered
+              padding: AppStyles.paddingLg,
+              backgroundColor: isPast
+                ? Colors.white.withOpacity(0.75)
+                : isHovered
                   ? AppColors.primary.withOpacity(0.05)
                   : isPressed
                     ? AppColors.primary.withOpacity(0.1)
@@ -122,13 +131,13 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.1),
+                            color: AppColors.primary.withOpacity(isPast ? 0.05 : 0.1),
                             borderRadius: AppStyles.borderRadiusLg,
                           ),
                           child: Icon(
                             Icons.fitness_center,
                             size: 20,
-                            color: AppColors.primary,
+                            color: AppColors.primary.withOpacity(isPast ? 0.5 : 1.0),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -142,7 +151,7 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                                 classItem.name,
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
+                                  color: AppColors.textPrimary.withOpacity(isPast ? 0.5 : 1.0),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -151,18 +160,25 @@ class _HomeClassesSectionState extends State<HomeClassesSection> {
                               Text(
                                 '${DateFormatters.formatTime(classItem.startTime)} • ${classItem.trainerName}',
                                 style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: AppColors.textSecondary.withOpacity(isPast ? 0.5 : 1.0),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         
-                        // Индикатор свободных мест
-                        StatusBadge(
-                          text: isFull ? 'Нет мест' : '$availableSpots мест',
-                          color: statusColor,
-                        ),
+                        // Индикатор свободных мест (не показываем для прошедших занятий)
+                        if (!isPast) ...[
+                          StatusBadge(
+                            text: isFull ? 'Нет мест' : '$availableSpots мест',
+                            color: statusColor,
+                          ),
+                        ] else ...[
+                          StatusBadge(
+                            text: 'Завершено',
+                            color: AppColors.warning,
+                          ),
+                        ],
                       ],
                     ),
                   ],

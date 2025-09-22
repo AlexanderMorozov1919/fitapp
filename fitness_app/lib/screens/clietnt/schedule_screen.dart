@@ -252,6 +252,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final canBook = classItem.isAvailable && !isFull;
     final availableSpots = classItem.maxParticipants - classItem.currentParticipants;
     final isAlmostFull = availableSpots <= 2;
+    
+    // Проверяем, прошло ли время занятия сегодня
+    final now = DateTime.now();
+    final isToday = classItem.startTime.year == now.year &&
+                   classItem.startTime.month == now.month &&
+                   classItem.startTime.day == now.day;
+    final isPast = isToday && classItem.startTime.isBefore(now);
 
     Color statusColor;
     if (isFull) {
@@ -263,16 +270,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
 
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor: isPast ? SystemMouseCursors.basic : SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () => _navigateToClassDetail(classItem),
+        onTap: isPast ? null : () => _navigateToClassDetail(classItem),
         child: Container(
           margin: const EdgeInsets.only(bottom: 16),
           padding: AppStyles.paddingLg,
           decoration: AppStyles.elevatedCardDecoration.copyWith(
+            color: isPast ? Colors.white.withOpacity(0.75) : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withOpacity(isPast ? 0.05 : 0.1),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -292,7 +300,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       child: Text(
                         classItem.name,
                         style: AppTextStyles.headline6.copyWith(
-                          color: AppColors.textPrimary,
+                          color: AppColors.textPrimary.withOpacity(isPast ? 0.5 : 1.0),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -302,7 +310,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
-                      color: AppColors.textTertiary,
+                      color: AppColors.textTertiary.withOpacity(isPast ? 0.5 : 1.0),
                     ),
                   ],
                 ),
@@ -311,13 +319,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withOpacity(isPast ? 0.05 : 0.1),
                   borderRadius: AppStyles.borderRadiusLg,
                 ),
                 child: Text(
                   '${_formatTime(classItem.startTime)}-${_formatTime(classItem.endTime)}',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.primary,
+                    color: AppColors.primary.withOpacity(isPast ? 0.5 : 1.0),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -331,7 +339,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Text(
             '${classItem.type} • ${classItem.level} • ${classItem.trainerName}',
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondary.withOpacity(isPast ? 0.5 : 1.0),
             ),
           ),
           
@@ -340,7 +348,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           Text(
             classItem.description,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondary.withOpacity(isPast ? 0.5 : 1.0),
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -357,13 +365,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   Icon(
                     Icons.location_on,
                     size: 16,
-                    color: AppColors.textTertiary,
+                    color: AppColors.textTertiary.withOpacity(isPast ? 0.5 : 1.0),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     classItem.location,
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.textTertiary,
+                      color: AppColors.textTertiary.withOpacity(isPast ? 0.5 : 1.0),
                     ),
                   ),
                 ],
@@ -371,37 +379,39 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               
               const Spacer(),
               
-              // Участники
-              Row(
-                children: [
-                  Icon(
-                    Icons.people,
-                    size: 16,
-                    color: AppColors.textTertiary,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${classItem.currentParticipants}/${classItem.maxParticipants}',
-                    style: AppTextStyles.caption.copyWith(
+              // Участники (не показываем для прошедших занятий)
+              if (!isPast) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.people,
+                      size: 16,
                       color: AppColors.textTertiary,
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${classItem.currentParticipants}/${classItem.maxParticipants}',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const Spacer(),
+              ],
               
-              const Spacer(),
-              
-              // Статус
+              // Статус (не показываем количество мест для прошедших занятий)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.1),
+                  color: isPast ? AppColors.textTertiary.withOpacity(0.1) : statusColor.withOpacity(0.1),
                   borderRadius: AppStyles.borderRadiusSm,
                 ),
                 child: Text(
-                  isFull ? 'Нет мест' : '$availableSpots мест',
+                  isPast ? 'Завершено' : (isFull ? 'Нет мест' : '$availableSpots мест'),
                   style: AppTextStyles.overline.copyWith(
-                    color: statusColor,
+                    color: isPast ? AppColors.warning : statusColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -419,18 +429,19 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 classItem.price > 0 ? '${classItem.price} ₽' : 'Бесплатно',
                 style: AppTextStyles.price.copyWith(
                   fontSize: 18,
+                  color: AppColors.textPrimary.withOpacity(isPast ? 0.5 : 1.0),
                 ),
               ),
               
               ElevatedButton(
-               onPressed: canBook ? () => _selectClass(classItem) : null,
+               onPressed: isPast ? null : (canBook ? () => _selectClass(classItem) : null),
                style: AppStyles.primaryButtonStyle.copyWith(
                  backgroundColor: MaterialStateProperty.all(
-                   canBook ? AppColors.primary : AppColors.textTertiary,
+                   isPast ? AppColors.textTertiary : (canBook ? AppColors.primary : AppColors.textTertiary),
                  ),
                ),
                child: Text(
-                 isFull ? 'Мест нет' : 'Записаться',
+                 isPast ? 'Завершено' : (isFull ? 'Мест нет' : 'Записаться'),
                  style: AppTextStyles.buttonSmall,
                ),
              ),
