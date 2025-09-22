@@ -15,7 +15,7 @@ final List<Locker> lockers = [
     size: 'Стандартный',
     isAvailable: false,
     pricePerDay: 100,
-    rentalEndDate: DateTime(2025, 9, 25),
+    rentalEndDate: DateTime(2025, 9, 29),
   ),
   Locker(
     id: 'locker_003',
@@ -30,7 +30,7 @@ final List<Locker> lockers = [
     size: 'Стандартный',
     isAvailable: false,
     pricePerDay: 100,
-    rentalEndDate: DateTime(2025, 9, 20),
+    rentalEndDate: DateTime(2025, 9, 24),
   ),
   Locker(
     id: 'locker_005',
@@ -45,7 +45,7 @@ final List<Locker> lockers = [
     size: 'Большой',
     isAvailable: false,
     pricePerDay: 150,
-    rentalEndDate: DateTime(2025, 10, 1),
+    rentalEndDate: DateTime(2025, 10, 5),
   ),
 
   // Секция B - 2 этаж
@@ -69,7 +69,7 @@ final List<Locker> lockers = [
     size: 'Стандартный',
     isAvailable: false,
     pricePerDay: 100,
-    rentalEndDate: DateTime(2025, 9, 22),
+    rentalEndDate: DateTime(2025, 9, 26),
   ),
   Locker(
     id: 'locker_010',
@@ -84,7 +84,7 @@ final List<Locker> lockers = [
     size: 'Стандартный',
     isAvailable: false,
     pricePerDay: 100,
-    rentalEndDate: DateTime(2025, 9, 19),
+    rentalEndDate: DateTime(2025, 9, 23),
   ),
   Locker(
     id: 'locker_012',
@@ -108,7 +108,7 @@ final List<Locker> lockers = [
     size: 'Премиум',
     isAvailable: false,
     pricePerDay: 200,
-    rentalEndDate: DateTime(2025, 9, 30),
+    rentalEndDate: DateTime(2025, 10, 4),
   ),
   Locker(
     id: 'locker_015',
@@ -123,7 +123,7 @@ final List<Locker> lockers = [
     size: 'Большой',
     isAvailable: false,
     pricePerDay: 150,
-    rentalEndDate: DateTime(2025, 9, 23),
+    rentalEndDate: DateTime(2025, 9, 27),
   ),
   Locker(
     id: 'locker_017',
@@ -147,7 +147,7 @@ final List<Locker> lockers = [
     size: 'Стандартный',
     isAvailable: false,
     pricePerDay: 100,
-    rentalEndDate: DateTime(2025, 9, 21),
+    rentalEndDate: DateTime(2025, 9, 25),
   ),
   Locker(
     id: 'locker_020',
@@ -162,7 +162,7 @@ final List<Locker> lockers = [
     size: 'Большой',
     isAvailable: false,
     pricePerDay: 150,
-    rentalEndDate: DateTime(2025, 10, 5),
+    rentalEndDate: DateTime(2025, 10, 9),
   ),
   Locker(
     id: 'locker_022',
@@ -184,6 +184,6 @@ final List<Locker> lockers = [
     size: 'Стандартный',
     isAvailable: false,
     pricePerDay: 100,
-    rentalEndDate: DateTime(2025, 9, 26),
+    rentalEndDate: DateTime(2025, 9, 30),
   ),
 ];

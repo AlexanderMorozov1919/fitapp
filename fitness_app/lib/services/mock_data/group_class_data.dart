@@ -1,7 +1,7 @@
 import '../../models/trainer_model.dart';
 
 final List<GroupClass> groupClasses = [
-  // Занятия на сегодня (18 сентября)
+  // Занятия на сегодня (22 сентября)
   GroupClass(
     id: 'class_001',
     name: 'Утренняя йога',
@@ -12,8 +12,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 15,
     currentParticipants: 12,
-    startTime: DateTime(2025, 9, 18, 8, 0),
-    endTime: DateTime(2025, 9, 18, 9, 0),
+    startTime: DateTime(2025, 9, 22, 8, 0),
+    endTime: DateTime(2025, 9, 22, 9, 0),
     location: 'Зал 2',
     price: 500,
   ),
@@ -27,8 +27,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Самостоятельно',
     maxParticipants: 4,
     currentParticipants: 1,
-    startTime: DateTime(2025, 9, 18, 9, 0),
-    endTime: DateTime(2025, 9, 18, 10, 0),
+    startTime: DateTime(2025, 9, 22, 9, 0),
+    endTime: DateTime(2025, 9, 22, 10, 0),
     location: 'Корт 2',
     price: 1200,
   ),
@@ -42,8 +42,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 12,
     currentParticipants: 8,
-    startTime: DateTime(2025, 9, 18, 17, 0),
-    endTime: DateTime(2025, 9, 18, 18, 0),
+    startTime: DateTime(2025, 9, 22, 17, 0),
+    endTime: DateTime(2025, 9, 22, 18, 0),
     location: 'Зал 3',
     price: 550,
   ),
@@ -57,8 +57,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Мария Иванова',
     maxParticipants: 20,
     currentParticipants: 18,
-    startTime: DateTime(2025, 9, 18, 18, 0),
-    endTime: DateTime(2025, 9, 18, 19, 0),
+    startTime: DateTime(2025, 9, 22, 18, 0),
+    endTime: DateTime(2025, 9, 22, 19, 0),
     location: 'Зал 1',
     price: 600,
   ),
@@ -72,13 +72,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Анна Ковалева',
     maxParticipants: 1,
     currentParticipants: 0,
-    startTime: DateTime(2025, 9, 18, 19, 30),
-    endTime: DateTime(2025, 9, 18, 20, 30),
+    startTime: DateTime(2025, 9, 22, 19, 30),
+    endTime: DateTime(2025, 9, 22, 20, 30),
     location: 'Массажный кабинет',
     price: 2500,
   ),
 
-  // Занятия на завтра (19 сентября)
+  // Занятия на завтра (23 сентября)
   GroupClass(
     id: 'class_006',
     name: 'Теннис с тренером',
@@ -89,8 +89,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Мария Иванова',
     maxParticipants: 1,
     currentParticipants: 1,
-    startTime: DateTime(2025, 9, 19, 16, 0),
-    endTime: DateTime(2025, 9, 19, 17, 0),
+    startTime: DateTime(2025, 9, 23, 16, 0),
+    endTime: DateTime(2025, 9, 23, 17, 0),
     location: 'Корт 1',
     price: 2000,
   ),
@@ -104,8 +104,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Дмитрий Петров',
     maxParticipants: 15,
     currentParticipants: 10,
-    startTime: DateTime(2025, 9, 19, 19, 0),
-    endTime: DateTime(2025, 9, 19, 20, 0),
+    startTime: DateTime(2025, 9, 23, 19, 0),
+    endTime: DateTime(2025, 9, 23, 20, 0),
     location: 'Зал 1',
     price: 650,
   ),
@@ -119,13 +119,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 18,
     currentParticipants: 14,
-    startTime: DateTime(2025, 9, 19, 20, 30),
-    endTime: DateTime(2025, 9, 19, 21, 30),
+    startTime: DateTime(2025, 9, 23, 20, 30),
+    endTime: DateTime(2025, 9, 23, 21, 30),
     location: 'Зал 2',
     price: 450,
   ),
 
-  // Занятия на 20 сентября
+  // Занятия на 24 сентября
   GroupClass(
     id: 'class_009',
     name: 'Стретчинг утренний',
@@ -136,8 +136,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 15,
     currentParticipants: 9,
-    startTime: DateTime(2025, 9, 20, 9, 0),
-    endTime: DateTime(2025, 9, 20, 10, 0),
+    startTime: DateTime(2025, 9, 24, 9, 0),
+    endTime: DateTime(2025, 9, 24, 10, 0),
     location: 'Зал 2',
     price: 500,
   ),
@@ -151,13 +151,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Дмитрий Петров',
     maxParticipants: 16,
     currentParticipants: 12,
-    startTime: DateTime(2025, 9, 20, 18, 0),
-    endTime: DateTime(2025, 9, 20, 19, 0),
+    startTime: DateTime(2025, 9, 24, 18, 0),
+    endTime: DateTime(2025, 9, 24, 19, 0),
     location: 'Зал 1',
     price: 700,
   ),
 
-  // Занятия на 21 сентября
+  // Занятия на 25 сентября
   GroupClass(
     id: 'class_011',
     name: 'Йога для продвинутых',
@@ -168,8 +168,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 12,
     currentParticipants: 8,
-    startTime: DateTime(2025, 9, 21, 10, 0),
-    endTime: DateTime(2025, 9, 21, 11, 30),
+    startTime: DateTime(2025, 9, 25, 10, 0),
+    endTime: DateTime(2025, 9, 25, 11, 30),
     location: 'Зал 2',
     price: 600,
   ),
@@ -183,13 +183,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Дмитрий Петров',
     maxParticipants: 20,
     currentParticipants: 15,
-    startTime: DateTime(2025, 9, 21, 17, 0),
-    endTime: DateTime(2025, 9, 21, 18, 0),
+    startTime: DateTime(2025, 9, 25, 17, 0),
+    endTime: DateTime(2025, 9, 25, 18, 0),
     location: 'Зал 1',
     price: 650,
   ),
 
-  // Занятия на 22 сентября
+  // Занятия на 26 сентября
   GroupClass(
     id: 'class_013',
     name: 'Пилатес реформатор',
@@ -200,8 +200,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 8,
     currentParticipants: 6,
-    startTime: DateTime(2025, 9, 22, 11, 0),
-    endTime: DateTime(2025, 9, 22, 12, 0),
+    startTime: DateTime(2025, 9, 26, 11, 0),
+    endTime: DateTime(2025, 9, 26, 12, 0),
     location: 'Зал 3',
     price: 800,
   ),
@@ -215,13 +215,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Мария Иванова',
     maxParticipants: 25,
     currentParticipants: 20,
-    startTime: DateTime(2025, 9, 22, 19, 0),
-    endTime: DateTime(2025, 9, 22, 20, 0),
+    startTime: DateTime(2025, 9, 26, 19, 0),
+    endTime: DateTime(2025, 9, 26, 20, 0),
     location: 'Зал 1',
     price: 550,
   ),
 
-  // Занятия на 23 сентября
+  // Занятия на 27 сентября
   GroupClass(
     id: 'class_015',
     name: 'Тай-чи',
@@ -232,8 +232,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 20,
     currentParticipants: 12,
-    startTime: DateTime(2025, 9, 23, 9, 30),
-    endTime: DateTime(2025, 9, 23, 10, 30),
+    startTime: DateTime(2025, 9, 27, 9, 30),
+    endTime: DateTime(2025, 9, 27, 10, 30),
     location: 'Зал 2',
     price: 500,
   ),
@@ -247,13 +247,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Дмитрий Петров',
     maxParticipants: 15,
     currentParticipants: 8,
-    startTime: DateTime(2025, 9, 23, 18, 0),
-    endTime: DateTime(2025, 9, 23, 19, 0),
+    startTime: DateTime(2025, 9, 27, 18, 0),
+    endTime: DateTime(2025, 9, 27, 19, 0),
     location: 'Боксерский зал',
     price: 750,
   ),
 
-  // Занятия на 24 сентября
+  // Занятия на 28 сентября
   GroupClass(
     id: 'class_017',
     name: 'Аквааэробика',
@@ -264,8 +264,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Мария Иванова',
     maxParticipants: 12,
     currentParticipants: 10,
-    startTime: DateTime(2025, 9, 24, 10, 0),
-    endTime: DateTime(2025, 9, 24, 11, 0),
+    startTime: DateTime(2025, 9, 28, 10, 0),
+    endTime: DateTime(2025, 9, 28, 11, 0),
     location: 'Бассейн',
     price: 850,
   ),
@@ -279,13 +279,13 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Елена Сидорова',
     maxParticipants: 18,
     currentParticipants: 14,
-    startTime: DateTime(2025, 9, 24, 20, 0),
-    endTime: DateTime(2025, 9, 24, 21, 0),
+    startTime: DateTime(2025, 9, 28, 20, 0),
+    endTime: DateTime(2025, 9, 28, 21, 0),
     location: 'Зал 2',
     price: 500,
   ),
 
-  // Занятия на 25 сентября
+  // Занятия на 29 сентября
   GroupClass(
     id: 'class_019',
     name: 'Функциональный тренинг утренний',
@@ -296,8 +296,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Дмитрий Петров',
     maxParticipants: 18,
     currentParticipants: 12,
-    startTime: DateTime(2025, 9, 25, 8, 0),
-    endTime: DateTime(2025, 9, 25, 9, 0),
+    startTime: DateTime(2025, 9, 29, 8, 0),
+    endTime: DateTime(2025, 9, 29, 9, 0),
     location: 'Зал 1',
     price: 600,
   ),
@@ -311,8 +311,8 @@ final List<GroupClass> groupClasses = [
     trainerName: 'Мария Иванова',
     maxParticipants: 16,
     currentParticipants: 14,
-    startTime: DateTime(2025, 9, 25, 15, 0),
-    endTime: DateTime(2025, 9, 25, 17, 0),
+    startTime: DateTime(2025, 9, 29, 15, 0),
+    endTime: DateTime(2025, 9, 29, 17, 0),
     location: 'Корт 1-2',
     price: 1000,
   ),

@@ -15,8 +15,8 @@ final User currentUser = User(
   membership: Membership(
     id: 'mem_001',
     type: 'All-inclusive',
-    startDate: DateTime(2025, 9, 1),
-    endDate: DateTime(2025, 9, 30),
+    startDate: DateTime(2025, 9, 22),
+    endDate: DateTime(2025, 10, 22),
     remainingVisits: 0, // unlimited
     price: 25000,
     includedServices: ['тренажерный зал', 'групповые занятия', 'теннис', 'бассейн'],
