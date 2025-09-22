@@ -61,6 +61,9 @@ class _NewsBannerWidgetState extends State<NewsBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Проверяем, находимся ли мы в режиме личного кабинета
+    final bool isPersonalCabinet = DeviceUtils.isPersonalCabinetMode();
+    
     return Column(
       children: [
 
@@ -74,7 +77,9 @@ class _NewsBannerWidgetState extends State<NewsBannerWidget> {
             itemBuilder: (context, index) {
               final banner = NewsBannerData.banners[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: isPersonalCabinet
+                    ? const EdgeInsets.all(16)
+                    : const EdgeInsets.symmetric(horizontal: 16),
                 child: _buildBannerCard(banner),
               );
             },
@@ -106,11 +111,15 @@ class _NewsBannerWidgetState extends State<NewsBannerWidget> {
   }
 
   Widget _buildBannerCard(NewsBanner banner) {
+    final bool isPersonalCabinet = DeviceUtils.isPersonalCabinetMode();
+    
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => _onBannerTap(banner),
         child: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             color: banner.backgroundColor,
             borderRadius: AppStyles.borderRadiusLg,

@@ -54,10 +54,6 @@ class _HomeScreenPersonalCabinetState extends State<HomeScreenPersonalCabinet> {
               onQuickAccessNavigate: widget.onQuickAccessNavigate,
             ),
 
-            // Новости фитнес-центра
-            const SizedBox(height: 12),
-            NewsBannerWidget(onBannerTap: widget.onQuickAccessNavigate),
-
             // Объединенная секция бронирований с фильтром
             if (allBookings.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -73,6 +69,47 @@ class _HomeScreenPersonalCabinetState extends State<HomeScreenPersonalCabinet> {
                 ),
               ),
             ],
+
+            // Новости фитнес-центра
+            const SizedBox(height: 12),
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: AppStyles.borderRadiusLg,
+                boxShadow: AppColors.shadowSm,
+                border: Border.all(
+                  color: AppColors.border,
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Заголовок секции (без кнопки сворачивания)
+                  Container(
+                    padding: AppStyles.paddingLg,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Новости фитнес-центра',
+                            style: AppTextStyles.headline5.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Контент секции
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: NewsBannerWidget(onBannerTap: widget.onQuickAccessNavigate),
+                  ),
+                ],
+              ),
+            ),
 
             // Групповые занятия сегодня
             const SizedBox(height: 12),
