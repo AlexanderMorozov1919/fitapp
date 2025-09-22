@@ -68,9 +68,6 @@ class SideNavigation extends StatelessWidget {
                   activeIcon: Icons.book_online,
                   label: 'Мои записи',
                 ),
-                
-                const SizedBox(height: 8),
-                _buildSectionTitle('Услуги'),
                 _buildMenuItem(
                   context,
                   index: 4,
@@ -119,9 +116,6 @@ class SideNavigation extends StatelessWidget {
                   activeIcon: Icons.person,
                   label: 'Профиль',
                 ),
-                
-                const SizedBox(height: 8),
-                _buildSectionTitle('Дополнительно'),
                 _buildMenuItem(
                   context,
                   index: 10,
@@ -129,6 +123,9 @@ class SideNavigation extends StatelessWidget {
                   activeIcon: Icons.people,
                   label: 'Тренеры',
                 ),
+                
+                const SizedBox(height: 8),
+                _buildSectionTitle('Дополнительно'),
                 _buildMenuItem(
                   context,
                   index: 11,
