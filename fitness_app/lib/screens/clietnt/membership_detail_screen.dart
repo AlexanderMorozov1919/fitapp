@@ -229,21 +229,20 @@ class _MembershipDetailScreenState extends State<MembershipDetailScreen> {
               const SizedBox(height: 16),
             ] else if (membership.isActive) ...[
               // Кнопки управления для активного абонемента
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: SecondaryButton(
-                      text: 'Отключить автопродление',
-                      onPressed: _toggleAutoRenew,
-                      color: AppColors.error,
-                    ),
+                  PrimaryButton(
+                    text: 'Продлить абонемент',
+                    onPressed: _renewMembership,
+                    width: double.infinity,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: PrimaryButton(
-                      text: 'Продлить абонемент',
-                      onPressed: _renewMembership,
-                    ),
+                  const SizedBox(height: 12),
+                  SecondaryButton(
+                    text: 'Отключить автопродление',
+                    onPressed: _toggleAutoRenew,
+                    color: AppColors.error,
+                    width: double.infinity,
                   ),
                 ],
               ),

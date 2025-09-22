@@ -147,6 +147,7 @@ class SecondaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isEnabled;
   final Color? color;
+  final double? width;
 
   const SecondaryButton({
     super.key,
@@ -154,26 +155,30 @@ class SecondaryButton extends StatelessWidget {
     required this.onPressed,
     this.isEnabled = true,
     this.color,
+    this.width,
   });
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: isEnabled ? onPressed : null,
-      style: AppStyles.secondaryButtonStyle.copyWith(
-        side: MaterialStateProperty.all(
-          BorderSide(
-            color: isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+    return SizedBox(
+      width: width,
+      child: OutlinedButton(
+        onPressed: isEnabled ? onPressed : null,
+        style: AppStyles.secondaryButtonStyle.copyWith(
+          side: MaterialStateProperty.all(
+            BorderSide(
+              color: isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+            ),
+          ),
+          foregroundColor: MaterialStateProperty.all(
+            isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
           ),
         ),
-        foregroundColor: MaterialStateProperty.all(
-          isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
-        ),
-      ),
-      child: Text(
-        text,
-        style: AppTextStyles.buttonMedium.copyWith(
-          color: isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+        child: Text(
+          text,
+          style: AppTextStyles.buttonMedium.copyWith(
+            color: isEnabled ? (color ?? AppColors.primary) : AppColors.textTertiary,
+          ),
         ),
       ),
     );
